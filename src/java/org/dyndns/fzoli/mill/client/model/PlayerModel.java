@@ -44,23 +44,23 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return askModel(m) == 1 ? true : false;
     }
     
-    public void revalidateEmail(String password, ModelActionListener<Integer> callback) {
+    public void revalidateEmail(String password, boolean safe, ModelActionListener<Integer> callback) {
         RequestMap m = new RequestMap();
-        m.setFirst(KEY_REQUEST, REQ_REVALIDATE_EMAIL);
+        m.setFirst(KEY_REQUEST, safe ? REQ_SAFE_REVALIDATE_EMAIL : REQ_REVALIDATE_EMAIL);
         m.setFirst(KEY_PASSWORD, password);
         askModel(m, callback);
     }
     
-    public void suspendAccount(String password, ModelActionListener<Integer> callback) {
+    public void suspendAccount(String password, boolean safe, ModelActionListener<Integer> callback) {
         RequestMap m = new RequestMap();
-        m.setFirst(KEY_REQUEST, REQ_SUSPEND_ACCOUNT);
+        m.setFirst(KEY_REQUEST, safe ? REQ_SAFE_SUSPEND_ACCOUNT : REQ_SUSPEND_ACCOUNT);
         m.setFirst(KEY_PASSWORD, password);
         askModel(m, callback);
     }
     
-    public void setEmail(String password, String email, ModelActionListener<Integer> callback) {
+    public void setEmail(String password, String email, boolean safe, ModelActionListener<Integer> callback) {
         RequestMap m = new RequestMap();
-        m.setFirst(KEY_REQUEST, REQ_SET_EMAIL);
+        m.setFirst(KEY_REQUEST, safe ? REQ_SAFE_SET_EMAIL : REQ_SET_EMAIL);
         m.setFirst(KEY_PASSWORD, password);
         m.setFirst(KEY_VALUE, email);
         setProperty(m, callback);

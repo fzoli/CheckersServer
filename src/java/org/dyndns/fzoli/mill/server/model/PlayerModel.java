@@ -128,15 +128,15 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.NULL;
     }
     
-    private PlayerReturn setEmail(String password, String email) { //TODO
+    private PlayerReturn setEmail(String password, String email, boolean safe) { //TODO
         return PlayerReturn.NULL;
     }
     
-    private PlayerReturn validateEmail(String password) { //TODO
+    private PlayerReturn validateEmail(String password, boolean safe) { //TODO
         return PlayerReturn.NULL;
     }
     
-    private PlayerReturn suspendAccount(String password) { //TODO
+    private PlayerReturn suspendAccount(String password, boolean safe) { //TODO
         return PlayerReturn.NULL;
     }
     
@@ -192,8 +192,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 if (action.equals(REQ_IS_EMAIL_FREE)) return isEmailFree(value) ? 1 : 0;
             }
             if (passwd != null) {
-                if (action.equals(REQ_REVALIDATE_EMAIL)) return validateEmail(passwd).ordinal();
-                if (action.equals(REQ_SUSPEND_ACCOUNT)) return suspendAccount(passwd).ordinal();
+                if (action.equals(REQ_REVALIDATE_EMAIL)) return validateEmail(passwd, false).ordinal();
+                if (action.equals(REQ_SAFE_REVALIDATE_EMAIL)) return validateEmail(passwd, true).ordinal();
+                if (action.equals(REQ_SUSPEND_ACCOUNT)) return suspendAccount(passwd, false).ordinal();
+                if (action.equals(REQ_SAFE_SUSPEND_ACCOUNT)) return suspendAccount(passwd, true).ordinal();
             }
         }
         return ret == -1 ? PlayerReturn.NULL.ordinal() : ret;
@@ -208,7 +210,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (value != null) {
                 if (action.equals(REQ_SET_PLAYER_STATE)) return setPlayerState(value).ordinal();
                 if (passwd != null) {
-                    if (action.equals(REQ_SET_EMAIL)) return setEmail(passwd, value).ordinal();
+                    if (action.equals(REQ_SET_EMAIL)) return setEmail(passwd, value, false).ordinal();
+                    if (action.equals(REQ_SAFE_SET_EMAIL)) return setEmail(passwd, value, true).ordinal();
                     if (action.equals(REQ_SET_PASSWORD)) return setPassword(passwd, value, false).ordinal();
                     if (action.equals(REQ_SET_SAFE_PASSWORD)) return setPassword(passwd, value, true).ordinal();
                 }
