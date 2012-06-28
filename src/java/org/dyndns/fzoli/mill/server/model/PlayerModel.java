@@ -41,6 +41,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return commonPlayer;
     }
 
+    public boolean isEmailFree(String email) {
+        return !PlayerDAO.isEmailExists(email);
+    }
+    
     public PlayerReturn signIn(String name, String password, boolean hash) {
         System.out.println(name + " ; " + password + " ; " + hash);
         PlayerReturn ret = PlayerDAO.verify(name, password, hash);
@@ -166,6 +170,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (action.equals(REQ_SIGN_OUT)) return signOut(SignOutType.NORMAL).ordinal();
             if (action.equals(REQ_SIGN_IN)) return signIn(rm.getFirst(KEY_USER), rm.getFirst(KEY_PASSWORD), false).ordinal();
             if (action.equals(REQ_SAFE_SIGN_IN)) return signIn(rm.getFirst(KEY_USER), rm.getFirst(KEY_PASSWORD), true).ordinal();
+            String value = rm.getFirst(KEY_VALUE);
+            if (value != null) {
+                if (action.equals(REQ_IS_EMAIL_FREE)) return isEmailFree(value) ? 1 : 0;
+            }
         }
         return ret == -1 ? PlayerReturn.NULL.ordinal() : ret;
     }
