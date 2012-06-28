@@ -124,6 +124,22 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.NULL;
     }
     
+    private PlayerReturn setPassword(String oldPassword, String newPassword, boolean safe) { //TODO
+        return PlayerReturn.NULL;
+    }
+    
+    private PlayerReturn setEmail(String password, String email) { //TODO
+        return PlayerReturn.NULL;
+    }
+    
+    private PlayerReturn validateEmail(String password) { //TODO
+        return PlayerReturn.NULL;
+    }
+    
+    private PlayerReturn suspendAccount(String password) { //TODO
+        return PlayerReturn.NULL;
+    }
+    
     @Override
     public void onPlayerChanged(Player p, PlayerChangeType type) {
         super.onPlayerChanged(p, type);
@@ -171,8 +187,13 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (action.equals(REQ_SIGN_IN)) return signIn(rm.getFirst(KEY_USER), rm.getFirst(KEY_PASSWORD), false).ordinal();
             if (action.equals(REQ_SAFE_SIGN_IN)) return signIn(rm.getFirst(KEY_USER), rm.getFirst(KEY_PASSWORD), true).ordinal();
             String value = rm.getFirst(KEY_VALUE);
+            String passwd = rm.getFirst(KEY_PASSWORD);
             if (value != null) {
                 if (action.equals(REQ_IS_EMAIL_FREE)) return isEmailFree(value) ? 1 : 0;
+            }
+            if (passwd != null) {
+                if (action.equals(REQ_REVALIDATE_EMAIL)) return validateEmail(passwd).ordinal();
+                if (action.equals(REQ_SUSPEND_ACCOUNT)) return suspendAccount(passwd).ordinal();
             }
         }
         return ret == -1 ? PlayerReturn.NULL.ordinal() : ret;
@@ -183,8 +204,14 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
             String value = rm.getFirst(KEY_VALUE);
+            String passwd = rm.getFirst(KEY_PASSWORD);
             if (value != null) {
                 if (action.equals(REQ_SET_PLAYER_STATE)) return setPlayerState(value).ordinal();
+                if (passwd != null) {
+                    if (action.equals(REQ_SET_EMAIL)) return setEmail(passwd, value).ordinal();
+                    if (action.equals(REQ_SET_PASSWORD)) return setPassword(passwd, value, false).ordinal();
+                    if (action.equals(REQ_SET_SAFE_PASSWORD)) return setPassword(passwd, value, true).ordinal();
+                }
             }
         }
         return PlayerReturn.NULL.ordinal(); 
