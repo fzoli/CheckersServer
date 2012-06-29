@@ -127,6 +127,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn setPassword(String oldPassword, String newPassword, boolean safe) {
         if (player == null) return PlayerReturn.NULL;
+        if (!InputValidator.isPasswordValid(newPassword, safe) || !InputValidator.isPasswordValid(oldPassword, safe)) return PlayerReturn.INVALID;
         if (!safe) {
             oldPassword = InputValidator.md5Hex(oldPassword);
             newPassword = InputValidator.md5Hex(newPassword);
@@ -143,6 +144,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn setEmail(String password, String email, boolean safe) {
         if (player == null) return PlayerReturn.NULL;
+        if (!InputValidator.isPasswordValid(password, safe)) return PlayerReturn.INVALID;
         if (!safe) password = InputValidator.md5Hex(password);
         if (password.equals(player.getPassword())) {
             if (PlayerDAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
