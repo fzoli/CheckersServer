@@ -8,5 +8,6 @@ public enum PlayerReturn {
     OK,
     NOT_OK,
     NULL,
-    INVALID
+    INVALID,
+    EMAIL_NOT_FREE
 }

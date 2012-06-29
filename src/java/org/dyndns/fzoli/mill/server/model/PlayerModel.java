@@ -141,8 +141,14 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
     }
     
-    private PlayerReturn setEmail(String password, String email, boolean safe) { //TODO
-        return PlayerReturn.NULL;
+    private PlayerReturn setEmail(String password, String email, boolean safe) {
+        if (player == null) return PlayerReturn.NULL;
+        if (!safe) password = InputValidator.md5Hex(password);
+        if (password.equals(player.getPassword())) {
+            if (PlayerDAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
+            return PlayerReturn.OK;
+        }
+        return PlayerReturn.NOT_OK;
     }
     
     private PlayerReturn validateEmail(String password, boolean safe) { //TODO
