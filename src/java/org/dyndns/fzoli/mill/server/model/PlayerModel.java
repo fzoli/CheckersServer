@@ -1,6 +1,7 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.util.List;
+import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
@@ -124,8 +125,20 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.NULL;
     }
     
-    private PlayerReturn setPassword(String oldPassword, String newPassword, boolean safe) { //TODO
-        return PlayerReturn.NULL;
+    private PlayerReturn setPassword(String oldPassword, String newPassword, boolean safe) {
+        if (player == null) return PlayerReturn.NULL;
+        if (!safe) {
+            oldPassword = InputValidator.md5Hex(oldPassword);
+            newPassword = InputValidator.md5Hex(newPassword);
+        }
+        if (oldPassword.equals(player.getPassword())) {
+            player.setPassword(newPassword);
+            PlayerDAO.save(player);
+            return PlayerReturn.OK;
+        }
+        else {
+            return PlayerReturn.NOT_OK;
+        }
     }
     
     private PlayerReturn setEmail(String password, String email, boolean safe) { //TODO
