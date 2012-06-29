@@ -67,7 +67,7 @@ public class GMailSender {
             message.setFrom(new InternetAddress(data.user));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(address));
             message.setSubject(subject);
-            message.setText(msg);
+            message.setContent(msg, "text/html;charset=UTF-8");
             Transport.send(message);
         }
         catch (MessagingException e) {
@@ -76,7 +76,7 @@ public class GMailSender {
     }
     
     public static void main(String[] args) {
-        sendEmail(new File("/home/zoli/gmail-authenticator.xml"), "f.zoli@mailbox.hu", "Testing Subject", "Dear Mail Crawler,\n\n No spam to my email, please!");
+        sendEmail(new File("/home/zoli/gmail-authenticator.xml"), "f.zoli@mailbox.hu", "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1>");
     }
     
 }

@@ -167,7 +167,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (player.isValidated()) return PlayerReturn.NO_CHANGE;
         EmailServlet mailServlet = (EmailServlet) getModelMap().getModelBean().getServlet();
         try { //TODO
-            mailServlet.sendEmail(player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.\nKöszöni a Java.\n\nÖt szép szűzlány őrült írót nyúz.");
+            mailServlet.sendEmail(player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1>");
             return PlayerReturn.NULL;
         }
         catch (Exception ex) {
