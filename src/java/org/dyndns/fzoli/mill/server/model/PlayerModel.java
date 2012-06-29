@@ -132,6 +132,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             oldPassword = InputValidator.md5Hex(oldPassword);
             newPassword = InputValidator.md5Hex(newPassword);
         }
+        if (oldPassword.equals(newPassword)) {
+            return PlayerReturn.NO_CHANGE;
+        }
         if (oldPassword.equals(player.getPassword())) {
             player.setPassword(newPassword);
             PlayerDAO.save(player);
