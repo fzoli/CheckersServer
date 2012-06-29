@@ -14,8 +14,10 @@ import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
+import org.dyndns.fzoli.mill.server.servlet.EmailServlet;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 import org.dyndns.fzoli.mvc.server.model.Model;
+import org.dyndns.fzoli.mvc.server.servlet.ModelServlet;
 
 /**
  *
@@ -160,8 +162,18 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.NOT_OK;
     }
     
-    private PlayerReturn validateEmail(String password, boolean safe) { //TODO
-        return PlayerReturn.NULL;
+    private PlayerReturn validateEmail(String password, boolean safe) {
+        if (player == null || player.getEmail().isEmpty()) return PlayerReturn.NULL;
+        if (player.isValidated()) return PlayerReturn.NO_CHANGE;
+        EmailServlet mailServlet = (EmailServlet) getModelMap().getModelBean().getServlet();
+        try { //TODO
+            mailServlet.sendEmail(player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.\nKöszöni a Java.\n\nÖt szép szűzlány őrült írót nyúz.");
+            return PlayerReturn.NULL;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return PlayerReturn.ERROR;
+        }
     }
     
     private PlayerReturn suspendAccount(String password, boolean safe) { //TODO
