@@ -174,10 +174,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         File config = MillControllerServlet.getEmailConfig(hsr);
         try { //TODO
             String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
-            if (ValidatorDAO.addValidator(new Validator(player, key))) {
-                String url = host + MillServletURL.VALIDATOR + "?key=" + key;
-                GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3><a href=\"" + url + "\">Teszt validálás</a></h3>");
-            }
+            ValidatorDAO.setKey(player, key);
+            String url = host + MillServletURL.VALIDATOR + "?key=" + key;
+            GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3><a href=\"" + url + "\">Teszt validálás</a></h3>");
             return PlayerReturn.NULL;
         }
         catch (Exception ex) {

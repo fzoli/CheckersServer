@@ -39,5 +39,9 @@ public class Validator implements Serializable {
     public String getValidatorKey() {
         return validatorKey;
     }
+
+    public void setValidatorKey(String validatorKey) {
+        this.validatorKey = validatorKey;
+    }
     
 }
