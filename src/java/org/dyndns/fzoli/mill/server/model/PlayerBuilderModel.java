@@ -2,6 +2,7 @@ package org.dyndns.fzoli.mill.server.model;
 
 import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.PlayerBuilderKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerBuilderReturn;
@@ -81,7 +82,7 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
     }
     
     @Override
-    protected int askModel(RequestMap m) {
+    protected int askModel(HttpServletRequest sr, RequestMap m) {
         String action = m.getFirst(KEY_REQUEST);
         String value = m.getFirst(KEY_VALUE);
         if (action != null) {
@@ -89,17 +90,17 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
             if (action.equals(REQ_CREATE)) return createUser(value, false).ordinal();
             if (action.equals(REQ_SAFE_CREATE)) return createUser(value, true).ordinal();
         }
-        return super.askModel(m);
+        return super.askModel(sr, m);
     }
     
     @Override
-    protected PlayerBuilderData getProperties(RequestMap m) {
+    protected PlayerBuilderData getProperties(HttpServletRequest sr, RequestMap m) {
         validate(false);
         return new PlayerBuilderData(user, email, new Date().getTime(), initTime, TIMEOUT, PlayerDAO.getPlayerCount(), isCaptchaValidated(), getCaptchaWidth());
     }
 
     @Override
-    protected int setProperty(RequestMap rm) {
+    protected int setProperty(HttpServletRequest hsr, RequestMap rm) {
         String action = rm.getFirst(KEY_REQUEST);
         String value = rm.getFirst(KEY_VALUE);
         if (action != null && value != null) {

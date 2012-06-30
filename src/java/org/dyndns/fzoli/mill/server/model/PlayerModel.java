@@ -1,6 +1,9 @@
 package org.dyndns.fzoli.mill.server.model;
 
+import java.io.File;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.dyndns.fzoli.email.GMailSender;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
@@ -14,10 +17,9 @@ import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
-import org.dyndns.fzoli.mill.server.servlet.EmailServlet;
+import org.dyndns.fzoli.mill.server.servlet.MillControllerServlet;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 import org.dyndns.fzoli.mvc.server.model.Model;
-import org.dyndns.fzoli.mvc.server.servlet.ModelServlet;
 
 /**
  *
@@ -147,7 +149,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
     }
     
-    private PlayerReturn setEmail(String password, String email, boolean safe) {
+    private PlayerReturn setEmail(HttpServletRequest hsr, String password, String email, boolean safe) {
         if (player == null) return PlayerReturn.NULL;
         if (!InputValidator.isPasswordValid(password, safe)) return PlayerReturn.INVALID;
         if (!safe) password = InputValidator.md5Hex(password);
@@ -156,18 +158,19 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             commonPlayer.setEmail(email);
             player.setEmail(email);
             player.setValidated(false);
-            validateEmail(password, true);
+            validateEmail(hsr, password, true);
             return PlayerReturn.OK;
         }
         return PlayerReturn.NOT_OK;
     }
     
-    private PlayerReturn validateEmail(String password, boolean safe) {
+    private PlayerReturn validateEmail(HttpServletRequest hsr, String password, boolean safe) {
         if (player == null || player.getEmail().isEmpty()) return PlayerReturn.NULL;
         if (player.isValidated()) return PlayerReturn.NO_CHANGE;
-        EmailServlet mailServlet = (EmailServlet) getModelMap().getModelBean().getServlet();
+        String host = MillControllerServlet.getHost(hsr);
+        File config = MillControllerServlet.getEmailConfig(hsr);
         try { //TODO
-            mailServlet.sendEmail(player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1>");
+            GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3>Szerver: " + host + "</h3>");
             return PlayerReturn.NULL;
         }
         catch (Exception ex) {
@@ -219,8 +222,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     @Override
-    protected int askModel(RequestMap rm) {
-        int ret = super.askModel(rm);
+    protected int askModel(HttpServletRequest hsr, RequestMap rm) {
+        int ret = super.askModel(hsr, rm);
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
             if (action.equals(REQ_SIGN_OUT)) return signOut(SignOutType.NORMAL).ordinal();
@@ -232,8 +235,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 if (action.equals(REQ_IS_EMAIL_FREE)) return isEmailFree(value) ? 1 : 0;
             }
             if (passwd != null) {
-                if (action.equals(REQ_REVALIDATE_EMAIL)) return validateEmail(passwd, false).ordinal();
-                if (action.equals(REQ_SAFE_REVALIDATE_EMAIL)) return validateEmail(passwd, true).ordinal();
+                if (action.equals(REQ_REVALIDATE_EMAIL)) return validateEmail(hsr, passwd, false).ordinal();
+                if (action.equals(REQ_SAFE_REVALIDATE_EMAIL)) return validateEmail(hsr, passwd, true).ordinal();
                 if (action.equals(REQ_SUSPEND_ACCOUNT)) return suspendAccount(passwd, false).ordinal();
                 if (action.equals(REQ_SAFE_SUSPEND_ACCOUNT)) return suspendAccount(passwd, true).ordinal();
             }
@@ -242,7 +245,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     @Override
-    protected int setProperty(RequestMap rm) {
+    protected int setProperty(HttpServletRequest hsr, RequestMap rm) {
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
             String value = rm.getFirst(KEY_VALUE);
@@ -250,8 +253,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (value != null) {
                 if (action.equals(REQ_SET_PLAYER_STATE)) return setPlayerState(value).ordinal();
                 if (passwd != null) {
-                    if (action.equals(REQ_SET_EMAIL)) return setEmail(passwd, value, false).ordinal();
-                    if (action.equals(REQ_SAFE_SET_EMAIL)) return setEmail(passwd, value, true).ordinal();
+                    if (action.equals(REQ_SET_EMAIL)) return setEmail(hsr, passwd, value, false).ordinal();
+                    if (action.equals(REQ_SAFE_SET_EMAIL)) return setEmail(hsr, passwd, value, true).ordinal();
                     if (action.equals(REQ_SET_PASSWORD)) return setPassword(passwd, value, false).ordinal();
                     if (action.equals(REQ_SET_SAFE_PASSWORD)) return setPassword(passwd, value, true).ordinal();
                 }
@@ -261,7 +264,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
 
     @Override
-    protected PlayerData getProperties(RequestMap rm) {
+    protected PlayerData getProperties(HttpServletRequest hsr, RequestMap rm) {
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
     }
     

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
 import nl.captcha.Captcha;
 import nl.captcha.backgrounds.BackgroundProducer;
 import nl.captcha.backgrounds.FlatColorBackgroundProducer;
@@ -42,17 +43,17 @@ abstract class AbstractMillModel<EventObj, PropsObj> extends JSONModel<EventObj,
     private Captcha captcha;
 
     @Override
-    protected RenderedImage getImage(RequestMap rm) {
+    protected RenderedImage getImage(HttpServletRequest hsr, RequestMap rm) {
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
             if (action.equals(REQ_GET_CAPTCHA)) return getCaptcha();
             if (action.equals(REQ_CREATE_CAPTCHA)) return createCaptcha();
         }
-        return super.getImage(rm);
+        return super.getImage(hsr, rm);
     }
 
     @Override
-    protected int askModel(RequestMap rm) {
+    protected int askModel(HttpServletRequest hsr, RequestMap rm) {
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
             String val = rm.getFirst(KEY_VALUE);

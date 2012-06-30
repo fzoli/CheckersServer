@@ -28,7 +28,7 @@ import org.dyndns.fzoli.mvc.server.servlet.listener.JSONListenerServlet;
             @WebInitParam(name=MillListenerServlet.PARAM_GC_DELAY, value="60000")
         }
 )
-public final class MillListenerServlet extends JSONListenerServlet implements EmailServlet {
+public final class MillListenerServlet extends JSONListenerServlet {
 
     private static Date lastTime;
     
@@ -62,16 +62,6 @@ public final class MillListenerServlet extends JSONListenerServlet implements Em
             lastTime = now;
         }
         super.printResponse(request, response);
-    }
-
-    @Override
-    public void sendEmail(String address, String subject, String msg) {
-        EmailServletUtil.sendEmail(this, address, subject, msg);
-    }
-
-    @Override
-    public String getCtxInitParameter(String name) {
-        return super.getCtxInitParameter(name);
     }
     
 }
