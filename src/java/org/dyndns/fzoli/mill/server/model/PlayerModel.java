@@ -155,7 +155,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (!safe) password = InputValidator.md5Hex(password);
         if (password.equals(player.getPassword())) {
             if (PlayerDAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
-            validateEmail(hsr, password, true);
+            if (validateEmail(hsr, password, true).equals(PlayerReturn.ERROR)) return PlayerReturn.ERROR;
             commonPlayer.setEmail(email);
             player.setEmail(email);
             player.setValidated(false);
