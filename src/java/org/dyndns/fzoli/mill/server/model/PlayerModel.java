@@ -157,10 +157,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (!safe) password = InputValidator.md5Hex(password);
         if (password.equals(player.getPassword())) {
             if (PlayerDAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
-            if (validateEmail(hsr, password, true).equals(PlayerReturn.ERROR)) return PlayerReturn.ERROR;
             commonPlayer.setEmail(email);
             player.setEmail(email);
             player.setValidated(false);
+            PlayerDAO.save(player);
+            validateEmail(hsr, password, true);
             return PlayerReturn.OK;
         }
         return PlayerReturn.NOT_OK;
@@ -174,7 +175,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         try { //TODO
             String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
             if (ValidatorDAO.addValidator(new Validator(player, key))) {
-                String url = "http://" + host + MillServletURL.VALIDATOR + "?key=" + key;
+                String url = host + MillServletURL.VALIDATOR + "?key=" + key;
                 GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3><a href=\"" + url + "\">Teszt validálás</a></h3>");
             }
             return PlayerReturn.NULL;

@@ -8,7 +8,7 @@
     <context-param>
         <description>Host for e-mail urls</description>
         <param-name>public-host</param-name>
-        <param-value>fzoli.dyndns.org</param-value>
+        <param-value>http://fzoli.dyndns.org:8084/Mill</param-value>
     </context-param>
     <!--<security-constraint>
         <display-name>Security Constraint</display-name>
