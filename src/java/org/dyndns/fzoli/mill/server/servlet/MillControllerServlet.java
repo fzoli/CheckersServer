@@ -15,7 +15,7 @@ public final class MillControllerServlet extends JSONControllerServlet {
 
     public static String getHost(HttpServletRequest hsr) {
         String host = hsr.getServletContext().getInitParameter("public-host");
-        return host == null ? (hsr.isSecure() ? "https" : "http") + hsr.getRemoteAddr() + ":" + hsr.getRemotePort()  + hsr.getContextPath(): host;
+        return host == null ? (hsr.isSecure() ? "https" : "http") + "://" + hsr.getRemoteAddr() + ":" + hsr.getLocalPort()  + hsr.getContextPath(): host;
     }
     
     public static File getEmailConfig(HttpServletRequest hsr) {
