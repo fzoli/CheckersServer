@@ -2,16 +2,23 @@ package org.dyndns.fzoli.mill.server.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.dyndns.fzoli.mill.common.key.MillServletURL;
+import org.dyndns.fzoli.mill.common.key.ModelKeys;
+import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
+import org.dyndns.fzoli.mill.server.model.PlayerModel;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
+import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mill.server.model.entity.Validator;
+import org.dyndns.fzoli.mvc.server.model.bean.ModelBean;
+import org.dyndns.fzoli.mvc.server.model.bean.ModelBeanRegister;
 
 /**
  *
@@ -56,14 +63,32 @@ public class ValidatorServlet extends HttpServlet {
     
     public static ValidateReturn validate(String key) {
         if (key == null) return ValidateReturn.NOT_OK;
-        Validator v = ValidatorDAO.getValidator(key);
+        final Validator v = ValidatorDAO.getValidator(key);
         if (v == null) return ValidateReturn.NOT_OK;
-        Player p = v.getPlayer();
+        final Player p = v.getPlayer();
         if (p == null) return ValidateReturn.USED;
-        p.setValidated(true);
-        PlayerDAO.save(p);
-        v.setPlayer(null);
-        ValidatorDAO.save(v);
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                p.setValidated(true);
+                PlayerDAO.save(p);
+                v.setPlayer(null);
+                ValidatorDAO.save(v);
+                List<ModelBean> l = ModelBeanRegister.getModelBeans();
+                synchronized(l) {
+                    for (ModelBean bean : l) {
+                        PlayerModel m = (PlayerModel) bean.getModel(ModelKeys.PLAYER);
+                        if (m == null || m.getPlayer() == null) continue;
+                        if (m.getPlayer().getPlayerName().equals(p.getPlayerName())) {
+                            m.addEvent(new PlayerEvent(ConvertUtil.createPlayer(m, p), PlayerEvent.PlayerEventType.VALIDATE));
+                            break;
+                        }
+                    }
+                }
+            }
+            
+        }).start();
         return ValidateReturn.OK;
     }
     
