@@ -40,6 +40,10 @@ public class Validator implements Serializable {
         return validatorKey;
     }
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
     public void setValidatorKey(String validatorKey) {
         this.validatorKey = validatorKey;
     }

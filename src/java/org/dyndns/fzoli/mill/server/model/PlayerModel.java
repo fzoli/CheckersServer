@@ -177,7 +177,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             ValidatorDAO.setKey(player, key);
             String url = host + MillServletURL.VALIDATOR + "?key=" + key;
             GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3><a href=\"" + url + "\">Teszt validálás</a></h3>");
-            return PlayerReturn.NULL;
+            return PlayerReturn.OK;
         }
         catch (Exception ex) {
             ex.printStackTrace();
