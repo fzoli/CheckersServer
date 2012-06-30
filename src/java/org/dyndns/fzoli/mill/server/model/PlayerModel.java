@@ -1,10 +1,12 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
 import org.dyndns.fzoli.mill.common.InputValidator;
+import org.dyndns.fzoli.mill.common.key.MillServletURL;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
@@ -15,8 +17,10 @@ import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
+import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
+import org.dyndns.fzoli.mill.server.model.entity.Validator;
 import org.dyndns.fzoli.mill.server.servlet.MillControllerServlet;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 import org.dyndns.fzoli.mvc.server.model.Model;
@@ -30,8 +34,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     public static enum SignOutType {
         RESIGN, KICK, NORMAL
     }
-    
-    private final PlayerDAO DAO = new PlayerDAO(this);
     
     private Player player;
     private org.dyndns.fzoli.mill.common.model.entity.Player commonPlayer;
@@ -170,7 +172,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         String host = MillControllerServlet.getHost(hsr);
         File config = MillControllerServlet.getEmailConfig(hsr);
         try { //TODO
-            GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3>Szerver: " + host + "</h3>");
+            String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
+            if (ValidatorDAO.addValidator(new Validator(player, key))) {
+                String url = "http://" + host + MillServletURL.VALIDATOR + "?key=" + key;
+                GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3><a href=\"" + url + "\">Teszt validálás</a></h3>");
+            }
             return PlayerReturn.NULL;
         }
         catch (Exception ex) {

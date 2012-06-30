@@ -6,7 +6,6 @@ import javax.persistence.TypedQuery;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.PlayerBuilderReturn;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
-import org.dyndns.fzoli.mill.server.model.PlayerModel;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 
 /**
@@ -14,16 +13,6 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  * @author zoli
  */
 public class PlayerDAO extends AbstractDAO {
-
-    private final PlayerModel MODEL;
-    
-    public PlayerDAO(PlayerModel model) {
-        MODEL = model;
-    }
-    
-    private Player getPlayer() {
-        return MODEL.getPlayer();
-    }
     
     public static Player getPlayer(String name) {
         if (name == null) return null;
