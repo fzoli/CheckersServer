@@ -14,7 +14,7 @@ import org.dyndns.fzoli.mvc.server.servlet.controller.JSONControllerServlet;
 public final class MillControllerServlet extends JSONControllerServlet {
 
     public static String getHost(HttpServletRequest hsr) {
-        String host = hsr.getServletContext().getInitParameter("host");
+        String host = hsr.getServletContext().getInitParameter("public-host");
         return host == null ? hsr.getRemoteAddr() : host;
     }
     

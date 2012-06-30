@@ -7,7 +7,7 @@
     </context-param>
     <context-param>
         <description>Host for e-mail urls</description>
-        <param-name>host</param-name>
+        <param-name>public-host</param-name>
         <param-value>fzoli.dyndns.org</param-value>
     </context-param>
     <!--<security-constraint>
