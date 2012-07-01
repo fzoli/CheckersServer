@@ -7,7 +7,7 @@ package org.dyndns.fzoli.mill.server.servlet;
 public class ValidatorInfo {
     
     public enum Return {
-        OK,
+        VALIDATED,
         USED,
         NOT_OK,
         REMOVED
@@ -52,8 +52,8 @@ public class ValidatorInfo {
         return getKey() != null;
     }
     
-    public boolean isReturnOk() {
-        return isReturn(Return.OK.name());
+    public boolean isReturnValidated() {
+        return isReturn(Return.VALIDATED.name());
     }
     
     public boolean isReturnNotOk() {

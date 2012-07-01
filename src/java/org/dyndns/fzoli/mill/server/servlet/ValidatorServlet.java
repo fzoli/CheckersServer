@@ -48,15 +48,11 @@ public class ValidatorServlet extends HttpServlet {
         String key = req.getParameter(KEY_KEY);
         String action = req.getParameter(KEY_ACTION);
         if (action == null) action = ACTION_INVALIDATE;
-        if (action.equals(ACTION_VALIDATE)) return validate(key);
-        else return invalidate(key);
+        if (action.equals(ACTION_VALIDATE)) return validate(key, true);
+        else return validate(key, false);
     }
     
-    public static ValidatorInfo invalidate(String key) { //TODO
-        return new ValidatorInfo(ValidatorInfo.Return.REMOVED, key);
-    }
-    
-    public static ValidatorInfo validate(String key) {
+    public static ValidatorInfo validate(String key, final boolean add) {
         if (key == null) return new ValidatorInfo(ValidatorInfo.Return.NOT_OK, key);
         final Validator v = ValidatorDAO.getValidator(key);
         if (v == null) return new ValidatorInfo(ValidatorInfo.Return.NOT_OK, key);
@@ -66,7 +62,7 @@ public class ValidatorServlet extends HttpServlet {
 
             @Override
             public void run() {
-                p.setValidated(true);
+                p.setValidated(add);
                 PlayerDAO.save(p);
                 v.setPlayer(null);
                 ValidatorDAO.save(v);
@@ -76,7 +72,7 @@ public class ValidatorServlet extends HttpServlet {
                         PlayerModel m = (PlayerModel) bean.getModel(ModelKeys.PLAYER);
                         if (m == null || m.getPlayer() == null) continue;
                         if (m.getPlayer().getPlayerName().equals(p.getPlayerName())) {
-                            m.addEvent(new PlayerEvent(ConvertUtil.createPlayer(m, p), PlayerEvent.PlayerEventType.VALIDATE));
+                            m.addEvent(new PlayerEvent(ConvertUtil.createPlayer(m, p), add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
                             break;
                         }
                     }
@@ -84,7 +80,7 @@ public class ValidatorServlet extends HttpServlet {
             }
             
         }).start();
-        return new ValidatorInfo(ValidatorInfo.Return.OK, key, p.getName());
+        return new ValidatorInfo(add ? ValidatorInfo.Return.VALIDATED : ValidatorInfo.Return.REMOVED, key, p.getName());
     }
     
     protected void forward(HttpServletRequest req, HttpServletResponse resp, String jsp) throws ServletException, IOException {

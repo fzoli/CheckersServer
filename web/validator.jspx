@@ -20,7 +20,7 @@
                     <c:when test="${validator_info.keySpecified}">
                         <p>Tisztelt <c:out default="felhasználó" value="${validator_info.name}" />!</p>
                         <c:choose>
-                            <c:when test="${validator_info.returnOk}">
+                            <c:when test="${validator_info.returnValidated}">
                                 <p>Sikeresen érvényesítette e-mail címét.</p>
                             </c:when>
                             <c:when test="${validator_info.returnUsed}">
