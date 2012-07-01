@@ -62,7 +62,8 @@ public class ValidatorServlet extends HttpServlet {
 
             @Override
             public void run() {
-                p.setValidated(add);
+                if (add) p.setValidated(true);
+                else p.setEmail("");
                 PlayerDAO.save(p);
                 v.setPlayer(null);
                 ValidatorDAO.save(v);
