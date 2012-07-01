@@ -5,11 +5,11 @@
         <param-name>gmail-authenticator</param-name>
         <param-value>/home/zoli/gmail-authenticator.xml</param-value>
     </context-param>
-    <!--<context-param>
+    <context-param>
         <description>Host for e-mail urls</description>
         <param-name>public-host</param-name>
         <param-value>http://fzoli.dyndns.org:8084/Mill</param-value>
-    </context-param>-->
+    </context-param>
     <!--<security-constraint>
         <display-name>Security Constraint</display-name>
         <web-resource-collection>

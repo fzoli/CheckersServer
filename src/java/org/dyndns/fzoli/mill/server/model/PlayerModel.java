@@ -181,11 +181,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
             File fileHtml = new File(hsr.getServletContext().getRealPath("/WEB-INF/validator-email.xhtml"));
             if (!fileHtml.isFile()) return PlayerReturn.ERROR;
-            String out = readFileAsString(fileHtml);
-            out = out.replace("{user}", player.getName());
-            out = out.replace("{host}", host);
-            out = out.replace("{validation-url}", validationUrl);
-            out = out.replace("{invalidation-url}", invalidationUrl);
+            String out = readFileAsString(fileHtml)
+            .replace("${user}", player.getName())
+            .replace("${host}", host)
+            .replace("${validation-url}", validationUrl)
+            .replace("${invalidation-url}", invalidationUrl);
             GMailSender.sendEmail(config, player.getEmail(), "E-mail validation", out);
             return PlayerReturn.OK;
         }
