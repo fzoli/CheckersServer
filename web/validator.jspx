@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          version="2.0">
     <jsp:directive.page contentType="text/html" pageEncoding="UTF-8"/>
+    <jsp:useBean id="validator_info" class="org.dyndns.fzoli.mill.server.servlet.ValidatorInfo" scope="request" />
+    <c:if test="${!validator_info.processed}">
+        <jsp:forward page="/Validator" />
+    </c:if>
     <jsp:body>
         <jsp:output doctype-root-element="html"
                     doctype-public="-//W3C//DTD XHTML 1.1//EN"
@@ -10,7 +16,28 @@
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             </head>
             <body>
-                <p>Helló Világ</p>
+                <c:choose>
+                    <c:when test="${validator_info.keySpecified}">
+                        <p>Tisztelt <c:out default="felhasználó" value="${validator_info.name}" />!</p>
+                        <c:choose>
+                            <c:when test="${validator_info.returnOk}">
+                                <p>Sikeresen érvényesítette e-mail címét.</p>
+                            </c:when>
+                            <c:when test="${validator_info.returnUsed}">
+                                <p>A megadott kód már fel lett használva!</p>
+                            </c:when>
+                            <c:when test="${validator_info.returnNotOk}">
+                                <p>Nem érvényes kulcsot adott meg!</p>
+                            </c:when>
+                            <c:when test="${validator_info.returnRemoved}">
+                                <p>E-mail címét sikeresen töröltük adatbázisunkból.</p>
+                            </c:when>
+                        </c:choose>
+                    </c:when>
+                    <c:otherwise>
+                        <p>Érvénytelen kérés!</p>
+                    </c:otherwise>
+                </c:choose>
             </body>
         </html>
     </jsp:body>

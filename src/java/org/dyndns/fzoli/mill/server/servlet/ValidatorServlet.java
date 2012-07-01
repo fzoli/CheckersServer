@@ -1,8 +1,8 @@
 package org.dyndns.fzoli.mill.server.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,41 +33,10 @@ public class ValidatorServlet extends HttpServlet {
     public static final String ACTION_VALIDATE = "validation";
     public static final String ACTION_INVALIDATE = "invalidation";
     
-    public static enum ValidateReturn {
-        OK,
-        USED,
-        NOT_OK,
-        REMOVED
-    }
-    
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException { //TODO
-        resp.setContentType("text/html;charset=utf-8");
-        PrintWriter out = resp.getWriter();
-        out.print("<html><head><title>E-mail cím érvényesítés</title></head><body>");
-        String key = req.getParameter(KEY_KEY);
-        String action = req.getParameter(KEY_ACTION);
-        if (action == null) action = ACTION_VALIDATE;
-        Player player = ValidatorDAO.getPlayer(key);
-        ValidateReturn ret;
-        if (action.equals(ACTION_VALIDATE)) ret = validate(key);
-        else ret = invalidate(key);
-        switch (ret) {
-            case OK:
-                out.print("Kedves " + player.getName() + "!<br />");
-                out.print("Sikeresen érvényesítette e-mail címét.");
-                break;
-            case USED:
-                out.print("A megadott kód már fel lett használva!");
-                break;
-            case REMOVED:
-                out.print("E-mail címét eltávolítottuk adatbázisunkból!");
-                break;
-            default:
-                out.print("Érvénytelen kód!");
-        }
-        out.print("</body></html>");
-        out.close();
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("validator_info", process(req));
+        forward(req, resp, "/validator.jspx");
     }
     
     @Override
@@ -75,16 +44,24 @@ public class ValidatorServlet extends HttpServlet {
         return "E-mail address validator servlet.";
     }
     
-    public static ValidateReturn invalidate(String key) { //TODO
-        return ValidateReturn.REMOVED;
+    private ValidatorInfo process(HttpServletRequest req) {
+        String key = req.getParameter(KEY_KEY);
+        String action = req.getParameter(KEY_ACTION);
+        if (action == null) action = ACTION_INVALIDATE;
+        if (action.equals(ACTION_VALIDATE)) return validate(key);
+        else return invalidate(key);
     }
     
-    public static ValidateReturn validate(String key) {
-        if (key == null) return ValidateReturn.NOT_OK;
+    public static ValidatorInfo invalidate(String key) { //TODO
+        return new ValidatorInfo(ValidatorInfo.Return.REMOVED, key);
+    }
+    
+    public static ValidatorInfo validate(String key) {
+        if (key == null) return new ValidatorInfo(ValidatorInfo.Return.NOT_OK, key);
         final Validator v = ValidatorDAO.getValidator(key);
-        if (v == null) return ValidateReturn.NOT_OK;
+        if (v == null) return new ValidatorInfo(ValidatorInfo.Return.NOT_OK, key);
         final Player p = v.getPlayer();
-        if (p == null) return ValidateReturn.USED;
+        if (p == null) return new ValidatorInfo(ValidatorInfo.Return.USED, key);
         new Thread(new Runnable() {
 
             @Override
@@ -107,7 +84,12 @@ public class ValidatorServlet extends HttpServlet {
             }
             
         }).start();
-        return ValidateReturn.OK;
+        return new ValidatorInfo(ValidatorInfo.Return.OK, key, p.getName());
+    }
+    
+    protected void forward(HttpServletRequest req, HttpServletResponse resp, String jsp) throws ServletException, IOException {
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(jsp);
+        dispatcher.forward(req, resp);
     }
     
 }
