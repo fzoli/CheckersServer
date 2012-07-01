@@ -27,20 +27,31 @@ import org.dyndns.fzoli.mvc.server.model.bean.ModelBeanRegister;
 @WebServlet(urlPatterns={MillServletURL.VALIDATOR})
 public class ValidatorServlet extends HttpServlet {
 
+    public static final String KEY_KEY = "key";
+    public static final String KEY_ACTION = "action";
+    
+    public static final String ACTION_VALIDATE = "validation";
+    public static final String ACTION_INVALIDATE = "invalidation";
+    
     public static enum ValidateReturn {
         OK,
         USED,
-        NOT_OK
+        NOT_OK,
+        REMOVED
     }
     
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException { //TODO
         resp.setContentType("text/html;charset=utf-8");
         PrintWriter out = resp.getWriter();
         out.print("<html><head><title>E-mail cím érvényesítés</title></head><body>");
-        String key = req.getParameter("key");
+        String key = req.getParameter(KEY_KEY);
+        String action = req.getParameter(KEY_ACTION);
+        if (action == null) action = ACTION_VALIDATE;
         Player player = ValidatorDAO.getPlayer(key);
-        ValidateReturn ret = validate(key);
+        ValidateReturn ret;
+        if (action.equals(ACTION_VALIDATE)) ret = validate(key);
+        else ret = invalidate(key);
         switch (ret) {
             case OK:
                 out.print("Kedves " + player.getName() + "!<br />");
@@ -48,6 +59,9 @@ public class ValidatorServlet extends HttpServlet {
                 break;
             case USED:
                 out.print("A megadott kód már fel lett használva!");
+                break;
+            case REMOVED:
+                out.print("E-mail címét eltávolítottuk adatbázisunkból!");
                 break;
             default:
                 out.print("Érvénytelen kód!");
@@ -59,6 +73,10 @@ public class ValidatorServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "E-mail address validator servlet.";
+    }
+    
+    public static ValidateReturn invalidate(String key) { //TODO
+        return ValidateReturn.REMOVED;
     }
     
     public static ValidateReturn validate(String key) {

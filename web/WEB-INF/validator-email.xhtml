@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>E-mail cím érvényesítés</title>
+    <style type="text/css">
+        p#invocation {
+            font-weight: 800;
+        }
+        a {
+            color: black;
+            font-weight: 600;
+            font-style: normal;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        a#validation {
+            color: green;
+        }
+        a#invalidation {
+            color: red;
+        }
+        p#goodbyes {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <p id="invocation">Tisztelt {user}!</p>
+    <p>Valaki az ön e-mail címét adta meg az <a href="{host}">Online Dáma</a> játékban.</p>
+    <p>
+        Ha maga tette, <a id="validation" href="{validation-url}">kattintson ide</a> az e-mail címe érvényesítéséhez,
+        <br />
+        ellenkező esetben <a id="invalidation" href="{invalidation-url}">ide kattintva</a> tudja törölni az e-mail címét adatbázisunkból.
+    </p>
+    <p id="goodbyes">Minden jót!</p>
+</body>
+</html>

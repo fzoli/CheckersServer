@@ -22,6 +22,7 @@ import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mill.server.model.entity.Validator;
 import org.dyndns.fzoli.mill.server.servlet.MillControllerServlet;
+import org.dyndns.fzoli.mill.server.servlet.ValidatorServlet;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 import org.dyndns.fzoli.mvc.server.model.Model;
 
@@ -172,11 +173,20 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (player.isValidated()) return PlayerReturn.NO_CHANGE;
         String host = MillControllerServlet.getHost(hsr);
         File config = MillControllerServlet.getEmailConfig(hsr);
-        try { //TODO
+        try {
             String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
             ValidatorDAO.setKey(player, key);
-            String url = host + MillServletURL.VALIDATOR + "?key=" + key;
-            GMailSender.sendEmail(config, player.getEmail(), "Teszt üzenet", "Kedves e-mail szűrő, kérlek ne töröld az üzenetet.<br />Köszöni a Java.<h1>Öt szép szűz lány őrült írót nyúz.</h1><h3><a href=\"" + url + "\">Teszt validálás</a></h3>");
+            String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
+            String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
+            String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
+            File fileHtml = new File(hsr.getServletContext().getRealPath("/WEB-INF/validator-email.xhtml"));
+            if (!fileHtml.isFile()) return PlayerReturn.ERROR;
+            String out = readFileAsString(fileHtml);
+            out = out.replace("{user}", player.getName());
+            out = out.replace("{host}", host);
+            out = out.replace("{validation-url}", validationUrl);
+            out = out.replace("{invalidation-url}", invalidationUrl);
+            GMailSender.sendEmail(config, player.getEmail(), "E-mail validation", out);
             return PlayerReturn.OK;
         }
         catch (Exception ex) {
