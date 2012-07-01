@@ -23,6 +23,18 @@ public class ValidatorDAO extends AbstractDAO {
         }
     }
     
+    public static Validator getValidator(Player player) {
+        if (player == null) return null;
+        try {
+            TypedQuery<Validator> query = getEntityManager().createQuery("SELECT v FROM Validator v WHERE v.player = :player", Validator.class);
+            query.setParameter("player", player);
+            return query.getSingleResult();
+        }
+        catch (Exception ex) {
+            return null;
+        }
+    }
+    
     public static Player getPlayer(String key) {
         if (key == null) return null;
         Validator validator = getValidator(key);
@@ -31,7 +43,7 @@ public class ValidatorDAO extends AbstractDAO {
     
     public static void setKey(Player player, String key) {
         if (player == null || key == null) return;
-        Validator validator = getValidator(key);
+        Validator validator = getValidator(player);
         if (validator == null) validator = new Validator(player, key);
         else validator.setValidatorKey(key);
         save(validator);

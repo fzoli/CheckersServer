@@ -20,7 +20,6 @@ import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
-import org.dyndns.fzoli.mill.server.model.entity.Validator;
 import org.dyndns.fzoli.mill.server.servlet.MillControllerServlet;
 import org.dyndns.fzoli.mill.server.servlet.ValidatorServlet;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
