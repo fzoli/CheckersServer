@@ -8,6 +8,8 @@
         <jsp:forward page="/Validator" />
     </c:if>
     <jsp:body>
+        <jsp:useBean id="r" class="org.dyndns.fzoli.language.LanguageResource" scope="request" />
+        <jsp:setProperty name="r" property="pageContext" value="${pageContext}" />
         <jsp:output doctype-root-element="html"
                     doctype-public="-//W3C//DTD XHTML 1.1//EN"
                     doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" />
@@ -16,7 +18,7 @@
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             </head>
             <body>
-                <p>Nyelv: <c:out value="${pageContext.request.locale.language}"/></p>
+                <p>Nyelv: <c:out value="${r.language}"/></p>
                 <c:choose>
                     <c:when test="${validator_info.keySpecified}">
                         <p>Tisztelt <c:out default="felhasználó" value="${validator_info.name}" />!</p>

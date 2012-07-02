@@ -1,6 +1,7 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -132,6 +133,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     private PlayerReturn setPassword(String oldPassword, String newPassword, boolean safe) {
+        if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
         if (player == null) return PlayerReturn.NULL;
         if (!InputValidator.isPasswordValid(newPassword, safe) || !InputValidator.isPasswordValid(oldPassword, safe)) return PlayerReturn.INVALID;
         if (!safe) {
@@ -152,6 +154,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     private PlayerReturn setEmail(HttpServletRequest hsr, String password, String email, boolean safe) {
+        if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
         if (player == null) return PlayerReturn.NULL;
         if (!InputValidator.isPasswordValid(password, safe)) return PlayerReturn.INVALID;
         if (!safe) password = InputValidator.md5Hex(password);
@@ -167,7 +170,15 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.NOT_OK;
     }
     
+    private String getEmailText(HttpServletRequest hsr) throws IOException {
+        File fileHtml = new File(hsr.getServletContext().getRealPath("/WEB-INF/" + hsr.getLocale().getLanguage() + "-validator-email.xhtml")); // http kérésben definiált nyelv alapján fájl megszerzése
+        if (!fileHtml.isFile()) fileHtml = new File(hsr.getServletContext().getRealPath("/WEB-INF/validator-email.xhtml")); // ha nem létezik, alapértelmezett fájl megszerzése
+        if (!fileHtml.isFile()) throw new NullPointerException("validator-email.xhtml not exists"); // ha az sem létezik, programhiba
+        return readFileAsString(fileHtml);
+    }
+    
     private PlayerReturn validateEmail(HttpServletRequest hsr, String password, boolean safe) {
+        if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
         if (player == null || player.getEmail().isEmpty()) return PlayerReturn.NULL;
         if (player.isValidated()) return PlayerReturn.NO_CHANGE;
         String host = MillControllerServlet.getHost(hsr);
@@ -178,9 +189,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
             String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
             String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
-            File fileHtml = new File(hsr.getServletContext().getRealPath("/WEB-INF/validator-email.xhtml"));
-            if (!fileHtml.isFile()) return PlayerReturn.ERROR;
-            String out = readFileAsString(fileHtml)
+            String out = getEmailText(hsr)
             .replace("${user}", player.getName())
             .replace("${host}", host)
             .replace("${validation-url}", validationUrl)
