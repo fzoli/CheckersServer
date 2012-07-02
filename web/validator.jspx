@@ -16,6 +16,7 @@
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             </head>
             <body>
+                <p>Nyelv: <c:out value="${pageContext.request.locale.language}"/></p>
                 <c:choose>
                     <c:when test="${validator_info.keySpecified}">
                         <p>Tisztelt <c:out default="felhasználó" value="${validator_info.name}" />!</p>
