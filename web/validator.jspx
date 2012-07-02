@@ -8,7 +8,7 @@
         <jsp:forward page="/Validator" />
     </c:if>
     <jsp:body>
-        <jsp:useBean id="r" class="org.dyndns.fzoli.language.LanguageResource" scope="request" />
+        <jsp:useBean id="r" class="org.dyndns.fzoli.mill.server.Resource" scope="request" />
         <jsp:setProperty name="r" property="pageContext" value="${pageContext}" />
         <jsp:output doctype-root-element="html"
                     doctype-public="-//W3C//DTD XHTML 1.1//EN"
@@ -16,30 +16,29 @@
         <html xmlns="http://www.w3.org/1999/xhtml">
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                <title>${r.emailValidation}</title>
             </head>
             <body>
-                <p>Nyelv: <c:out value="${r.language}"/></p>
-                <p>Tesztüzenet: <c:out value="${r.test}"/></p>
                 <c:choose>
                     <c:when test="${validator_info.keySpecified}">
-                        <p>Tisztelt <c:out default="felhasználó" value="${validator_info.name}" />!</p>
+                        <p>${r.dear} <c:out default="${r.user}" value="${validator_info.name}" />!</p>
                         <c:choose>
                             <c:when test="${validator_info.returnValidated}">
-                                <p>Sikeresen érvényesítette e-mail címét.</p>
+                                <p>${r.successfulEmailValidation}</p>
                             </c:when>
                             <c:when test="${validator_info.returnUsed}">
-                                <p>A megadott kód már fel lett használva!</p>
+                                <p>${r.keyUsed}</p>
                             </c:when>
                             <c:when test="${validator_info.returnNotOk}">
-                                <p>Nem érvényes kulcsot adott meg!</p>
+                                <p>${r.keyInvalid}</p>
                             </c:when>
                             <c:when test="${validator_info.returnRemoved}">
-                                <p>E-mail címét sikeresen töröltük adatbázisunkból.</p>
+                                <p>${r.successfulEmailDelete}</p>
                             </c:when>
                         </c:choose>
                     </c:when>
                     <c:otherwise>
-                        <p>Érvénytelen kérés!</p>
+                        <p>${r.invalidRequest}</p>
                     </c:otherwise>
                 </c:choose>
             </body>

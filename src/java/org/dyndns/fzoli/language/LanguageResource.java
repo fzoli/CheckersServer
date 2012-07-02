@@ -35,10 +35,6 @@ public class LanguageResource {
     public String getLanguage() {
         return language;
     }
-
-    public String getTest() {
-        return getString("test");
-    }
     
     public String getString(String key) {
         File xmlFile = getResourceFile(context, language, "strings.xml");
@@ -53,11 +49,15 @@ public class LanguageResource {
                 String k = ((Element)node).getAttribute("key");
                 if (k.equals(key)) return node.getTextContent();
             }
-            return "";
+            return null;
         }
         catch (Exception ex) {
-            return "";
+            throw new RuntimeException(ex);
         }
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
     
     public void setPageContext(PageContext context) {
