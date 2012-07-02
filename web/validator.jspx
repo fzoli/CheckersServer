@@ -17,28 +17,29 @@
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <title>${r.emailValidation}</title>
+                <link href="validator.css" rel="stylesheet" type="text/css" />
             </head>
             <body>
                 <c:choose>
                     <c:when test="${validator_info.keySpecified}">
-                        <p>${r.dear} <c:out default="${r.user}" value="${validator_info.name}" />!</p>
+                        <p id="invocation">${r.dear} <c:out default="${r.user}" value="${validator_info.name}" />${r.dearClose}</p>
                         <c:choose>
                             <c:when test="${validator_info.returnValidated}">
-                                <p>${r.successfulEmailValidation}</p>
-                            </c:when>
-                            <c:when test="${validator_info.returnUsed}">
-                                <p>${r.keyUsed}</p>
-                            </c:when>
-                            <c:when test="${validator_info.returnNotOk}">
-                                <p>${r.keyInvalid}</p>
+                                <p id="success">${r.successfulEmailValidation}</p>
                             </c:when>
                             <c:when test="${validator_info.returnRemoved}">
-                                <p>${r.successfulEmailDelete}</p>
+                                <p id="success">${r.successfulEmailDelete}</p>
+                            </c:when>
+                            <c:when test="${validator_info.returnUsed}">
+                                <p id="used">${r.keyUsed}</p>
+                            </c:when>
+                            <c:when test="${validator_info.returnNotOk}">
+                                <p id="error">${r.keyInvalid}</p>
                             </c:when>
                         </c:choose>
                     </c:when>
                     <c:otherwise>
-                        <p>${r.invalidRequest}</p>
+                        <p id="error">${r.invalidRequest}</p>
                     </c:otherwise>
                 </c:choose>
             </body>

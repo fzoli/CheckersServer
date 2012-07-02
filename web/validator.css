@@ -1,0 +1,25 @@
+@charset "utf-8";
+
+/* 
+    Document   : validator
+    Created on : 2012.07.02., 21:46:14
+    Author     : zoli
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+p#invocation {
+    font-style: italic;
+}
+
+p#success {
+    color: green;
+}
+
+p#error {
+    color: red;
+}
+
+p#success, p#error, p#used {
+    font-weight: 600;
+}

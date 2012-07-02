@@ -3,6 +3,7 @@
     <string key="email_validation">E-mail address validation</string>
     <string key="dear">Dear</string>
     <string key="user">user</string>
+    <string key="dear_close">,</string>
     <string key="successful_email_validation">Your e-mail address was successfully validated.</string>
     <string key="successful_email_delete">Your e-mail address was successfully deleted from our database.</string>
     <string key="key_used">The given key was already used!</string>

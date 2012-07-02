@@ -20,6 +20,10 @@ public class Resource extends LanguageResource {
         return getString("user");
     }
     
+    public String getDearClose() {
+        return getString("dear_close");
+    }
+    
     public String getSuccessfulEmailValidation() {
         return getString("successful_email_validation");
     }
