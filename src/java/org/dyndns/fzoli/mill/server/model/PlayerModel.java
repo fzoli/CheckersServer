@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
+import org.dyndns.fzoli.language.LanguageResource;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.MillServletURL;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
@@ -171,10 +172,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     private String getEmailText(HttpServletRequest hsr) throws IOException {
-        File fileHtml = new File(hsr.getServletContext().getRealPath("/WEB-INF/" + hsr.getLocale().getLanguage() + "-validator-email.xhtml")); // http kérésben definiált nyelv alapján fájl megszerzése
-        if (!fileHtml.isFile()) fileHtml = new File(hsr.getServletContext().getRealPath("/WEB-INF/validator-email.xhtml")); // ha nem létezik, alapértelmezett fájl megszerzése
-        if (!fileHtml.isFile()) throw new NullPointerException("validator-email.xhtml not exists"); // ha az sem létezik, programhiba
-        return readFileAsString(fileHtml);
+        File xhtmlFile = LanguageResource.getResourceFile(hsr.getServletContext(), hsr.getLocale().getLanguage(), "validator-email.xhtml");
+        return readFileAsString(xhtmlFile);
     }
     
     private PlayerReturn validateEmail(HttpServletRequest hsr, String password, boolean safe) {

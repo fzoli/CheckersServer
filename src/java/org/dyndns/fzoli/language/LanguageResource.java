@@ -1,7 +1,15 @@
 package org.dyndns.fzoli.language;
 
+import java.io.File;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.PageContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -9,9 +17,8 @@ import javax.servlet.jsp.PageContext;
  */
 public class LanguageResource {
     
-    private static final String EN = "en";
-    
     private String language;
+    private ServletContext context;
 
     public LanguageResource() {
     }
@@ -22,26 +29,48 @@ public class LanguageResource {
     
     public LanguageResource(ServletRequest request) {
         language = request.getLocale().getLanguage();
+        context = request.getServletContext();
     }
 
     public String getLanguage() {
-        if (language == null) return EN;
         return language;
     }
 
-    public String getText(String key) {
-        return getText(getLanguage(), key);
+    public String getTest() {
+        return getString("test");
     }
     
-    public static String getText(String lang, String key) {
-        if (key == null) return "";
-        if (lang == null) lang = EN;
-        //TODO
-        return "";
+    public String getString(String key) {
+        File xmlFile = getResourceFile(context, language, "strings.xml");
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            doc.getDocumentElement().normalize();
+            NodeList strings = doc.getDocumentElement().getElementsByTagName("string");
+            for (int i = 0; i < strings.getLength(); i++) {
+                Node node = strings.item(i);
+                String k = ((Element)node).getAttribute("key");
+                if (k.equals(key)) return node.getTextContent();
+            }
+            return "";
+        }
+        catch (Exception ex) {
+            return "";
+        }
     }
     
     public void setPageContext(PageContext context) {
-        language = context.getRequest().getLocale().getLanguage();
+        this.language = context.getRequest().getLocale().getLanguage();
+        this.context = context.getServletContext();
+    }
+    
+    public static File getResourceFile(ServletContext context, String lang, String filename) {
+        if (context == null) throw new NullPointerException("ServletContext is null");
+        File xmlFile = new File(context.getRealPath("/WEB-INF/" + lang + "-" + filename));
+        if (!xmlFile.isFile()) xmlFile = new File(context.getRealPath("/WEB-INF/" + filename));
+        if (!xmlFile.isFile()) throw new NullPointerException(filename + " not exists");
+        return xmlFile;
     }
     
 }

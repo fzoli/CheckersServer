@@ -19,6 +19,7 @@
             </head>
             <body>
                 <p>Nyelv: <c:out value="${r.language}"/></p>
+                <p>Tesztüzenet: <c:out value="${r.test}"/></p>
                 <c:choose>
                     <c:when test="${validator_info.keySpecified}">
                         <p>Tisztelt <c:out default="felhasználó" value="${validator_info.name}" />!</p>
