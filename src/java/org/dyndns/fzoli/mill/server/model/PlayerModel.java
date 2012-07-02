@@ -55,7 +55,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     public PlayerReturn signIn(String name, String password, boolean hash) {
-        System.out.println(name + " ; " + password + " ; " + hash);
         PlayerReturn ret = PlayerDAO.verify(name, password, hash);
         if (ret == PlayerReturn.OK) {
             if (player != null) signOut(SignOutType.RESIGN);
@@ -180,6 +179,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
         if (player == null || player.getEmail().isEmpty()) return PlayerReturn.NULL;
         if (player.isValidated()) return PlayerReturn.NO_CHANGE;
+        if (!InputValidator.isPasswordValid(password, safe)) return PlayerReturn.INVALID;
+        if (!safe) password = InputValidator.md5Hex(password);
+        if (!password.equals(player.getPassword())) return PlayerReturn.NOT_OK;
         String host = MillControllerServlet.getHost(hsr);
         File config = MillControllerServlet.getEmailConfig(hsr);
         try {
