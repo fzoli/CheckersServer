@@ -20,7 +20,8 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
         SIGN_IN,
         SIGN_OUT,
         STATE_INVISIBLE,
-        STATE_ONLINE
+        STATE_ONLINE,
+        SUSPEND
     }
     
     public boolean isOnline(Player p) {

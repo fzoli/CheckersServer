@@ -11,13 +11,16 @@ import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
+import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
+import org.dyndns.fzoli.mill.common.permission.Permissions;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
+import org.dyndns.fzoli.mill.server.model.entity.PersonalData;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mill.server.servlet.MillControllerServlet;
 import org.dyndns.fzoli.mill.server.servlet.ValidatorServlet;
@@ -56,6 +59,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (ret == PlayerReturn.OK) {
             if (player != null) signOut(SignOutType.RESIGN);
             player = PlayerDAO.getPlayer(name);
+            if (player.getPlayerStatus().equals(PlayerStatus.SUSPENDED)) {
+                player.setPlayerStatus(PlayerStatus.NORMAL);
+            }
             player.updateSignInDate();
             PlayerDAO.save(player);
             commonPlayer = ConvertUtil.createPlayer(this);
@@ -181,8 +187,14 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn suspendAccount(String password, boolean safe) {
         if (isRequestWrong(password, safe)) return getError(password, safe);
-        //TODO
-        return PlayerReturn.NULL;
+        if (player.getPermissionMask(false) == Permissions.ROOT) return PlayerReturn.NOT_OK;
+        player.setPersonalData(new PersonalData());
+        player.setPlayerStatus(PlayerStatus.SUSPENDED);
+        player.setPermissionMask(0);
+        PlayerDAO.save(player);
+        callOnPlayerChanged(player, PlayerChangeType.SUSPEND);
+        signOut(SignOutType.KICK);
+        return PlayerReturn.OK;
     }
     
     private boolean isRequestWrong(String password, boolean safe) {
