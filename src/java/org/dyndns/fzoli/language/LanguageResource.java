@@ -104,4 +104,30 @@ public class LanguageResource {
         return l;
     }
     
+    public static String createLanguageUrls(ServletRequest hsr, String url, Locale defLocale, boolean startAmp) {
+        StringBuilder langs = new StringBuilder();
+        List<Locale> locales = getLocales(hsr.getServletContext());
+        appendLangUrl(langs, url, defLocale, startAmp);
+        for (Locale locale : locales) {
+            appendLangUrl(langs, url, locale, startAmp);
+        }
+        return langs.substring(0, langs.length() - 7);
+    }
+    
+    private static void appendLangUrl(StringBuilder langs, String langUrl, Locale locale, boolean startAmp) {
+        String start = startAmp ? "&amp;" : "?";
+        String dl = locale.getDisplayLanguage();
+        dl = String.valueOf(dl.charAt(0)).toUpperCase() + dl.substring(1);
+        langs.append("<a class=\"lang_url\" href=\"")
+        .append(langUrl)
+        .append(start)
+        .append(LanguageServlet.KEY_LANG)
+        .append('=')
+        .append(locale.getLanguage())
+        .append("\">")
+        .append(dl)
+        .append("</a>")
+        .append(",&nbsp;");
+    }
+    
 }

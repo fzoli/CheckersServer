@@ -30,6 +30,8 @@ import org.dyndns.fzoli.mvc.server.model.bean.ModelBeanRegister;
 @WebServlet(urlPatterns={MillServletURL.VALIDATOR})
 public class ValidatorServlet extends HttpServlet {
 
+    public static final String AMP = "&amp;";
+    
     public static final String KEY_KEY = "key";
     public static final String KEY_ACTION = "action";
     
@@ -102,31 +104,12 @@ public class ValidatorServlet extends HttpServlet {
         return new Resource(hsr).getEmailValidation();
     }
     
-    private static void appendLangUrl(StringBuilder langs, String langUrl, Locale locale) {
-        String dl = locale.getDisplayLanguage();
-        dl = String.valueOf(dl.charAt(0)).toUpperCase() + dl.substring(1);
-        langs.append("<a class=\"lang_url\" href=\"")
-        .append(langUrl)
-        .append(locale.getLanguage())
-        .append("\">")
-        .append(dl)
-        .append("</a>")
-        .append(",&nbsp;");
-    }
-    
     public static String createValidationEmail(HttpServletRequest hsr, String key, Player player) throws IOException {
         String host = MillControllerServlet.getHost(hsr);
         Resource res = new Resource(hsr);
-        String amp = "&amp;";
-        String keyParam = key == null ? "" : amp + KEY_KEY + "=" + key;
-        StringBuilder langs = new StringBuilder();
-        String langUrl = host + MillServletURL.VALIDATOR + "?" + KEY_ACTION + "=" + ACTION_SHOW_EMAIL + keyParam + amp + LanguageServlet.KEY_LANG + "=";
-        List<Locale> locales = Resource.getLocales(hsr.getServletContext());
-        appendLangUrl(langs, langUrl, Locale.ENGLISH);
-        for (Locale locale : locales) {
-            appendLangUrl(langs, langUrl, locale);
-        }
-        String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + keyParam + amp + KEY_ACTION + "=";
+        String keyParam = key == null ? "" : AMP + KEY_KEY + "=" + key;
+        String langUrl = host + MillServletURL.VALIDATOR + "?" + KEY_ACTION + "=" + ACTION_SHOW_EMAIL + keyParam;
+        String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + keyParam + AMP + KEY_ACTION + "=";
         String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
         String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
         String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
@@ -136,7 +119,7 @@ public class ValidatorServlet extends HttpServlet {
         .replace("${host}", host)
         .replace("${validation-url}", validationUrl)
         .replace("${invalidation-url}", invalidationUrl)
-        .replace("${lang_urls}", langs.substring(0, langs.length() - 7));
+        .replace("${lang_urls}", Resource.createLanguageUrls(hsr, langUrl, Locale.ENGLISH, true));
         return out;
     }
     
