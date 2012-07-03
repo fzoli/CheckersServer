@@ -5,9 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import nl.captcha.Captcha;
@@ -110,20 +107,6 @@ abstract class AbstractMillModel<EventObj, PropsObj> extends JSONModel<EventObj,
         return player.getPlayerName();
     }
 
-    public static String readFileAsString(File file) throws java.io.IOException {
-        StringBuilder fileData = new StringBuilder(1000);
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        char[] buf = new char[1024];
-        int numRead=0;
-        while((numRead=reader.read(buf)) != -1){
-            String readData = String.valueOf(buf, 0, numRead);
-            fileData.append(readData);
-            buf = new char[1024];
-        }
-        reader.close();
-        return fileData.toString();
-    }
-    
     protected boolean isCaptchaValidated() {
         return captchaValidated;
     }

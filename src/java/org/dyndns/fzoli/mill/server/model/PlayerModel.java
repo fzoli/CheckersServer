@@ -1,14 +1,11 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
-import org.dyndns.fzoli.language.LanguageResource;
 import org.dyndns.fzoli.mill.common.InputValidator;
-import org.dyndns.fzoli.mill.common.key.MillServletURL;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
@@ -181,18 +178,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         File config = MillControllerServlet.getEmailConfig(hsr);
         try {
             String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
+            GMailSender.sendEmail(config, player.getEmail(), ValidatorServlet.getEmailValidationSubject(hsr), ValidatorServlet.createValidationEmail(hsr, key, player));
             ValidatorDAO.setKey(player, key);
-            LanguageResource res = new LanguageResource(hsr);
-            String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_LANG + "=" + res.getLanguage() + "&" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
-            String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
-            String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
-            String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
-            .replace("${css}", readFileAsString(res.getResourceFile("validator-email.css")))
-            .replace("${user}", player.getName())
-            .replace("${host}", host)
-            .replace("${validation-url}", validationUrl)
-            .replace("${invalidation-url}", invalidationUrl);
-            GMailSender.sendEmail(config, player.getEmail(), "E-mail validation", out);
             removeCaptcha();
             return PlayerReturn.OK;
         }

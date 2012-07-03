@@ -1,5 +1,6 @@
 package org.dyndns.fzoli.mill.server;
 
+import javax.servlet.ServletRequest;
 import org.dyndns.fzoli.language.LanguageResource;
 
 /**
@@ -7,6 +8,13 @@ import org.dyndns.fzoli.language.LanguageResource;
  * @author zoli
  */
 public class Resource extends LanguageResource {
+
+    public Resource() {
+    }
+
+    public Resource(ServletRequest request) {
+        super(request);
+    }
     
     public String getEmailValidation() {
         return getString("email_validation");

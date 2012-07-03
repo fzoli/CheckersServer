@@ -1,5 +1,8 @@
 package org.dyndns.fzoli.mill.server.servlet;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
@@ -8,9 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.dyndns.fzoli.language.LanguageResource;
 import org.dyndns.fzoli.mill.common.key.MillServletURL;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
+import org.dyndns.fzoli.mill.server.Resource;
 import org.dyndns.fzoli.mill.server.model.PlayerModel;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
@@ -83,6 +88,39 @@ public class ValidatorServlet extends HttpServlet {
             
         }).start();
         return new ValidatorInfo(add ? ValidatorInfo.Return.VALIDATED : ValidatorInfo.Return.REMOVED, key, p.getName());
+    }
+    
+    public static String getEmailValidationSubject(HttpServletRequest hsr) {
+        return new Resource(hsr).getEmailValidation();
+    }
+    
+    public static String createValidationEmail(HttpServletRequest hsr, String key, Player player) throws IOException {
+        String host = MillControllerServlet.getHost(hsr);
+        LanguageResource res = new Resource(hsr);
+        String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_LANG + "=" + res.getLanguage() + "&" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
+        String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
+        String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
+        String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
+        .replace("${css}", readFileAsString(res.getResourceFile("validator-email.css")))
+        .replace("${user}", player.getName())
+        .replace("${host}", host)
+        .replace("${validation-url}", validationUrl)
+        .replace("${invalidation-url}", invalidationUrl);
+        return out;
+    }
+    
+    private static String readFileAsString(File file) throws java.io.IOException {
+        StringBuilder fileData = new StringBuilder(1000);
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        char[] buf = new char[1024];
+        int numRead;
+        while((numRead=reader.read(buf)) != -1){
+            String readData = String.valueOf(buf, 0, numRead);
+            fileData.append(readData);
+            buf = new char[1024];
+        }
+        reader.close();
+        return fileData.toString();
     }
     
     protected void forward(HttpServletRequest req, HttpServletResponse resp, String jsp) throws ServletException, IOException {
