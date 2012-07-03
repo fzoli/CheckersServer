@@ -1,4 +1,4 @@
-        p#invocation, p#goodbyes, p#close {
+        p#invocation, p#goodbyes, p#close, a.lang_url {
             font-style: italic;
         }
         p#close {

@@ -1,6 +1,9 @@
 package org.dyndns.fzoli.language;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -21,6 +24,9 @@ public class LanguageResource {
     private String language;
     private ServletContext context;
 
+    private static final String WEB_INF = "/WEB-INF/";
+    private static final String STRINGS_XML = "strings.xml";
+    
     public LanguageResource() {
     }
 
@@ -42,7 +48,7 @@ public class LanguageResource {
     }
     
     public String getString(String key) {
-        if (xmlFile == null) xmlFile = getResourceFile(context, language, "strings.xml");
+        if (xmlFile == null) xmlFile = getResourceFile(context, language, STRINGS_XML);
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -76,10 +82,26 @@ public class LanguageResource {
     
     public static File getResourceFile(ServletContext context, String lang, String filename) {
         if (context == null) throw new NullPointerException("ServletContext is null");
-        File xmlFile = new File(context.getRealPath("/WEB-INF/" + lang + "-" + filename));
-        if (!xmlFile.isFile()) xmlFile = new File(context.getRealPath("/WEB-INF/" + filename));
+        File xmlFile = new File(context.getRealPath(WEB_INF + lang + "-" + filename));
+        if (!xmlFile.isFile()) xmlFile = new File(context.getRealPath(WEB_INF + filename));
         if (!xmlFile.isFile()) throw new NullPointerException(filename + " not exists");
         return xmlFile;
+    }
+    
+    private static boolean contains(List<Locale> locales, Locale locale) {
+        for (Locale l : locales) {
+            if (l.getLanguage().equals(locale.getLanguage())) return true;
+        }
+        return false;
+    }
+    
+    public static List<Locale> getLocales(ServletContext context) {
+        List<Locale> l = new ArrayList<Locale>();
+        Locale[] locales = Locale.getAvailableLocales();
+        for (Locale locale : locales) {
+            if(!contains(l, locale) && new File(context.getRealPath(WEB_INF + locale.getLanguage() + "-" + STRINGS_XML)).isFile()) l.add(locale);
+        }
+        return l;
     }
     
 }
