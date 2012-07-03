@@ -196,7 +196,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             .replace("${validation-url}", validationUrl)
             .replace("${invalidation-url}", invalidationUrl);
             GMailSender.sendEmail(config, player.getEmail(), "E-mail validation", out);
-            //TODO: captcha érvénytelenítése és android kliensen is bevezetni a változást
+            removeCaptcha();
             return PlayerReturn.OK;
         }
         catch (Exception ex) {
