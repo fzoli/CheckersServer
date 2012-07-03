@@ -170,11 +170,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.NOT_OK;
     }
     
-    private String getEmailText(LanguageResource res) throws IOException {
-        File xhtmlFile = res.getResourceFile("validator-email.xhtml");
-        return readFileAsString(xhtmlFile);
-    }
-    
     private PlayerReturn validateEmail(HttpServletRequest hsr, String password, boolean safe) {
         if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
         if (player == null || player.getEmail().isEmpty()) return PlayerReturn.NULL;
@@ -191,7 +186,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_LANG + "=" + res.getLanguage() + "&" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
             String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
             String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
-            String out = getEmailText(res)
+            String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
+            .replace("${css}", readFileAsString(res.getResourceFile("validator-email.css")))
             .replace("${user}", player.getName())
             .replace("${host}", host)
             .replace("${validation-url}", validationUrl)
