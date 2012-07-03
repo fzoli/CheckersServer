@@ -28,6 +28,7 @@ import org.dyndns.fzoli.mvc.server.model.bean.ModelBeanRegister;
 public class ValidatorServlet extends HttpServlet {
 
     public static final String KEY_KEY = "key";
+    public static final String KEY_LANG = "lang";
     public static final String KEY_ACTION = "action";
     
     public static final String ACTION_VALIDATE = "validation";

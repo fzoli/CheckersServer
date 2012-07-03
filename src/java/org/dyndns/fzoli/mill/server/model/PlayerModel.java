@@ -170,8 +170,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.NOT_OK;
     }
     
-    private String getEmailText(HttpServletRequest hsr) throws IOException {
-        File xhtmlFile = LanguageResource.getResourceFile(hsr.getServletContext(), hsr.getLocale().getLanguage(), "validator-email.xhtml");
+    private String getEmailText(LanguageResource res) throws IOException {
+        File xhtmlFile = res.getResourceFile("validator-email.xhtml");
         return readFileAsString(xhtmlFile);
     }
     
@@ -187,10 +187,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         try {
             String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
             ValidatorDAO.setKey(player, key);
-            String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
+            LanguageResource res = new LanguageResource(hsr);
+            String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_LANG + "=" + res.getLanguage() + "&" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
             String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
             String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
-            String out = getEmailText(hsr)
+            String out = getEmailText(res)
             .replace("${user}", player.getName())
             .replace("${host}", host)
             .replace("${validation-url}", validationUrl)
