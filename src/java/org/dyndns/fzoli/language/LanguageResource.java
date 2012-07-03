@@ -19,8 +19,6 @@ import org.w3c.dom.NodeList;
  */
 public class LanguageResource {
     
-    public static final String KEY_LANG = "lang";
-    
     private File xmlFile;
     private String language;
     private ServletContext context;
@@ -88,12 +86,12 @@ public class LanguageResource {
     
     private static String createLanguage(ServletRequest request) {
         String language = request.getLocale().getLanguage();
-        String l = request.getParameter(KEY_LANG);
+        String l = request.getParameter(LanguageServlet.KEY_LANG);
         if (l == null) {
             if (request instanceof HttpServletRequest) {
                 HttpSession session = ((HttpServletRequest)request).getSession(false);
                 if (session != null) {
-                    l = (String) session.getAttribute(KEY_LANG);
+                    l = (String) session.getAttribute(LanguageServlet.KEY_LANG);
                     if (l != null) {
                         language = l;
                     }

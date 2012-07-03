@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.dyndns.fzoli.language.LanguageResource;
+import org.dyndns.fzoli.language.LanguageServlet;
 import org.dyndns.fzoli.mill.common.key.MillServletURL;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
@@ -33,7 +34,6 @@ import org.dyndns.fzoli.mvc.server.model.bean.ModelBeanRegister;
 public class ValidatorServlet extends HttpServlet {
 
     public static final String KEY_KEY = "key";
-    public static final String KEY_LANG = "lang";
     public static final String KEY_ACTION = "action";
     
     public static final String ACTION_VALIDATE = "validation";
@@ -97,7 +97,7 @@ public class ValidatorServlet extends HttpServlet {
     public static String createValidationEmail(HttpServletRequest hsr, String key, Player player) throws IOException {
         String host = MillControllerServlet.getHost(hsr);
         LanguageResource res = new Resource(hsr);
-        String url = host + MillServletURL.VALIDATOR + "?" + ValidatorServlet.KEY_LANG + "=" + res.getLanguage() + "&" + ValidatorServlet.KEY_KEY + "=" + key + "&" + ValidatorServlet.KEY_ACTION + "=";
+        String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + "&" + KEY_KEY + "=" + key + "&" + KEY_ACTION + "=";
         String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
         String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
         String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
