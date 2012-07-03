@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
-import org.dyndns.fzoli.mill.common.model.entity.PlayerState;
+import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
+import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
 import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.common.permission.Permissions;
 
@@ -37,7 +38,10 @@ public class Player implements Serializable {
     private PersonalData personalData = new PersonalData();
     
     @Enumerated(EnumType.STRING)
-    private PlayerState playerState = PlayerState.ONLINE;
+    private OnlineStatus onlineStatus = OnlineStatus.ONLINE;
+    
+    @Enumerated(EnumType.STRING)
+    private PlayerStatus playerStatus = PlayerStatus.NORMAL;
     
     @ManyToMany
     private List<Player> friendList = new ArrayList<Player>(), 
@@ -81,8 +85,12 @@ public class Player implements Serializable {
         return Permissions.getPermissions(mask);
     }
     
-    public PlayerState getPlayerState() {
-        return playerState;
+    public OnlineStatus getOnlineStatus() {
+        return onlineStatus;
+    }
+
+    public PlayerStatus getPlayerStatus() {
+        return playerStatus;
     }
     
     public String getName() {
@@ -197,8 +205,12 @@ public class Player implements Serializable {
         this.validated = validated;
     }
 
-    public void setPlayerState(PlayerState playerState) {
-        this.playerState = playerState;
+    public void setOnlineStatus(OnlineStatus playerState) {
+        this.onlineStatus = playerState;
+    }
+
+    public void setPlayerStatus(PlayerStatus playerStatus) {
+        this.playerStatus = playerStatus;
     }
     
     public void setPassword(String password) {

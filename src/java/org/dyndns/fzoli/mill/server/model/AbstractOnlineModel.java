@@ -2,7 +2,7 @@ package org.dyndns.fzoli.mill.server.model;
 
 import java.util.List;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
-import org.dyndns.fzoli.mill.common.model.entity.PlayerState;
+import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
 import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
@@ -25,10 +25,10 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
     
     public boolean isOnline(Player p) {
         Player player = getPlayer();
-        if (player.equals(p)) return player.getPlayerState().equals(PlayerState.ONLINE);
+        if (player.equals(p)) return player.getOnlineStatus().equals(OnlineStatus.ONLINE);
         if (!player.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT)) {
             if (!player.getFriendList().contains(p)) return false;
-            if (p.getPlayerState().equals(PlayerState.INVISIBLE)) return false;
+            if (p.getOnlineStatus().equals(OnlineStatus.INVISIBLE)) return false;
         }
         List<ModelBean> beans = ModelBeanRegister.getModelBeans();
         synchronized (beans) {

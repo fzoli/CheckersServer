@@ -10,7 +10,7 @@ import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
-import org.dyndns.fzoli.mill.common.model.entity.PlayerState;
+import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
@@ -112,11 +112,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     private PlayerReturn setPlayerState(String state) {
         if (player != null) {
             try {
-                PlayerState ps = PlayerState.valueOf(state);
-                PlayerState old = player.getPlayerState();
+                OnlineStatus ps = OnlineStatus.valueOf(state);
+                OnlineStatus old = player.getOnlineStatus();
                 if (!old.equals(ps)) {
-                    player.setPlayerState(ps);
-                    commonPlayer.setOnline(ps.equals(PlayerState.ONLINE));
+                    player.setOnlineStatus(ps);
+                    commonPlayer.setOnline(ps.equals(OnlineStatus.ONLINE));
                     PlayerDAO.save(player);
                     callOnPlayerChanged(player, commonPlayer.isOnline() ? PlayerChangeType.STATE_ONLINE : PlayerChangeType.STATE_INVISIBLE);
                     return PlayerReturn.OK;
@@ -216,7 +216,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     private void onSignInOut(Player p, boolean signIn, boolean sign) {
         if (player != null) {
             boolean canDetect = player.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT);
-            if (sign && p.getPlayerState().equals(PlayerState.INVISIBLE) && !canDetect) return; //ha be/ki-jelentkezés van és láthatatlan és nincs láthatatlanság detektáló jog, akkor nem kell jelezni
+            if (sign && p.getOnlineStatus().equals(OnlineStatus.INVISIBLE) && !canDetect) return; //ha be/ki-jelentkezés van és láthatatlan és nincs láthatatlanság detektáló jog, akkor nem kell jelezni
             if (!sign && canDetect) return; // ha állapot váltás történt (tehát nem be/ki-jelentkezés) és van láthatatlanság detektáló jog, nem kell jelezni
             System.out.print("sign " + p.getPlayerName() + " " + (signIn ? "in" : "out") + " detected on session of " + player.getPlayerName() + "...");
             if (player.isFriend(p)) {
