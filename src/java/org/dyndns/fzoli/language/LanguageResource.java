@@ -3,8 +3,6 @@ package org.dyndns.fzoli.language;
 import java.io.File;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,7 +34,7 @@ public class LanguageResource {
 
     private void init(ServletRequest request) {
         context = request.getServletContext();
-        language = createLanguage(request);
+        language = LanguageServlet.createLanguage(request);
     }
     
     public String getLanguage() {
@@ -82,26 +80,6 @@ public class LanguageResource {
         if (!xmlFile.isFile()) xmlFile = new File(context.getRealPath("/WEB-INF/" + filename));
         if (!xmlFile.isFile()) throw new NullPointerException(filename + " not exists");
         return xmlFile;
-    }
-    
-    private static String createLanguage(ServletRequest request) {
-        String language = request.getLocale().getLanguage();
-        String l = request.getParameter(LanguageServlet.KEY_LANG);
-        if (l == null) {
-            if (request instanceof HttpServletRequest) {
-                HttpSession session = ((HttpServletRequest)request).getSession(false);
-                if (session != null) {
-                    l = (String) session.getAttribute(LanguageServlet.KEY_LANG);
-                    if (l != null) {
-                        language = l;
-                    }
-                }
-            }
-        }
-        else {
-            language = l;
-        }
-        return language;
     }
     
 }
