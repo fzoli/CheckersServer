@@ -105,8 +105,9 @@ public class ValidatorServlet extends HttpServlet {
         String host = MillControllerServlet.getHost(hsr);
         Resource res = new Resource(hsr);
         String amp = "&amp;";
-        String langUrl = host + MillServletURL.VALIDATOR + "?" + KEY_ACTION + "=" + ACTION_SHOW_EMAIL + amp + "lang=";
-        String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + (key == null ? "" : amp + KEY_KEY + "=" + key) + amp + KEY_ACTION + "=";
+        String keyParam = key == null ? "" : amp + KEY_KEY + "=" + key;
+        String langUrl = host + MillServletURL.VALIDATOR + "?" + KEY_ACTION + "=" + ACTION_SHOW_EMAIL + keyParam + amp + LanguageServlet.KEY_LANG + "=";
+        String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + keyParam + amp + KEY_ACTION + "=";
         String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
         String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
         String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
