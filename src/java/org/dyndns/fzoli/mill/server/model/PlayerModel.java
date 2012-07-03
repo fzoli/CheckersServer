@@ -187,7 +187,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn suspendAccount(String password, boolean safe) {
         if (isRequestWrong(password, safe)) return getError(password, safe);
-        if (player.getPermissionMask(false) == Permissions.ROOT) return PlayerReturn.NOT_OK;
+        if (player.getPermissionMask(false) == Permissions.ROOT) return PlayerReturn.NO_CHANGE;
         player.setPersonalData(new PersonalData());
         player.setPlayerStatus(PlayerStatus.SUSPENDED);
         player.setPermissionMask(0);
