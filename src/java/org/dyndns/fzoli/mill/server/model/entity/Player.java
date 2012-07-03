@@ -181,7 +181,16 @@ public class Player implements Serializable {
     private List<Player> filterList(List<Player> ls) {
         List<Player> l = new ArrayList<Player>();
         for (Player p : ls) {
-            if (!p.getPlayerStatus().equals(PlayerStatus.SUSPENDED) || canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) l.add(p);
+            switch (p.getPlayerStatus()) {
+                case NORMAL:
+                    l.add(p);
+                    break;
+                case HIDDEN:
+                    if (canUsePermission(p, Permission.HIDDEN_PLAYER_DETECT)) l.add(p);
+                    break;
+                case SUSPENDED:
+                    if (canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) l.add(p);
+            }
         }
         return l;
     }
