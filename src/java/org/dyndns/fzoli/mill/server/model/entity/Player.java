@@ -159,25 +159,33 @@ public class Player implements Serializable {
     }
 
     public List<Player> getFriendList() {
-        return friendList;
+        return filterList(friendList);
     }
 
     public List<Player> getFriendWishList() {
-        return friendWishList;
+        return filterList(friendWishList);
     }
 
     public List<Player> getPossibleFriends() {
-        return possibleFriends;
+        return filterList(possibleFriends);
     }
 
     public List<Player> getBlockedUserList() {
-        return blockedUserList;
+        return filterList(blockedUserList);
     }
 
     public List<Player> getInvisibleUsers() {
         return invisibleUsers;
     }
 
+    private List<Player> filterList(List<Player> ls) {
+        List<Player> l = new ArrayList<Player>();
+        for (Player p : ls) {
+            if (!p.getPlayerStatus().equals(PlayerStatus.SUSPENDED) || canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) l.add(p);
+        }
+        return l;
+    }
+    
     public boolean canUsePermission(Player target, Permission permission) {
         if (target.hasPermission(false, Permission.SHIELD_MODE) && !isRoot()) return false; // ha a célpontnak van SHIELD_MODE joga ÉS a kérő nem ROOT, akkor nem használhatja a célponton a kért jogot
         return hasPermission(true, permission); // egyéb esetben ha aktív a kért jog, használhatja a célponton azt
