@@ -151,30 +151,20 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     private PlayerReturn setEmail(HttpServletRequest hsr, String password, String email, boolean safe) {
-        if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
-        if (player == null) return PlayerReturn.NULL;
-        if (!InputValidator.isPasswordValid(password, safe)) return PlayerReturn.INVALID;
-        if (!safe) password = InputValidator.md5Hex(password);
-        if (password.equals(player.getPassword())) {
-            if (PlayerDAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
-            commonPlayer.setEmail(email);
-            player.setEmail(email);
-            player.setValidated(false);
-            PlayerDAO.save(player);
-            validateEmail(hsr, password, true);
-            return PlayerReturn.OK;
-        }
-        return PlayerReturn.NOT_OK;
+        if (isRequestWrong(password, safe)) return getError(password, safe);
+        if (PlayerDAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
+        commonPlayer.setEmail(email);
+        player.setEmail(email);
+        player.setValidated(false);
+        PlayerDAO.save(player);
+        validateEmail(hsr, password, safe);
+        return PlayerReturn.OK;
     }
     
     private PlayerReturn validateEmail(HttpServletRequest hsr, String password, boolean safe) {
-        if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
-        if (player == null || player.getEmail().isEmpty()) return PlayerReturn.NULL;
+        if (isRequestWrong(password, safe)) return getError(password, safe);
         if (player.isValidated()) return PlayerReturn.NO_CHANGE;
-        if (!InputValidator.isPasswordValid(password, safe)) return PlayerReturn.INVALID;
-        if (!safe) password = InputValidator.md5Hex(password);
-        if (!password.equals(player.getPassword())) return PlayerReturn.NOT_OK;
-        String host = MillControllerServlet.getHost(hsr);
+        if (player.getEmail().isEmpty()) return PlayerReturn.NULL;
         File config = MillControllerServlet.getEmailConfig(hsr);
         try {
             String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
@@ -189,8 +179,23 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
     }
     
-    private PlayerReturn suspendAccount(String password, boolean safe) { //TODO
+    private PlayerReturn suspendAccount(String password, boolean safe) {
+        if (isRequestWrong(password, safe)) return getError(password, safe);
+        //TODO
         return PlayerReturn.NULL;
+    }
+    
+    private boolean isRequestWrong(String password, boolean safe) {
+        return getError(password, safe) != null;
+    }
+    
+    private PlayerReturn getError(String password, boolean safe) {
+        if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
+        if (player == null) return PlayerReturn.NULL;
+        if (!InputValidator.isPasswordValid(password, safe)) return PlayerReturn.INVALID;
+        if (!safe) password = InputValidator.md5Hex(password);
+        if (!password.equals(player.getPassword())) return PlayerReturn.NOT_OK;
+        return null;
     }
     
     @Override
