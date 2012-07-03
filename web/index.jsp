@@ -4,6 +4,7 @@
     Author     : zoli
 --%>
 
+<%@page import="org.dyndns.fzoli.mill.server.Resource"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -12,6 +13,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1><%= new Resource(request).getString("hello_world") %></h1>
+        <h2><a href="Language?lang=en">English</a>&nbsp;<a href="Language?lang=hu">Magyar</a></h2>
     </body>
 </html>

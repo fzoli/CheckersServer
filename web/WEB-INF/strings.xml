@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string key="hello_world">Hello World!</string>
     <string key="email_validation">E-mail address validation</string>
     <string key="dear">Dear</string>
     <string key="user">user</string>

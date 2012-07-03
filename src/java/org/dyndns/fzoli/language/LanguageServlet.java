@@ -31,8 +31,12 @@ public class LanguageServlet extends HttpServlet {
         if (l != null) {
             req.getSession(true).setAttribute(KEY_LANG, l);
         }
-        String referer = req.getHeader("Referer"); //TODO
-        System.out.println(referer);
+        redirect(req, resp);
+    }
+    
+    private void redirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String referer = req.getHeader("Referer");
+        resp.sendRedirect(referer == null ? ("/" + req.getServletContext().getContextPath()) : referer);
     }
     
     @Override

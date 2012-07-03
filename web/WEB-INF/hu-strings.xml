@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string key="hello_world">Helló Világ!</string>
     <string key="email_validation">E-mail cím érvényesítés</string>
     <string key="dear">Tisztelt</string>
     <string key="user">felhasználó</string>
