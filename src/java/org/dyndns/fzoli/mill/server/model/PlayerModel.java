@@ -261,7 +261,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             String value = rm.getFirst(KEY_VALUE);
             String passwd = rm.getFirst(KEY_PASSWORD);
             if (value != null) {
-                if (action.equals(REQ_SET_PLAYER_STATE)) return setPlayerState(value).ordinal();
+                if (action.equals(REQ_SET_ONLINE_STATUS)) return setPlayerState(value).ordinal();
                 if (passwd != null) {
                     if (action.equals(REQ_SET_EMAIL)) return setEmail(hsr, passwd, value, false).ordinal();
                     if (action.equals(REQ_SAFE_SET_EMAIL)) return setEmail(hsr, passwd, value, true).ordinal();

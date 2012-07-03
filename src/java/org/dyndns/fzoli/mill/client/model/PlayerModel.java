@@ -74,9 +74,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         setProperty(m, callback);
     }
     
-    public void setPlayerState(OnlineStatus state, ModelActionListener<Integer> callback) {
+    public void setOnlineStatus(OnlineStatus state, ModelActionListener<Integer> callback) {
         RequestMap m = new RequestMap();
-        m.setFirst(KEY_REQUEST, REQ_SET_PLAYER_STATE);
+        m.setFirst(KEY_REQUEST, REQ_SET_ONLINE_STATUS);
         m.setFirst(KEY_VALUE, state.name());
         setProperty(m, callback);
     }
