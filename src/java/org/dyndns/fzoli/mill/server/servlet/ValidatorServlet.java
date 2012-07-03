@@ -1,9 +1,6 @@
 package org.dyndns.fzoli.mill.server.servlet;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -35,13 +32,24 @@ public class ValidatorServlet extends HttpServlet {
     public static final String KEY_KEY = "key";
     public static final String KEY_ACTION = "action";
     
+    public static final String ACTION_SHOW_EMAIL = "show_email";
     public static final String ACTION_VALIDATE = "validation";
     public static final String ACTION_INVALIDATE = "invalidation";
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("validator_info", process(req));
-        forward(req, resp, "/validator.jspx");
+        String action = req.getParameter(KEY_ACTION);
+        String key = req.getParameter(KEY_KEY);
+        if (action != null && action.equals(ACTION_SHOW_EMAIL)) {
+            resp.setCharacterEncoding("utf-8");
+            PrintWriter out = resp.getWriter();
+            out.print(createValidationEmail(req, key, ValidatorDAO.getPlayer(key)));
+            out.close();
+        }
+        else {
+            req.setAttribute("validator_info", process(req));
+            forward(req, resp, "/validator.jspx");
+        }
     }
     
     @Override
@@ -96,16 +104,19 @@ public class ValidatorServlet extends HttpServlet {
     public static String createValidationEmail(HttpServletRequest hsr, String key, Player player) throws IOException {
         String host = MillControllerServlet.getHost(hsr);
         Resource res = new Resource(hsr);
-        String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + "&" + KEY_KEY + "=" + key + "&" + KEY_ACTION + "=";
+        String amp = "&amp;";
+        String langUrl = host + MillServletURL.VALIDATOR + "?" + KEY_ACTION + "=" + ACTION_SHOW_EMAIL + amp + "lang=";
+        String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + (key == null ? "" : amp + KEY_KEY + "=" + key) + amp + KEY_ACTION + "=";
         String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
         String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
         String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
         .replace("${css}", readFileAsString(res.getResourceFile("validator-email.css")))
         .replace("${subject}", res.getEmailValidation())
-        .replace("${user}", player.getName())
+        .replace("${user}", player == null ? res.getUser() : player.getName())
         .replace("${host}", host)
         .replace("${validation-url}", validationUrl)
-        .replace("${invalidation-url}", invalidationUrl);
+        .replace("${invalidation-url}", invalidationUrl)
+        .replace("${lang_url}", langUrl);
         return out;
     }
     
