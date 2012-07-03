@@ -11,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.dyndns.fzoli.language.LanguageResource;
 import org.dyndns.fzoli.language.LanguageServlet;
 import org.dyndns.fzoli.mill.common.key.MillServletURL;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
@@ -96,12 +95,13 @@ public class ValidatorServlet extends HttpServlet {
     
     public static String createValidationEmail(HttpServletRequest hsr, String key, Player player) throws IOException {
         String host = MillControllerServlet.getHost(hsr);
-        LanguageResource res = new Resource(hsr);
+        Resource res = new Resource(hsr);
         String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + "&" + KEY_KEY + "=" + key + "&" + KEY_ACTION + "=";
         String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
         String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
         String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
         .replace("${css}", readFileAsString(res.getResourceFile("validator-email.css")))
+        .replace("${subject}", res.getEmailValidation())
         .replace("${user}", player.getName())
         .replace("${host}", host)
         .replace("${validation-url}", validationUrl)
