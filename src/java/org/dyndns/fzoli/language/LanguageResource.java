@@ -57,7 +57,7 @@ public class LanguageResource {
             NodeList strings = doc.getDocumentElement().getElementsByTagName("string");
             for (int i = 0; i < strings.getLength(); i++) {
                 Node node = strings.item(i);
-                String k = ((Element)node).getAttribute("key");
+                String k = ((Element)node).getAttribute("name");
                 if (k.equals(key)) return node.getTextContent();
             }
             return null;

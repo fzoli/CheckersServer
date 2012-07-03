@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string key="hello_world">Hello World!</string>
-    <string key="email_validation">E-mail address validation</string>
-    <string key="dear">Dear</string>
-    <string key="user">user</string>
-    <string key="dear_close">,</string>
-    <string key="successful_email_validation">Your e-mail address was successfully validated.</string>
-    <string key="successful_email_delete">Your e-mail address was successfully deleted from our database.</string>
-    <string key="key_used">The given key was already used!</string>
-    <string key="key_invalid">The given key is invalid!</string>
-    <string key="invalid_request">Invalid request!</string>
+    <string name="hello_world">Hello World!</string>
+    <string name="email_validation">E-mail address validation</string>
+    <string name="dear">Dear</string>
+    <string name="user">user</string>
+    <string name="dear_close">,</string>
+    <string name="successful_email_validation">Your e-mail address was successfully validated.</string>
+    <string name="successful_email_delete">Your e-mail address was successfully deleted from our database.</string>
+    <string name="key_used">The given key was already used!</string>
+    <string name="key_invalid">The given key is invalid!</string>
+    <string name="invalid_request">Invalid request!</string>
 </resources>

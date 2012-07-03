@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string key="hello_world">Helló Világ!</string>
-    <string key="email_validation">E-mail cím érvényesítés</string>
-    <string key="dear">Tisztelt</string>
-    <string key="user">felhasználó</string>
-    <string key="dear_close">!</string>
-    <string key="successful_email_validation">Sikeresen érvényesítette e-mail címét.</string>
-    <string key="successful_email_delete">E-mail címét sikeresen töröltük adatbázisunkból.</string>
-    <string key="key_used">A megadott kód már fel lett használva!</string>
-    <string key="key_invalid">Nem érvényes kulcsot adott meg!</string>
-    <string key="invalid_request">Érvénytelen kérés!</string>
+    <string name="hello_world">Helló Világ!</string>
+    <string name="email_validation">E-mail cím érvényesítés</string>
+    <string name="dear">Tisztelt</string>
+    <string name="user">felhasználó</string>
+    <string name="dear_close">!</string>
+    <string name="successful_email_validation">Sikeresen érvényesítette e-mail címét.</string>
+    <string name="successful_email_delete">E-mail címét sikeresen töröltük adatbázisunkból.</string>
+    <string name="key_used">A megadott kód már fel lett használva!</string>
+    <string name="key_invalid">Nem érvényes kulcsot adott meg!</string>
+    <string name="invalid_request">Érvénytelen kérés!</string>
 </resources>
