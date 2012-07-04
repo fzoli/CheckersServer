@@ -190,6 +190,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (player.getPermissionMask(false) == Permissions.ROOT) return PlayerReturn.NO_CHANGE;
         player.setPersonalData(new PersonalData());
         player.setPlayerStatus(PlayerStatus.SUSPENDED);
+        player.setOnlineStatus(OnlineStatus.ONLINE);
         player.setPermissionMask(0);
         PlayerDAO.save(player);
         callOnPlayerChanged(player, PlayerChangeType.SUSPEND);
