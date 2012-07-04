@@ -20,12 +20,12 @@ public class ConvertUtil {
     
     public static Player createPlayer(AbstractOnlineModel m, org.dyndns.fzoli.mill.server.model.entity.Player p) {
         if (p == null || m == null) return null;
-        return new Player(p.getPlayerName(), p.getEmail(), p.isValidated(), p.getPermissionMask(false), p.getPermissionMask(true), p.getSignUpDate(), p.getSignInDate(), createPersonalData(p.getPersonalData()), createPlayerList(m, p.getFriendList()), createPlayerList(m, p.getFriendWishList()), createPlayerList(m, p.getBlockedUserList()), createPlayerList(m, p.getPossibleFriends()), m.isOnline(p));
+        return new Player(p.getPlayerName(), p.getEmail(), p.isValidated(), p.getPermissionMask(false), p.getPermissionMask(true), p.getSignUpDate(), p.getSignInDate(), createPersonalData(p.getPersonalData()), p.getPlayerStatus(), createPlayerList(m, p.getFriendList()), createPlayerList(m, p.getFriendWishList()), createPlayerList(m, p.getBlockedUserList()), createPlayerList(m, p.getPossibleFriends()), m.isOnline(p));
     }
     
     public static BasePlayer createBasePlayer(AbstractOnlineModel m, org.dyndns.fzoli.mill.server.model.entity.Player p) {
         if (p == null || m == null) return null;
-        return new BasePlayer(p.getPlayerName(), p.getSignUpDate(), p.getSignInDate(), createPersonalData(p.getPersonalData()), m.isOnline(p));
+        return new BasePlayer(p.getPlayerName(), p.getSignUpDate(), p.getSignInDate(), createPersonalData(p.getPersonalData()), p.getPlayerStatus(), m.isOnline(p));
     }
     
     public static List<BasePlayer> createPlayerList(AbstractOnlineModel model, List<org.dyndns.fzoli.mill.server.model.entity.Player> l) {
