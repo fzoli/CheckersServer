@@ -12,12 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.dyndns.fzoli.language.LanguageServlet;
 import org.dyndns.fzoli.mill.common.key.MillServletURL;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
-import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.server.Resource;
 import org.dyndns.fzoli.mill.server.model.PlayerModel;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
-import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mill.server.model.entity.Validator;
 import org.dyndns.fzoli.mvc.server.model.bean.ModelBean;
@@ -89,7 +87,7 @@ public class ValidatorServlet extends HttpServlet {
                         PlayerModel m = (PlayerModel) bean.getModel(ModelKeys.PLAYER);
                         if (m == null || m.getPlayer() == null) continue;
                         if (m.getPlayer().getPlayerName().equals(p.getPlayerName())) {
-                            m.addEvent(new PlayerEvent(ConvertUtil.createPlayer(m, p), add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
+                            m.onValidate(add);
                             break;
                         }
                     }

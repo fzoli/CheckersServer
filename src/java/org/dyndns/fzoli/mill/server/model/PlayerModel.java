@@ -237,6 +237,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
     }
     
+    public void onValidate(boolean add) {
+        commonPlayer = ConvertUtil.createPlayer(this);
+        addEvent(new PlayerEvent(commonPlayer, add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
+    }
+    
     private void onSuspend(Player p) {
         addSuspendEvent(p, true);
         commonPlayer = ConvertUtil.createPlayer(this);
