@@ -107,6 +107,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                                 po.getPlayer().setValidated(false);
                             }
                             break;
+                        case SUSPEND:
+                            //TODO
+                            break;
                     }
                 }
             }

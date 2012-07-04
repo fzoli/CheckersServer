@@ -226,7 +226,25 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             case STATE_ONLINE:
                 onSignInOut(p, true, false);
                 break;
+            case SUSPEND:
+                onSuspend(p);
+                break;
                 
+        }
+    }
+    
+    private void onSuspend(Player p) {
+        if (player != null) {
+            commonPlayer = ConvertUtil.createPlayer(this);
+            List<BasePlayer> l = commonPlayer.createMergedPlayerList();
+            for (BasePlayer bp : l) {
+                if (bp.getPlayerName().equals(p.getPlayerName())) {
+                    if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) { //TODO: nem biztos, hogy kelleni fog
+                        addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.SUSPEND));
+                    }
+                    break;
+                }
+            }
         }
     }
     
