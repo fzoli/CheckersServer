@@ -59,12 +59,12 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (ret == PlayerReturn.OK) {
             if (player != null) signOut(SignOutType.RESIGN);
             player = PlayerDAO.getPlayer(name);
-            if (player.getPlayerStatus().equals(PlayerStatus.SUSPENDED)) {
-                player.setPlayerStatus(PlayerStatus.NORMAL);
-            }
+            boolean unsuspend = player.getPlayerStatus().equals(PlayerStatus.SUSPENDED);
+            if (unsuspend) player.setPlayerStatus(PlayerStatus.NORMAL);
             player.updateSignInDate();
             PlayerDAO.save(player);
             commonPlayer = ConvertUtil.createPlayer(this);
+            if (unsuspend) callOnPlayerChanged(player, PlayerChangeType.UNSUSPEND);
             getModelMap().remove(ModelKeys.PLAYER_BUILDER);
             boolean wasKick = false;
             List<PlayerModel> models = findModels(getKey(), PlayerModel.class);
@@ -229,23 +229,37 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             case SUSPEND:
                 onSuspend(p);
                 break;
+            case UNSUSPEND:
+                onUnSuspend(p);
+                break;
                 
         }
     }
     
     private void onSuspend(Player p) {
         if (player != null) {
-            commonPlayer = ConvertUtil.createPlayer(this);
-            List<BasePlayer> l = commonPlayer.createMergedPlayerList();
-            for (BasePlayer bp : l) {
-                if (bp.getPlayerName().equals(p.getPlayerName())) {
-                    if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) { //TODO: nem biztos, hogy kelleni fog
-                        addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.SUSPEND));
-                    }
-                    break;
+            if (findPlayer(p.getPlayerName()) != null) {
+                if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) { //TODO: nem biztos, hogy kelleni fog
+                    addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.SUSPEND));
                 }
             }
+            commonPlayer = ConvertUtil.createPlayer(this);
         }
+    }
+    
+    private void onUnSuspend(Player p) {
+        commonPlayer = ConvertUtil.createPlayer(this);
+    }
+    
+    private BasePlayer findPlayer(String playerName) {
+        if (commonPlayer == null) return null;
+        List<BasePlayer> l = commonPlayer.createMergedPlayerList();
+        for (BasePlayer bp : l) {
+            if (bp.getPlayerName().equals(playerName)) {
+                return bp;
+            }
+        }
+        return null;
     }
     
     private void onSignInOut(Player p, boolean signIn, boolean sign) {
@@ -310,6 +324,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
 
     @Override
     protected PlayerData getProperties(HttpServletRequest hsr, RequestMap rm) {
+        String user = rm.getFirst(KEY_USER);
+        if (user != null) return new PlayerData(findPlayer(user));
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
     }
     

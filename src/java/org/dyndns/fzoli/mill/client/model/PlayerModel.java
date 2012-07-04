@@ -21,6 +21,12 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         super(connection, ModelKeys.PLAYER, PlayerEvent.class, PlayerData.class);
     }
 
+    public BasePlayer loadPlayer(String playerName) {
+        RequestMap m = new RequestMap();
+        m.setFirst(KEY_USER, playerName);
+        return getProperties(m).getAskedPlayer();
+    }
+    
     public int signIn(String user, String password, boolean hash) {
         return askModel(createSignInRequest(user, password, hash));
     }
