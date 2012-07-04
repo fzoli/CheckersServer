@@ -1,9 +1,7 @@
 package org.dyndns.fzoli.mill.server.model.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import javax.persistence.*;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
@@ -192,6 +190,14 @@ public class Player implements Serializable {
                     if (canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) l.add(p);
             }
         }
+        Collections.sort(l, new Comparator<Player>() {
+
+            @Override
+            public int compare(Player p1, Player p2) {
+                return p1.getPlayerName().compareTo(p2.getPlayerName());
+            }
+            
+        });
         return l;
     }
     
