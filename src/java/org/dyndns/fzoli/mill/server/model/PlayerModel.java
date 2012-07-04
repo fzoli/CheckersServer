@@ -231,36 +231,51 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 onSuspend(p);
                 break;
             case UNSUSPEND:
-                onUnSuspend(p);
+                onUnsuspend(p);
                 break;
                 
         }
     }
     
     private void onSuspend(Player p) {
-        if (player != null) {
-            if (findPlayer(p.getPlayerName()) != null) {
-                if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) { //TODO: nem biztos, hogy kelleni fog
-                    addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.SUSPEND));
-                }
-            }
-            commonPlayer = ConvertUtil.createPlayer(this);
-        }
+        addSuspendEvent(p, true);
+        commonPlayer = ConvertUtil.createPlayer(this);
     }
     
-    private void onUnSuspend(Player p) {
+    private void onUnsuspend(Player p) {
         commonPlayer = ConvertUtil.createPlayer(this);
+        addSuspendEvent(p, false);
+    }
+    
+    private void addSuspendEvent(Player p, boolean suspend) {
+        if (findPlayer(p.getPlayerName()) != null) {
+            if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) {
+                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), suspend ? PlayerEvent.PlayerEventType.SUSPEND : PlayerEvent.PlayerEventType.UNSUSPEND));
+            }
+        }
     }
     
     private BasePlayer findPlayer(String playerName) {
         if (commonPlayer == null) return null;
-        List<BasePlayer> l = commonPlayer.createMergedPlayerList();
+        return findPlayer(playerName, commonPlayer.createMergedPlayerList());
+    }
+    
+    private BasePlayer findPlayer(String playerName, List<BasePlayer> l) {
         for (BasePlayer bp : l) {
             if (bp.getPlayerName().equals(playerName)) {
                 return bp;
             }
         }
         return null;
+    }
+    
+    private PlayerData.PlayerList findPlayerList(String playerName) {
+        if (commonPlayer != null) {
+            if (findPlayer(playerName, commonPlayer.getBlockedUserList()) != null) return PlayerData.PlayerList.BLOCKED_PLAYERS;
+            if (findPlayer(playerName, commonPlayer.getFriendWishList()) != null) return PlayerData.PlayerList.WISHED_FRIENDS;
+            if (findPlayer(playerName, commonPlayer.getPossibleFriends()) != null) return PlayerData.PlayerList.POSSIBLE_FRIENDS;
+        }
+        return PlayerData.PlayerList.FRIENDS;
     }
     
     private void onSignInOut(Player p, boolean signIn, boolean sign) {
@@ -326,7 +341,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     @Override
     protected PlayerData getProperties(HttpServletRequest hsr, RequestMap rm) {
         String user = rm.getFirst(KEY_USER);
-        if (user != null) return new PlayerData(findPlayer(user));
+        if (user != null) return new PlayerData(findPlayer(user), findPlayerList(user));
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
     }
     
