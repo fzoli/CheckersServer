@@ -25,7 +25,8 @@
         </style>
     </head>
     <body>
-        <h1><%= new Resource(request).getString("hello_world") %></h1>
-        <h2><%= MillLanguageServlet.createLanguageSetterUrls(request) %></h2>
+        <% Resource res = new Resource(request); %>
+        <h1><%= res.getString("hello_world") %></h1>
+        <h2><%= res.getLanguageSetterUrls() %></h2>
     </body>
 </html>

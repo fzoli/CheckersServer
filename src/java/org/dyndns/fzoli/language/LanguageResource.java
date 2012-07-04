@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,9 +21,10 @@ import org.w3c.dom.NodeList;
  */
 public class LanguageResource {
     
-    private File xmlFile;
-    private String language;
-    private ServletContext context;
+    protected File xmlFile;
+    protected String language;
+    protected ServletContext context;
+    protected HttpServletRequest request;
 
     private static final String WEB_INF = "/WEB-INF/";
     private static final String STRINGS_XML = "strings.xml";
@@ -39,8 +41,11 @@ public class LanguageResource {
     }
 
     private void init(ServletRequest request) {
-        context = request.getServletContext();
-        language = LanguageServlet.createLanguage(request);
+        this.context = request.getServletContext();
+        this.language = LanguageServlet.createLanguage(request);
+        if (request instanceof HttpServletRequest) {
+            this.request = (HttpServletRequest) request;
+        }
     }
     
     public String getLanguage() {

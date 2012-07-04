@@ -2,6 +2,7 @@ package org.dyndns.fzoli.mill.server;
 
 import javax.servlet.ServletRequest;
 import org.dyndns.fzoli.language.LanguageResource;
+import org.dyndns.fzoli.mill.server.servlet.MillLanguageServlet;
 
 /**
  *
@@ -14,6 +15,11 @@ public class Resource extends LanguageResource {
 
     public Resource(ServletRequest request) {
         super(request);
+    }
+    
+    public String getLanguageSetterUrls() {
+        if (request == null) return null;
+        return MillLanguageServlet.createLanguageSetterUrls(request);
     }
     
     public String getEmailValidation() {
