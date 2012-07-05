@@ -82,7 +82,7 @@ abstract class AbstractMillModel<EventObj, PropsObj> extends JSONModel<EventObj,
     }
     
     public PlayerModel getPlayerModel(boolean init) {
-        return findModel(ModelKeys.PLAYER, init, PlayerModel.class);
+        return getModelMap().get(ModelKeys.PLAYER, init, PlayerModel.class);
     }
 
     public int getCaptchaWidth() {
