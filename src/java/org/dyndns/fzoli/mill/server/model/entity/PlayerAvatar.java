@@ -35,6 +35,10 @@ public class PlayerAvatar implements Serializable {
     public PlayerAvatar() {
     }
 
+    public PlayerAvatar(String playerName, RenderedImage avatar, Point topLeftPoint, int scale) {
+        this(playerName, imageToByteArray(avatar), topLeftPoint, scale);
+    }
+    
     public PlayerAvatar(String playerName, byte[] avatar, Point topLeftPoint, int scale) {
         this.playerName = playerName;
         this.avatar = avatar;

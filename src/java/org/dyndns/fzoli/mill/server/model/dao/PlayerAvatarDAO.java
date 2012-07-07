@@ -13,12 +13,13 @@ public class PlayerAvatarDAO extends AbstractDAO {
         return "mill_extend.odb";
     }
 
-    protected boolean save(PlayerAvatar avatar) {
-        return save(avatar, PlayerAvatar.class);
+    public PlayerAvatar getPlayerAvatar(String playerName) {
+        if (playerName == null) return null;
+        return null; //TODO
     }
     
-//    public static void main(String[] args) {
-//        new PlayerAvatarDAO().save(new PlayerAvatar("test", new byte[] {7, 8}, new Point(5, 6), 2));
-//    }
+    public boolean save(PlayerAvatar avatar) {
+        return save(avatar, PlayerAvatar.class);
+    }
     
 }
