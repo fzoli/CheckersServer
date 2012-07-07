@@ -41,9 +41,9 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
             avatar.setScale(scale);
             avatar.setTopLeftPoint(point);
         }
-        DAO.save(avatar);
         scale = null;
         point = null;
+        DAO.save(avatar);
         return PlayerAvatarReturn.OK;
     }
 
