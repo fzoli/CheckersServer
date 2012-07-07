@@ -1,7 +1,6 @@
 package org.dyndns.fzoli.mill.server.model.dao;
 
 import org.dyndns.fzoli.mill.server.model.entity.PlayerAvatar;
-import org.dyndns.fzoli.mill.server.model.entity.Point;
 
 /**
  *
