@@ -1,6 +1,5 @@
 package org.dyndns.fzoli.mill.server.model.dao;
 
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import org.dyndns.fzoli.mill.common.InputValidator;
@@ -14,7 +13,7 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  */
 public class PlayerDAO extends AbstractDAO {
     
-    public static Player getPlayer(String name) {
+    public Player getPlayer(String name) {
         if (name == null) return null;
         try {
             TypedQuery<Player> query = getEntityManager().createQuery("SELECT p FROM Player p WHERE upper(p.playerName) = upper(:name)", Player.class);
@@ -26,7 +25,7 @@ public class PlayerDAO extends AbstractDAO {
         }
     }
     
-    public static PlayerReturn verify(String name, String password, boolean hash) {
+    public PlayerReturn verify(String name, String password, boolean hash) {
         if (name == null || password == null) return PlayerReturn.NULL;
         if (!InputValidator.isUserIdValid(name) || !InputValidator.isPasswordValid(password, hash)) return PlayerReturn.INVALID;
         Player p = getPlayer(name);
@@ -37,25 +36,25 @@ public class PlayerDAO extends AbstractDAO {
         return PlayerReturn.NOT_OK;
     }
     
-    public static boolean isPlayerNameExists(String name) {
+    public boolean isPlayerNameExists(String name) {
         return isExists(name, "playerName");
     }
 
-    public static boolean isEmailExists(String email) {
+    public boolean isEmailExists(String email) {
         if (email == null || email != null && email.isEmpty()) return false;
         TypedQuery<Boolean> query = getEntityManager().createQuery("SELECT count(p) > 0 FROM Player p WHERE upper(p.email) = upper(:value) AND p.validated = true", Boolean.class);
         query.setParameter("value", email);
         return isExists(query);
     }
 
-    private static boolean isExists(String value, String property) {
+    private boolean isExists(String value, String property) {
         if (value == null || property == null) return false;
         TypedQuery<Boolean> query = getEntityManager().createQuery("SELECT count(p) > 0 FROM Player p WHERE upper(p." + property + ") = upper(:value)", Boolean.class);
         query.setParameter("value", value);
         return isExists(query);
     }
     
-    private static boolean isExists(TypedQuery<Boolean> query) {
+    private boolean isExists(TypedQuery<Boolean> query) {
         try {
             return query.getSingleResult();
         }
@@ -64,7 +63,7 @@ public class PlayerDAO extends AbstractDAO {
         }
     }
     
-    public static long getPlayerCount() {
+    public long getPlayerCount() {
         try {
             return getEntityManager().createQuery("SELECT count(p) FROM Player p", Long.class).getSingleResult();
         }
@@ -73,7 +72,7 @@ public class PlayerDAO extends AbstractDAO {
         }
     }
     
-    public static PlayerBuilderReturn createPlayer(Player player, boolean hash) {
+    public PlayerBuilderReturn createPlayer(Player player, boolean hash) {
         if (player == null) {
             return PlayerBuilderReturn.NULL;
         }
@@ -106,16 +105,8 @@ public class PlayerDAO extends AbstractDAO {
         return PlayerBuilderReturn.OK;
     }
     
-    public static boolean save(Player p) {
-        EntityTransaction tr = getEntityManager().getTransaction();
-        try {
-            tr.begin();
-            getEntityManager().persist(p);
-            tr.commit();
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
+    public boolean save(Player player) {
+        return save(player, Player.class);
     }
     
 }

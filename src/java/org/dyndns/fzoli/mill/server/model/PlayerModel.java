@@ -17,6 +17,7 @@ import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.common.permission.Permissions;
+import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
@@ -37,6 +38,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         RESIGN, KICK, NORMAL
     }
     
+    private final static PlayerDAO DAO = new PlayerDAO();
+    private final static ValidatorDAO VDAO = new ValidatorDAO();
+    private final static PlayerAvatarDAO ADAO = new PlayerAvatarDAO();
+    
     private Player player;
     private org.dyndns.fzoli.mill.common.model.entity.Player commonPlayer;
 
@@ -51,18 +56,18 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
 
     public boolean isEmailFree(String email) {
-        return !PlayerDAO.isEmailExists(email);
+        return !DAO.isEmailExists(email);
     }
     
     public PlayerReturn signIn(String name, String password, boolean hash) {
-        PlayerReturn ret = PlayerDAO.verify(name, password, hash);
+        PlayerReturn ret = DAO.verify(name, password, hash);
         if (ret == PlayerReturn.OK) {
             if (player != null) signOut(SignOutType.RESIGN);
-            player = PlayerDAO.getPlayer(name);
+            player = DAO.getPlayer(name);
             boolean unsuspend = player.getPlayerStatus().equals(PlayerStatus.SUSPENDED);
             if (unsuspend) player.setPlayerStatus(PlayerStatus.NORMAL);
             player.updateSignInDate();
-            PlayerDAO.save(player);
+            DAO.save(player);
             commonPlayer = ConvertUtil.createPlayer(this);
             if (unsuspend) callOnPlayerChanged(player, PlayerChangeType.UNSUSPEND);
             getModelMap().remove(ModelKeys.PLAYER_BUILDER);
@@ -123,7 +128,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 if (!old.equals(ps)) {
                     player.setOnlineStatus(ps);
                     commonPlayer.setOnline(ps.equals(OnlineStatus.ONLINE));
-                    PlayerDAO.save(player);
+                    DAO.save(player);
                     callOnPlayerChanged(player, commonPlayer.isOnline() ? PlayerChangeType.STATE_ONLINE : PlayerChangeType.STATE_INVISIBLE);
                     return PlayerReturn.OK;
                 }
@@ -148,7 +153,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
         if (oldPassword.equals(player.getPassword())) {
             player.setPassword(newPassword);
-            PlayerDAO.save(player);
+            DAO.save(player);
             return PlayerReturn.OK;
         }
         else {
@@ -158,11 +163,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn setEmail(HttpServletRequest hsr, String password, String email, boolean safe) {
         if (isRequestWrong(password, safe)) return getError(password, safe);
-        if (PlayerDAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
+        if (DAO.isEmailExists(email)) return PlayerReturn.EMAIL_NOT_FREE;
         commonPlayer.setEmail(email);
         player.setEmail(email);
         player.setValidated(false);
-        PlayerDAO.save(player);
+        DAO.save(player);
         validateEmail(hsr, password, safe);
         return PlayerReturn.OK;
     }
@@ -175,7 +180,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         try {
             String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
             GMailSender.sendEmail(config, player.getEmail(), ValidatorServlet.getEmailValidationSubject(hsr), ValidatorServlet.createValidationEmail(hsr, key, player));
-            ValidatorDAO.setKey(player, key);
+            VDAO.setKey(player, key);
             removeCaptcha();
             return PlayerReturn.OK;
         }
@@ -192,7 +197,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         player.setPlayerStatus(PlayerStatus.SUSPENDED);
         player.setOnlineStatus(OnlineStatus.ONLINE);
         player.setPermissionMask(0);
-        PlayerDAO.save(player);
+        DAO.save(player);
         callOnPlayerChanged(player, PlayerChangeType.SUSPEND);
         signOut(SignOutType.KICK);
         return PlayerReturn.OK;

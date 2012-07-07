@@ -22,6 +22,8 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
     private long initTime = new Date().getTime();
     private String user = "", email = "";
     
+    private final static PlayerDAO DAO = new PlayerDAO();
+    
     public List<PlayerBuilderModel> findModels() {
         return findModels(getKey(), PlayerBuilderModel.class);
     }
@@ -32,7 +34,7 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
     
     public boolean isUserFree(String user) {
         if (user == null) return true;
-        if (PlayerDAO.isPlayerNameExists(user)) return false;
+        if (DAO.isPlayerNameExists(user)) return false;
         List<PlayerBuilderModel> models = findModels();
         long time = new Date().getTime();
         for (PlayerBuilderModel model : models) {
@@ -42,7 +44,7 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
     }
     
     public boolean isEmailFree(String email) {
-        return !PlayerDAO.isEmailExists(email);
+        return !DAO.isEmailExists(email);
     }
 
     public PlayerBuilderReturn setUser(String user) {
@@ -69,7 +71,7 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
         if (!isCaptchaValidated()) return PlayerBuilderReturn.WRONG_CAPTCHA;
         if (validate(false)) return PlayerBuilderReturn.VALIDATED;
         if (InputValidator.isPasswordValid(password, hash) && InputValidator.isUserIdValid(user) && InputValidator.isEmailValid(email)) {
-            PlayerBuilderReturn ret = PlayerDAO.createPlayer(new Player(user, password, email), hash);
+            PlayerBuilderReturn ret = DAO.createPlayer(new Player(user, password, email), hash);
             if (ret == PlayerBuilderReturn.OK) {
                 addStaticEvent();
                 validate(true);
@@ -96,7 +98,7 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
     @Override
     protected PlayerBuilderData getProperties(HttpServletRequest sr, RequestMap m) {
         validate(false);
-        return new PlayerBuilderData(user, email, new Date().getTime(), initTime, TIMEOUT, PlayerDAO.getPlayerCount(), isCaptchaValidated(), getCaptchaWidth());
+        return new PlayerBuilderData(user, email, new Date().getTime(), initTime, TIMEOUT, DAO.getPlayerCount(), isCaptchaValidated(), getCaptchaWidth());
     }
 
     @Override
@@ -123,11 +125,11 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
     }
     
     private void addEvent(boolean reset) {
-        addEvent(new PlayerBuilderEvent(reset, PlayerDAO.getPlayerCount()));
+        addEvent(new PlayerBuilderEvent(reset, DAO.getPlayerCount()));
     }
 
     private void addStaticEvent() {
-        addStaticEvent(new PlayerBuilderEvent(false, PlayerDAO.getPlayerCount()));
+        addStaticEvent(new PlayerBuilderEvent(false, DAO.getPlayerCount()));
     }
     
 }

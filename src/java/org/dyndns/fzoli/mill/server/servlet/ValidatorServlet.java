@@ -37,6 +37,9 @@ public class ValidatorServlet extends HttpServlet {
     public static final String ACTION_VALIDATE = "validation";
     public static final String ACTION_INVALIDATE = "invalidation";
     
+    private static final PlayerDAO DAO = new PlayerDAO();
+    private static final ValidatorDAO VDAO = new ValidatorDAO();
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter(KEY_ACTION);
@@ -44,7 +47,7 @@ public class ValidatorServlet extends HttpServlet {
         if (action != null && action.equals(ACTION_SHOW_EMAIL)) {
             resp.setCharacterEncoding("utf-8");
             PrintWriter out = resp.getWriter();
-            out.print(createValidationEmail(req, key, ValidatorDAO.getPlayer(key)));
+            out.print(createValidationEmail(req, key, VDAO.getPlayer(key)));
             out.close();
         }
         else {
@@ -68,7 +71,7 @@ public class ValidatorServlet extends HttpServlet {
     
     public static ValidatorInfo validate(String key, final boolean add) {
         if (key == null) return new ValidatorInfo(ValidatorInfo.Return.NOT_OK, key);
-        final Validator v = ValidatorDAO.getValidator(key);
+        final Validator v = VDAO.getValidator(key);
         if (v == null) return new ValidatorInfo(ValidatorInfo.Return.NOT_OK, key);
         final Player p = v.getPlayer();
         if (p == null) return new ValidatorInfo(ValidatorInfo.Return.USED, key);
@@ -78,9 +81,9 @@ public class ValidatorServlet extends HttpServlet {
             public void run() {
                 if (add) p.setValidated(true);
                 else p.setEmail("");
-                PlayerDAO.save(p);
+                DAO.save(p);
                 v.setPlayer(null);
-                ValidatorDAO.save(v);
+                VDAO.save(v);
                 List<ModelBean> l = ModelBeanRegister.getModelBeans();
                 synchronized(l) {
                     for (ModelBean bean : l) {

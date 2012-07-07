@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
 /**
@@ -12,29 +13,39 @@ import javax.persistence.Persistence;
  */
 public abstract class AbstractDAO {
     
-    private static EntityManager ENTITY_MANAGER = init();
-
-    protected static EntityManager getEntityManager() {
-        if (ENTITY_MANAGER == null) ENTITY_MANAGER = init();
-        return ENTITY_MANAGER;
+    private static final Map<String, EntityManager> MANAGERS = new HashMap<String, EntityManager>();
+    
+    protected String getPath() {
+        return "mill.odb";
     }
     
-    private static EntityManager createEntityManager() {
+    protected <T> boolean save(T obj, Class<T> clazz) {
+        EntityTransaction tr = getEntityManager().getTransaction();
+        try {
+            tr.begin();
+            getEntityManager().persist(obj);
+            tr.commit();
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+    
+    protected EntityManager getEntityManager() {
+        EntityManager m = MANAGERS.get(getPath());
+        if (m == null) {
+            m = createEntityManager();
+            MANAGERS.put(getPath(), m);
+        }
+        return m;
+    }
+    
+    private EntityManager createEntityManager() {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("javax.persistence.jdbc.user", "admin");
         properties.put("javax.persistence.jdbc.password", "admin");
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("objectdb://localhost:6136/mill.odb", properties);
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("objectdb://localhost:6136/" + getPath(), properties);
         return emf.createEntityManager();
-    }
-    
-    private static EntityManager init() {
-        try {
-            return ENTITY_MANAGER = createEntityManager();
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
     }
     
 }
