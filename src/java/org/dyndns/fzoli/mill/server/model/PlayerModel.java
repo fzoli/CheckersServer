@@ -40,7 +40,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private final static PlayerDAO DAO = new PlayerDAO();
     private final static ValidatorDAO VDAO = new ValidatorDAO();
-    private final static PlayerAvatarDAO ADAO = new PlayerAvatarDAO();
     
     private Player player;
     private org.dyndns.fzoli.mill.common.model.entity.Player commonPlayer;
