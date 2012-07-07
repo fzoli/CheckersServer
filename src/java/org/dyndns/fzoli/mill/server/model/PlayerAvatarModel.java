@@ -80,7 +80,9 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     
     @Override
     protected PlayerAvatarData getProperties(HttpServletRequest hsr, RequestMap rm) {
-        return new PlayerAvatarData(getPlayerName(), point.getX(), point.getY(), scale);
+        PlayerAvatar a = getPlayerAvatar();
+        if (a == null) return new PlayerAvatarData(getPlayerName());
+        else return new PlayerAvatarData(getPlayerName(), a.getTopLeftPoint().getX(), a.getTopLeftPoint().getY(), a.getScale());
     }
     
     @Override
