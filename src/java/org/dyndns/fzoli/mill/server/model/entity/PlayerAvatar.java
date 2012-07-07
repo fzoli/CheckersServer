@@ -1,7 +1,7 @@
 package org.dyndns.fzoli.mill.server.model.entity;
 
-import java.awt.Point;
 import java.io.Serializable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,6 +23,8 @@ public class PlayerAvatar implements Serializable {
     private byte[] avatar;
     
     private int scale;
+    
+    @Embedded
     private Point topLeftPoint;
 
     public PlayerAvatar() {

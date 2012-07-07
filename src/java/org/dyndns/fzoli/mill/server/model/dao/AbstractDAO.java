@@ -26,6 +26,7 @@ public abstract class AbstractDAO {
             getEntityManager().persist(obj);
             tr.commit();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return false;
         }
         return true;
