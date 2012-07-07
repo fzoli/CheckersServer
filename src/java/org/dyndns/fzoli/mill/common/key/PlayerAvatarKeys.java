@@ -6,4 +6,6 @@ package org.dyndns.fzoli.mill.common.key;
  */
 public interface PlayerAvatarKeys {
     
+    String REQ_SET_AVATAR = "set_avatar";
+    
 }
