@@ -11,6 +11,7 @@ import org.dyndns.fzoli.mill.common.key.PlayerAvatarKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerAvatarReturn;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarEvent;
+import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.server.Resource;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
@@ -24,6 +25,8 @@ import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
  * @author zoli
  */
 public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, PlayerAvatarData> implements PlayerAvatarKeys {
+    
+    //TODO: avatar változás esemény csak akkor, ha (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))
     
     private final static PlayerDAO PDAO = new PlayerDAO();
     private final static PlayerAvatarDAO DAO = new PlayerAvatarDAO();
@@ -72,9 +75,10 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     private RenderedImage createAvatarImage(String user, int scale) {
         if (user == null) user = getPlayerName();
         if (user != null) {
+            Player me = getPlayer();
             Player p = PDAO.getPlayer(user);
             if (p != null) {
-                if (p == getPlayer() || p.getFriendList().contains(getPlayer())) {
+                if (p == me || p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) {
                     PlayerAvatar avatar = DAO.getPlayerAvatar(user);
                     if (avatar != null) {
                         BufferedImage img = avatar.createAvatarImage();
