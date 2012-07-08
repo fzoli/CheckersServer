@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.key.PlayerAvatarKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerAvatarReturn;
+import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
@@ -25,8 +26,6 @@ import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
  * @author zoli
  */
 public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, PlayerAvatarData> implements PlayerAvatarKeys {
-    
-    //TODO: avatar változás esemény csak akkor, ha (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))
     
     private final static PlayerDAO PDAO = new PlayerDAO();
     private final static PlayerAvatarDAO DAO = new PlayerAvatarDAO();
@@ -56,6 +55,7 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         scale = null;
         point = null;
         DAO.save(avatar);
+        callOnPlayerChanged(getPlayer(), PlayerChangeType.AVATAR_CHANGE);
         return PlayerAvatarReturn.OK;
     }
 
@@ -155,6 +155,24 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
             }
         }
         return PlayerAvatarReturn.NOT_OK.ordinal();
+    }
+
+    private void onAvatarChange(Player p) {
+        Player me = getPlayer();
+        if (me == null) return;
+        if (me == p) return;
+        if ((p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
+            addEvent(new PlayerAvatarEvent(getPlayerName(), p.getPlayerName()));
+        }
+    }
+    
+    @Override
+    protected void onPlayerChanged(Player p, PlayerChangeType type) {
+        switch (type) {
+            case AVATAR_CHANGE:
+                onAvatarChange(p);
+                break;
+        }
     }
     
     public static void main(String[] args) throws IOException {
