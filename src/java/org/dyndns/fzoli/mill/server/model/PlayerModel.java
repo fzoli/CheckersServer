@@ -13,6 +13,7 @@ import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
+import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarEvent;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
@@ -244,13 +245,21 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             case UNSUSPEND:
                 onUnsuspend(p);
                 break;
-                
+            case AVATAR_CHANGE:
+                onAvatarChange(p);
+                break;
         }
     }
     
     public void onValidate(boolean add) {
         commonPlayer = ConvertUtil.createPlayer(this);
         addEvent(new PlayerEvent(commonPlayer, add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
+    }
+    
+    private void onAvatarChange(Player p) {
+        if (PlayerAvatarModel.isEventImportant(getPlayer(), p)) {
+            addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.AVATAR_CHANGE));
+        }
     }
     
     private void onSuspend(Player p) {

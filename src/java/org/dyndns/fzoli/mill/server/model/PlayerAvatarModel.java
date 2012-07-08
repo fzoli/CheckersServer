@@ -59,6 +59,15 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         return PlayerAvatarReturn.OK;
     }
 
+    public static boolean isEventImportant(Player me, Player p) {
+        if (me != null && me != p) {
+            if ((p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private static BufferedImage resize(BufferedImage img, int scale) {
         return Scalr.resize(img, Scalr.Method.QUALITY, scale, 0, Scalr.OP_ANTIALIAS);
     }
@@ -157,24 +166,6 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         return PlayerAvatarReturn.NOT_OK.ordinal();
     }
 
-    private void onAvatarChange(Player p) {
-        Player me = getPlayer();
-        if (me == null) return;
-        if (me == p) return;
-        if ((p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
-            addEvent(new PlayerAvatarEvent(getPlayerName(), p.getPlayerName()));
-        }
-    }
-    
-    @Override
-    protected void onPlayerChanged(Player p, PlayerChangeType type) {
-        switch (type) {
-            case AVATAR_CHANGE:
-                onAvatarChange(p);
-                break;
-        }
-    }
-    
     public static void main(String[] args) throws IOException {
         BufferedImage img = ImageIO.read(new File("/home/zoli/google.png"));
         PlayerAvatarModel model = new PlayerAvatarModel() {
