@@ -17,11 +17,13 @@ import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.common.permission.Permissions;
+import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.PersonalData;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
+import org.dyndns.fzoli.mill.server.model.entity.PlayerAvatar;
 import org.dyndns.fzoli.mill.server.servlet.MillControllerServlet;
 import org.dyndns.fzoli.mill.server.servlet.ValidatorServlet;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
@@ -39,6 +41,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private final static PlayerDAO DAO = new PlayerDAO();
     private final static ValidatorDAO VDAO = new ValidatorDAO();
+    private final static PlayerAvatarDAO ADAO = new PlayerAvatarDAO();
     
     private Player player;
     private org.dyndns.fzoli.mill.common.model.entity.Player commonPlayer;
@@ -196,6 +199,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         player.setOnlineStatus(OnlineStatus.ONLINE);
         player.setPermissionMask(0);
         DAO.save(player);
+        PlayerAvatar avatar = ADAO.getPlayerAvatar(player.getPlayerName());
+        if (avatar != null) {
+            avatar.reset();
+            ADAO.save(avatar);
+        }
         callOnPlayerChanged(player, PlayerChangeType.SUSPEND);
         signOut(SignOutType.KICK);
         return PlayerReturn.OK;

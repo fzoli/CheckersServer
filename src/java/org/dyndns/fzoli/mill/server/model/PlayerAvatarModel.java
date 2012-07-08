@@ -1,12 +1,19 @@
 package org.dyndns.fzoli.mill.server.model;
 
+import com.thebuzzmedia.imgscalr.Scalr;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.key.PlayerAvatarKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerAvatarReturn;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarEvent;
+import org.dyndns.fzoli.mill.server.Resource;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
+import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
+import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mill.server.model.entity.PlayerAvatar;
 import org.dyndns.fzoli.mill.server.model.entity.Point;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
@@ -17,6 +24,7 @@ import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
  */
 public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, PlayerAvatarData> implements PlayerAvatarKeys {
     
+    private final static PlayerDAO PDAO = new PlayerDAO();
     private final static PlayerAvatarDAO DAO = new PlayerAvatarDAO();
     
     private Integer scale;
@@ -29,7 +37,7 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         return PlayerAvatarReturn.OK;
     }
     
-    private PlayerAvatarReturn setAvatar(RenderedImage img) {
+    private PlayerAvatarReturn setAvatar(BufferedImage img) {
         String name = getPlayerName();
         if (name == null || scale == null || point == null) return PlayerAvatarReturn.NOT_OK;
         PlayerAvatar avatar = DAO.getPlayerAvatar(name);
@@ -47,6 +55,36 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         return PlayerAvatarReturn.OK;
     }
 
+    private static BufferedImage resize(BufferedImage img, int scale) {
+        return Scalr.resize(img, Scalr.Method.QUALITY, scale, 0, Scalr.OP_ANTIALIAS);
+    }
+    
+    private RenderedImage createDefaultAvatarImage(int scale) {
+        try {
+            return resize(ImageIO.read(Resource.class.getResource("avatar.png")), scale);
+        }
+        catch (IOException ex) {
+            return null;
+        }
+    }
+    
+    private RenderedImage createAvatarImage(String user, int scale) {
+        if (user == null) user = getPlayerName();
+        if (user != null) {
+            Player p = PDAO.getPlayer(user);
+            if (p != null) {
+                if (p == getPlayer() || p.getFriendList().contains(getPlayer())) {
+                    PlayerAvatar avatar = DAO.getPlayerAvatar(user);
+                    if (avatar != null) {
+                        BufferedImage img = avatar.createAvatarImage();
+                        if (img != null) return resize(img, scale);
+                    }
+                }
+            }
+        }
+        return createDefaultAvatarImage(scale);
+    }
+    
     private RenderedImage getAvatarImage() {
         PlayerAvatar a = getPlayerAvatar();
         if (a != null) return a.getAvatarImage();
@@ -64,7 +102,14 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     protected RenderedImage getImage(HttpServletRequest hsr, RequestMap rm) {
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
-            if (action.equals(REQ_GET_AVATAR)) return getAvatarImage();
+            if (action.equals(REQ_GET_AVATAR)) {
+                try {
+                    return createAvatarImage(rm.getFirst(KEY_USER), Integer.parseInt(rm.getFirst(KEY_SCALE)));
+                }
+                catch (Exception ex) {
+                    return getAvatarImage();
+                }
+            }
         }
         return null;
     }
@@ -73,7 +118,7 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     protected int setImage(RenderedImage img, HttpServletRequest servletRequest, RequestMap request) {
         String action = request.getFirst(KEY_REQUEST);
         if (action != null) {
-            if (action.equals(REQ_SET_AVATAR)) return setAvatar(img).ordinal();
+            if (action.equals(REQ_SET_AVATAR)) return setAvatar((BufferedImage)img).ordinal();
         }
         return PlayerAvatarReturn.NOT_OK.ordinal();
     }

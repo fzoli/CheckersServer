@@ -1,6 +1,6 @@
 package org.dyndns.fzoli.mill.server.model.entity;
 
-import java.awt.image.RenderedImage;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class PlayerAvatar implements Serializable {
     public PlayerAvatar() {
     }
 
-    public PlayerAvatar(String playerName, RenderedImage avatar, Point topLeftPoint, int scale) {
+    public PlayerAvatar(String playerName, BufferedImage avatar, Point topLeftPoint, int scale) {
         this(playerName, imageToByteArray(avatar), topLeftPoint, scale);
     }
     
@@ -58,7 +58,17 @@ public class PlayerAvatar implements Serializable {
         return avatar;
     }
 
-    public RenderedImage getAvatarImage() {
+    public BufferedImage createAvatarImage() {
+        try {
+            Point p = getTopLeftPoint();
+            return getAvatarImage().getSubimage(p.getX(), p.getY(), getScale(), getScale());
+        }
+        catch (Exception ex) {
+            return null;
+        }
+    }
+    
+    public BufferedImage getAvatarImage() {
         return byteArrayToImage(getAvatarArray());
     }
     
@@ -74,7 +84,7 @@ public class PlayerAvatar implements Serializable {
         this.avatar = avatar;
     }
 
-    public void setAvatar(RenderedImage avatar) {
+    public void setAvatar(BufferedImage avatar) {
         this.avatar = imageToByteArray(avatar);
     }
     
@@ -86,7 +96,13 @@ public class PlayerAvatar implements Serializable {
         this.scale = scale;
     }
     
-    public static byte[] imageToByteArray(RenderedImage img) {
+    public void reset() {
+        this.avatar = null;
+        this.topLeftPoint = null;
+        this.scale = 0;
+    }
+    
+    public static byte[] imageToByteArray(BufferedImage img) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             ImageIO.write(img, "png", os);
@@ -97,7 +113,7 @@ public class PlayerAvatar implements Serializable {
         return os.toByteArray();
     }
     
-    public static RenderedImage byteArrayToImage(byte[] array) {
+    public static BufferedImage byteArrayToImage(byte[] array) {
         try {
             return ImageIO.read(new ByteArrayInputStream(array));
         }
