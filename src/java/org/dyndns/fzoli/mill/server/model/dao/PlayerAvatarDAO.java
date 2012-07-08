@@ -22,7 +22,6 @@ public class PlayerAvatarDAO extends AbstractDAO {
             return query.setParameter("name", playerName).getSingleResult();
         }
         catch (PersistenceException ex) {
-            ex.printStackTrace();
             return null;
         }
     }

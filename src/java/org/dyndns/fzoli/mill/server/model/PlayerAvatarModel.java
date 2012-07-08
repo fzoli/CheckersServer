@@ -3,6 +3,7 @@ package org.dyndns.fzoli.mill.server.model;
 import com.thebuzzmedia.imgscalr.Scalr;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -147,6 +148,20 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
             }
         }
         return PlayerAvatarReturn.NOT_OK.ordinal();
+    }
+    
+    public static void main(String[] args) throws IOException {
+        BufferedImage img = ImageIO.read(new File("/home/zoli/google.png"));
+        PlayerAvatarModel model = new PlayerAvatarModel() {
+
+            @Override
+            public Player getPlayer() {
+                return new Player("fzoli", "", "");
+            }
+            
+        };
+        model.setAvatarAttrs(500, 160, 300);
+        model.setAvatar(img);
     }
     
 }
