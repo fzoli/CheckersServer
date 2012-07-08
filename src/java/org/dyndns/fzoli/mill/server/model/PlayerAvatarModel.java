@@ -67,7 +67,7 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         try {
             return resize(ImageIO.read(Resource.class.getResource("avatar.png")), scale);
         }
-        catch (IOException ex) {
+        catch (Exception ex) {
             return null;
         }
     }
@@ -109,7 +109,10 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         if (action != null) {
             if (action.equals(REQ_GET_AVATAR)) {
                 try {
-                    return createAvatarImage(rm.getFirst(KEY_USER), Integer.parseInt(rm.getFirst(KEY_SCALE)));
+                    int scale = Integer.parseInt(rm.getFirst(KEY_SCALE));
+                    if (scale < 0) scale = 1;
+                    if (scale > 1980) scale = 1980;
+                    return createAvatarImage(rm.getFirst(KEY_USER), scale);
                 }
                 catch (Exception ex) {
                     return getAvatarImage();
