@@ -111,7 +111,7 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
                 try {
                     int scale = Integer.parseInt(rm.getFirst(KEY_SCALE));
                     if (scale < 0) scale = 1;
-                    if (scale > 1980) scale = 1980;
+                    if (scale > 1000) scale = 1000;
                     return createAvatarImage(rm.getFirst(KEY_USER), scale);
                 }
                 catch (Exception ex) {
