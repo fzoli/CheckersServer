@@ -36,7 +36,8 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     private PlayerAvatarReturn setAvatarEnabled(boolean enabled) {
         Player p = getPlayer();
         if (p == null) return PlayerAvatarReturn.NOT_OK;
-        p.setCaptchaEnabled(enabled);
+        if (p.isAvatarEnabled() == enabled) return PlayerAvatarReturn.OK;
+        p.setAvatarEnabled(enabled);
         PDAO.save(p);
         callOnPlayerChanged(p, enabled ? PlayerChangeType.AVATAR_ENABLE : PlayerChangeType.AVATAR_DISABLE);
         return PlayerAvatarReturn.OK;
@@ -166,9 +167,9 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     protected PlayerAvatarData getProperties(HttpServletRequest hsr, RequestMap rm) {
         PlayerAvatar a = getPlayerAvatar();
         Player p = getPlayer();
-        boolean captchaEnabled = p == null ? false : p.isCaptchaEnabled();
-        if (a == null) return new PlayerAvatarData(getPlayerName(), captchaEnabled);
-        else return new PlayerAvatarData(getPlayerName(), a.getTopLeftPoint().getX(), a.getTopLeftPoint().getY(), a.getScale(), captchaEnabled);
+        boolean avatarEnabled = p == null ? false : p.isAvatarEnabled();
+        if (a == null) return new PlayerAvatarData(getPlayerName(), avatarEnabled);
+        else return new PlayerAvatarData(getPlayerName(), a.getTopLeftPoint().getX(), a.getTopLeftPoint().getY(), a.getScale(), avatarEnabled);
     }
 
     @Override

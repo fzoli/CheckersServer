@@ -23,7 +23,7 @@ public class Player implements Serializable {
     
     private int permission = 0, activePermission = 0;
     
-    private boolean validated = false, captchaEnabled = true;
+    private boolean validated = false, avatarEnabled = true;
     
     @Column(nullable = false)
     private String playerName, password, email;
@@ -108,8 +108,8 @@ public class Player implements Serializable {
         return false;
     }
 
-    public boolean isCaptchaEnabled() {
-        return captchaEnabled;
+    public boolean isAvatarEnabled() {
+        return avatarEnabled;
     }
     
     public boolean isValidated() {
@@ -228,8 +228,8 @@ public class Player implements Serializable {
         this.activePermission = permission;
     }
 
-    public void setCaptchaEnabled(boolean captchaEnabled) {
-        this.captchaEnabled = captchaEnabled;
+    public void setAvatarEnabled(boolean avatarEnabled) {
+        this.avatarEnabled = avatarEnabled;
     }
     
     public void setValidated(boolean validated) {
