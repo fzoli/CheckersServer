@@ -1,5 +1,7 @@
 package org.dyndns.fzoli.mill.client.model;
 
+import java.io.ByteArrayOutputStream;
+import org.dyndns.fzoli.http.CountingListener;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerAvatarKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarData;
@@ -18,6 +20,14 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         super(connection, ModelKeys.PLAYER_AVATAR, PlayerAvatarEvent.class, PlayerAvatarData.class);
     }
     
+    public int setAvatar(ByteArrayOutputStream stream, CountingListener l) {
+        return setImage(stream, createSetAvatarRequest(), l);
+    }
+    
+    public void setAvatar(ByteArrayOutputStream stream, ModelActionListener<Integer> callback, CountingListener l) {
+        setImage(stream, createSetAvatarRequest(), callback, l);
+    }
+    
     public int setAvatarAttrs(int x, int y, int scale) {
         return setProperty(createSetAvatarAttrsRequest(x, y, scale));
     }
@@ -32,6 +42,10 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     
     public void removeAvatar(ModelActionListener<Integer> callback) {
         askModel(createRemoveAvatarRequest(), callback);
+    }
+    
+    private RequestMap createSetAvatarRequest() {
+        return new RequestMap().setFirst(KEY_REQUEST, REQ_SET_AVATAR);
     }
     
     private RequestMap createSetAvatarAttrsRequest(int x, int y, int scale) {
