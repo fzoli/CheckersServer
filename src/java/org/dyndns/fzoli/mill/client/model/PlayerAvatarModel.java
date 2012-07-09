@@ -5,6 +5,7 @@ import org.dyndns.fzoli.mill.common.key.PlayerAvatarKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarEvent;
 import org.dyndns.fzoli.mvc.client.connection.Connection;
+import org.dyndns.fzoli.mvc.client.event.ModelActionListener;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 
 /**
@@ -17,7 +18,31 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         super(connection, ModelKeys.PLAYER_AVATAR, PlayerAvatarEvent.class, PlayerAvatarData.class);
     }
     
-    private RequestMap createAvatarRemoveRequest() {
+    public int setAvatarAttrs(int x, int y, int scale) {
+        return setProperty(createSetAvatarAttrsRequest(x, y, scale));
+    }
+    
+    public void setAvatarAttrs(int x, int y, int scale, ModelActionListener<Integer> callback) {
+        setProperty(createSetAvatarAttrsRequest(x, y, scale), callback);
+    }
+    
+    public int removeAvatar() {
+        return askModel(createRemoveAvatarRequest());
+    }
+    
+    public void removeAvatar(ModelActionListener<Integer> callback) {
+        askModel(createRemoveAvatarRequest(), callback);
+    }
+    
+    private RequestMap createSetAvatarAttrsRequest(int x, int y, int scale) {
+        return new RequestMap()
+        .setFirst(KEY_REQUEST, REQ_SET_AVATAR_ATTRS)
+        .setFirst(KEY_X, Integer.toString(x))
+        .setFirst(KEY_Y, Integer.toString(y))
+        .setFirst(KEY_SCALE, Integer.toString(scale));
+    }
+    
+    private RequestMap createRemoveAvatarRequest() {
         return new RequestMap()
         .setFirst(KEY_REQUEST, REQ_REMOVE_AVATAR);
     }
