@@ -58,7 +58,18 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         callOnPlayerChanged(getPlayer(), PlayerChangeType.AVATAR_CHANGE);
         return PlayerAvatarReturn.OK;
     }
-
+    
+    private PlayerAvatarReturn removeAvatar() {
+        String name = getPlayerName();
+        if (name == null) return PlayerAvatarReturn.NOT_OK;
+        PlayerAvatar avatar = DAO.getPlayerAvatar(name);
+        if (avatar == null) return PlayerAvatarReturn.OK;
+        avatar.reset();
+        DAO.save(avatar);
+        callOnPlayerChanged(getPlayer(), PlayerChangeType.AVATAR_CHANGE);
+        return PlayerAvatarReturn.OK;
+    }
+    
     public static boolean isEventImportant(Player me, Player p) {
         if (me != null && me != p) {
             if ((p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
@@ -145,6 +156,15 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         PlayerAvatar a = getPlayerAvatar();
         if (a == null) return new PlayerAvatarData(getPlayerName());
         else return new PlayerAvatarData(getPlayerName(), a.getTopLeftPoint().getX(), a.getTopLeftPoint().getY(), a.getScale());
+    }
+
+    @Override
+    protected int askModel(HttpServletRequest hsr, RequestMap rm) {
+        String action = rm.getFirst(KEY_REQUEST);
+        if (action != null) {
+            if (action.equals(REQ_REMOVE_AVATAR)) return removeAvatar().ordinal();
+        }
+        return PlayerAvatarReturn.NOT_OK.ordinal();
     }
     
     @Override
