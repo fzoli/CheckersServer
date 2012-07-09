@@ -279,7 +279,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     private void onAvatarEnabled(boolean enabled) {
-        //TODO
+        commonPlayer = ConvertUtil.createPlayer(this);
+        addEvent(new PlayerEvent(commonPlayer, enabled ? PlayerEvent.PlayerEventType.AVATAR_ENABLE : PlayerEvent.PlayerEventType.AVATAR_DISABLE));
     }
     
     private void addSuspendEvent(Player p, boolean suspend) {
