@@ -23,7 +23,7 @@ public class Player implements Serializable {
     
     private int permission = 0, activePermission = 0;
     
-    private boolean validated = false;
+    private boolean validated = false, captchaEnabled = true;
     
     @Column(nullable = false)
     private String playerName, password, email;
@@ -106,6 +106,10 @@ public class Player implements Serializable {
             }
         }
         return false;
+    }
+
+    public boolean isCaptchaEnabled() {
+        return captchaEnabled;
     }
     
     public boolean isValidated() {
@@ -222,6 +226,10 @@ public class Player implements Serializable {
     public void setActivePermissionMask(int permission) {
         if (hasPermission(false, Permission.SHIELD_MODE)) permission = Permissions.incPermission(permission, Permission.SHIELD_MODE); // ha van shield_mode joga, aktívvá kell tenni minden esetben
         this.activePermission = permission;
+    }
+
+    public void setCaptchaEnabled(boolean captchaEnabled) {
+        this.captchaEnabled = captchaEnabled;
     }
     
     public void setValidated(boolean validated) {

@@ -248,6 +248,12 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             case AVATAR_CHANGE:
                 onAvatarChange(p);
                 break;
+            case AVATAR_ENABLE:
+                onAvatarEnabled(true);
+                break;
+            case AVATAR_DISABLE:
+                onAvatarEnabled(false);
+                break;
         }
     }
     
@@ -270,6 +276,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     private void onUnsuspend(Player p) {
         commonPlayer = ConvertUtil.createPlayer(this);
         addSuspendEvent(p, false);
+    }
+    
+    private void onAvatarEnabled(boolean enabled) {
+        //TODO
     }
     
     private void addSuspendEvent(Player p, boolean suspend) {

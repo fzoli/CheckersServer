@@ -33,6 +33,15 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     private Integer scale;
     private Point point;
     
+    private PlayerAvatarReturn setAvatarEnabled(boolean enabled) {
+        Player p = getPlayer();
+        if (p == null) return PlayerAvatarReturn.NOT_OK;
+        p.setCaptchaEnabled(enabled);
+        PDAO.save(p);
+        callOnPlayerChanged(p, enabled ? PlayerChangeType.AVATAR_ENABLE : PlayerChangeType.AVATAR_DISABLE);
+        return PlayerAvatarReturn.OK;
+    }
+    
     private PlayerAvatarReturn setAvatarAttrs(int x, int y, int scale) {
         if (x < 0 || y < 0 || scale < 0) return PlayerAvatarReturn.NOT_OK;
         this.scale = scale;
@@ -146,7 +155,9 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     protected int setImage(RenderedImage img, HttpServletRequest servletRequest, RequestMap request) {
         String action = request.getFirst(KEY_REQUEST);
         if (action != null) {
-            if (action.equals(REQ_SET_AVATAR)) return setAvatar((BufferedImage)img).ordinal();
+            if (action.equals(REQ_SET_AVATAR)) {
+                return setAvatar((BufferedImage)img).ordinal();
+            }
         }
         return PlayerAvatarReturn.NOT_OK.ordinal();
     }
@@ -154,8 +165,10 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     @Override
     protected PlayerAvatarData getProperties(HttpServletRequest hsr, RequestMap rm) {
         PlayerAvatar a = getPlayerAvatar();
-        if (a == null) return new PlayerAvatarData(getPlayerName());
-        else return new PlayerAvatarData(getPlayerName(), a.getTopLeftPoint().getX(), a.getTopLeftPoint().getY(), a.getScale());
+        Player p = getPlayer();
+        boolean captchaEnabled = p == null ? false : p.isCaptchaEnabled();
+        if (a == null) return new PlayerAvatarData(getPlayerName(), captchaEnabled);
+        else return new PlayerAvatarData(getPlayerName(), a.getTopLeftPoint().getX(), a.getTopLeftPoint().getY(), a.getScale(), captchaEnabled);
     }
 
     @Override
@@ -171,6 +184,10 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
     protected int setProperty(HttpServletRequest hsr, RequestMap rm) {
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
+            if (action.equals(REQ_SET_AVATAR)) {
+                String enable = rm.getFirst(KEY_ENABLE);
+                if (enable != null) return setAvatarEnabled(Boolean.parseBoolean(enable)).ordinal();
+            }
             if (action.equals(REQ_SET_AVATAR_ATTRS)) {
                 try {
                     int x = Integer.parseInt(rm.getFirst(KEY_X));
