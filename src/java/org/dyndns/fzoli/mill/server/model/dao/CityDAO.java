@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dyndns.fzoli.mill.common.model.entity.Country;
+import org.dyndns.fzoli.mill.common.model.entity.Region;
 
 /**
  *
@@ -15,6 +16,72 @@ import org.dyndns.fzoli.mill.common.model.entity.Country;
  */
 public class CityDAO extends AbstractJdbcDAO {
 
+    private static final String ID = "ID", COUNTRY = "COUNTRY", REGION_CODE = "REGION_CODE", NAME = "NAME";
+    
+    public List<Country> getCountries() {
+        return getCountries(null, null, true);
+    }
+    
+    public Country getCountryById(String id) {
+        return getFirst(getCountries(ID, id, true));
+    }
+    
+    public Country getCountryByName(String name) {
+        return getFirst(getCountries(NAME, name, true));
+    }
+    
+    public List<Country> findCountries() {
+        return getCountries(null, null, false);
+    }
+    
+    public List<Country> findCountriesById(String id) {
+        return getCountries(ID, id, false);
+    }
+    
+    public List<Country> findCountriesByName(String name) {
+        return getCountries(NAME, name, false);
+    }
+    
+    public List<Region> getRegions() {
+        return getRegions(null, null, true);
+    }
+    
+    public Region getRegionById(String id) {
+        return getFirst(getRegions(ID, id, true));
+    }
+    
+    public List<Region> getRegionsByName(String name) {
+        return getRegions(NAME, name, true);
+    }
+    
+    public List<Region> getRegionsByCountry(String country) {
+        return getRegions(COUNTRY, country, true);
+    }
+    
+    public List<Region> getRegionsByRegionCode(String regionCode) {
+        return getRegions(REGION_CODE, regionCode, true);
+    }
+    
+    public List<Region> findRegions() {
+        return getRegions(null, null, false);
+    }
+    
+    public Region findRegionById(String id) {
+        return getFirst(getRegions(ID, id, false));
+    }
+    
+    public List<Region> findRegionsByName(String name) {
+        return getRegions(NAME, name, false);
+    }
+    
+    public List<Region> findRegionsByCountry(String country) {
+        return getRegions(COUNTRY, country, false);
+    }
+    
+    public List<Region> findRegionsByRegionCode(String regionCode) {
+        return getRegions(REGION_CODE, regionCode, false);
+    }
+    
     @Override
     protected String getUrl() {
         return "jdbc:h2:zip:" + new File("cities.h2.zip").getAbsolutePath() + "!/cities";
@@ -35,50 +102,46 @@ public class CityDAO extends AbstractJdbcDAO {
         return "";
     }
     
-    public List<Country> getCountries() {
-        return getCountries(null, null, true);
+    private List<Region> getRegions(final String column, String value, final boolean equals) {
+        return getObjects(column, value, equals, Region.class, "REGION");
     }
     
-    public Country getCountryById(String id) {
-        return getFirst(getCountries("ID", id, true));
+    private List<Country> getCountries(final String column, String value, final boolean equals) {
+        return getObjects(column, value, equals, Country.class, "COUNTRY");
     }
     
-    public Country getCountryByName(String name) {
-        return getFirst(getCountries("NAME", name, true));
-    }
-    
-    public List<Country> findCountries() {
-        return getCountries(null, null, false);
-    }
-    
-    public List<Country> findCountriesById(String id) {
-        return getCountries("ID", id, false);
-    }
-    
-    public List<Country> findCountriesByName(String name) {
-        return getCountries("NAME", name, false);
-    }
-    
-    private List<Country> getCountries(String column, String value, boolean equals) {
-        List<Country> l = new ArrayList<Country>();
-        if (!(column.equals("ID") || column.equals("NAME"))) return l;
+    private <T> List<T> getObjects(final String column, String value, final boolean equals, final Class<T> clazz, final String from) {
+        final List<T> l = new ArrayList<T>();
         value = StringEscapeUtils.escapeSql(value);
+        String sql = "SELECT * FROM " + from;
+        if (value != null) {
+            if (equals) sql += " WHERE UPPER(" + column + ") = '" + value.toUpperCase() + "'";
+            else sql += " WHERE LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
+        }
         try {
-            String sql = "SELECT * FROM COUNTRY";
-            if (column != null && value != null) {
-                if (equals) sql += " WHERE UPPER(" + column + ") = '" + value.toUpperCase() + "'";
-                else sql += " WHERE LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
-            }
-            Statement statement = getConnection().createStatement();
-            ResultSet results = statement.executeQuery(sql);
+            final Statement statement = getConnection().createStatement();
+            final ResultSet results = statement.executeQuery(sql);
             while (results.next()) {
-                l.add(new Country(results.getString("ID"), results.getString("NAME")));
+                l.add(createObject(results, clazz));
             }
+            results.close();
+            statement.close();
+        }
+        catch(SQLException ex) {
+            ex.printStackTrace();
+        }
+        return l;
+    }
+    
+    private static <T> T createObject(ResultSet results, Class<T> clazz) {
+        try {
+            if (clazz.equals(Country.class)) return (T) new Country(results.getString(ID), results.getString(NAME));
+            if (clazz.equals(Region.class)) return (T) new Region(Long.parseLong(results.getString(ID)), results.getString(COUNTRY), results.getString(REGION_CODE), results.getString(NAME));
         }
         catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return l;
+        return null;
     }
     
     private static <T> T getFirst(List<T> l) {
