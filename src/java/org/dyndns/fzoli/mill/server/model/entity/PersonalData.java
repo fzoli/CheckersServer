@@ -14,7 +14,7 @@ public class PersonalData implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    private boolean inverseName = true;
+    private boolean inverseName = false;
     
     private String firstName, lastName, country, region, city;
 
@@ -37,7 +37,7 @@ public class PersonalData implements Serializable {
     
     public String getName() {
         return getFirstName() == null || getLastName() == null ? null :
-               (isInverseName() ? getFirstName() + " " + getLastName() : getLastName() + " " + getFirstName()).trim();
+               (!isInverseName() ? getFirstName() + " " + getLastName() : getLastName() + " " + getFirstName()).trim();
     }
     
     public String getFirstName() {

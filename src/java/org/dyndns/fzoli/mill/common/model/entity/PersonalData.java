@@ -26,7 +26,7 @@ public class PersonalData {
 
     public String getName() {
         return getFirstName() == null || getLastName() == null ? null :
-               (isInverseName() ? getFirstName() + " " + getLastName() : getLastName() + " " + getFirstName()).trim();
+               (!isInverseName() ? getFirstName() + " " + getLastName() : getLastName() + " " + getFirstName()).trim();
     }
     
     public String getFirstName() {
