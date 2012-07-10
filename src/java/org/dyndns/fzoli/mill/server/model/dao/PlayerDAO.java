@@ -11,7 +11,7 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  *
  * @author zoli
  */
-public class PlayerDAO extends AbstractDAO {
+public class PlayerDAO extends AbstractObjectDAO {
     
     public Player getPlayer(String name) {
         if (name == null) return null;

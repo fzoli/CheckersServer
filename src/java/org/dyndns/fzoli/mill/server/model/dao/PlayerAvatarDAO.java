@@ -8,7 +8,7 @@ import org.dyndns.fzoli.mill.server.model.entity.PlayerAvatar;
  *
  * @author zoli
  */
-public class PlayerAvatarDAO extends AbstractDAO {
+public class PlayerAvatarDAO extends AbstractObjectDAO {
 
     @Override
     protected String getPath() {

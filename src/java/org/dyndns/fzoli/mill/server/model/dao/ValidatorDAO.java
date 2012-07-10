@@ -8,7 +8,7 @@ import org.dyndns.fzoli.mill.server.model.entity.Validator;
  *
  * @author zoli
  */
-public class ValidatorDAO extends AbstractDAO {
+public class ValidatorDAO extends AbstractObjectDAO {
 
     public Validator getValidator(String key) {
         if (key == null) return null;
