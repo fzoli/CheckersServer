@@ -98,7 +98,11 @@ public class ValidatorServlet extends HttpServlet {
             }
             
         }).start();
-        return new ValidatorInfo(add ? ValidatorInfo.Return.VALIDATED : ValidatorInfo.Return.REMOVED, key, p.getName());
+        return new ValidatorInfo(add ? ValidatorInfo.Return.VALIDATED : ValidatorInfo.Return.REMOVED, key, getName(p));
+    }
+    
+    private static String getName(Player player) {
+        return player == null ? null : player.getPersonalData() == null ? player.getPlayerName() : player.getPersonalData().getFirstName() == null ? player.getName() : player.getPersonalData().getFirstName();
     }
     
     public static String getEmailValidationSubject(HttpServletRequest hsr) {
@@ -113,10 +117,12 @@ public class ValidatorServlet extends HttpServlet {
         String url = host + MillServletURL.VALIDATOR + "?" + LanguageServlet.KEY_LANG + "=" + res.getLanguage() + keyParam + AMP + KEY_ACTION + "=";
         String validationUrl = url + ValidatorServlet.ACTION_VALIDATE;
         String invalidationUrl = url + ValidatorServlet.ACTION_INVALIDATE;
+        String name = getName(player);
+        if (name == null) name = res.getUser();
         String out = readFileAsString(res.getResourceFile("validator-email.xhtml"))
         .replace("${css}", readFileAsString(res.getResourceFile("validator-email.css")))
         .replace("${subject}", res.getEmailValidation())
-        .replace("${user}", player == null ? res.getUser() : player.getName())
+        .replace("${user}", name)
         .replace("${host}", host)
         .replace("${validation-url}", validationUrl)
         .replace("${invalidation-url}", invalidationUrl)

@@ -2,7 +2,7 @@
 <resources>
     <string name="hello_world">Helló Világ!</string>
     <string name="email_validation">E-mail cím érvényesítés</string>
-    <string name="dear">Tisztelt</string>
+    <string name="dear">Kedves</string>
     <string name="user">felhasználó</string>
     <string name="dear_close">!</string>
     <string name="successful_email_validation">Sikeresen érvényesítette e-mail címét.</string>
