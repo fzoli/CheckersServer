@@ -38,13 +38,9 @@ public class CityDAO extends AbstractJdbcDAO {
         return getFirst(getCountries(NAME, name, true));
     }
     
-    public List<Country> findCountries() {
-        return getCountries(null, null, false);
-    }
-    
-    public List<Country> findCountriesById(String id) {
-        return getCountries(ID, id, false);
-    }
+//    public List<Country> findCountriesById(String id) {
+//        return getCountries(ID, id, false);
+//    }
     
     public List<Country> findCountriesByName(String name) {
         return getCountries(NAME, name, false);
@@ -74,13 +70,9 @@ public class CityDAO extends AbstractJdbcDAO {
         return getRegions(REGION_CODE, regionCode, true);
     }
     
-    public List<Region> findRegions() {
-        return getRegions(null, null, false);
-    }
-    
-    public List<Region> findRegionsById(String id) {
-        return getRegions(ID, id, false);
-    }
+//    public List<Region> findRegionsById(String id) {
+//        return getRegions(ID, id, false);
+//    }
     
     public List<Region> findRegionsByName(String name) {
         return getRegions(NAME, name, false);
@@ -90,9 +82,9 @@ public class CityDAO extends AbstractJdbcDAO {
         return getRegions(COUNTRY, country, false);
     }
     
-    public List<Region> findRegionsByRegionCode(String regionCode) {
-        return getRegions(REGION_CODE, regionCode, false);
-    }
+//    public List<Region> findRegionsByRegionCode(String regionCode) {
+//        return getRegions(REGION_CODE, regionCode, false);
+//    }
     
     public City getCityById(long id) {
         return getCityById(Long.toString(id));
@@ -114,13 +106,13 @@ public class CityDAO extends AbstractJdbcDAO {
         return getCities(NAME, ACCENT_NAME, name, true);
     }
     
-    public List<City> findCitiesById(String id) {
-        return getCities(ID, id, false);
-    }
+//    public List<City> findCitiesById(String id) {
+//        return getCities(ID, id, false);
+//    }
     
-    public List<City> findCitiesByRegionCode(String regionCode) {
-        return getCities(REGION, regionCode, false);
-    }
+//    public List<City> findCitiesByRegionCode(String regionCode) {
+//        return getCities(REGION, regionCode, false);
+//    }
     
     public List<City> findCitiesByName(String name) {
         return getCities(NAME, ACCENT_NAME, name, false);
@@ -219,8 +211,7 @@ public class CityDAO extends AbstractJdbcDAO {
     public static void main(String[] args) {
         CityDAO dao = new CityDAO();
         System.out.println(dao.getCountries());
-        System.out.println(dao.findRegionsById("1"));
-        System.out.println(dao.findCitiesByName("Budapest"));
+        System.out.println(dao.getRegionById(1));
     }
     
 }
