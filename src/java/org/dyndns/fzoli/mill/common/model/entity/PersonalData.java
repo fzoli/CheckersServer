@@ -11,6 +11,7 @@ public class PersonalData {
     private String firstName, lastName, country, region, city;
     private boolean inverseName;
     private Date birthDate;
+    private Long birth;
     private Sex sex;
 
     public PersonalData(String firstName, String lastName, boolean inverseName, Date birthDate, Sex sex, String country, String region, String city) {
@@ -22,6 +23,7 @@ public class PersonalData {
         this.inverseName = inverseName;
         this.birthDate = birthDate;
         this.sex = sex;
+        if (birthDate != null) birth = birthDate.getTime();
     }
 
     public String getName() {
