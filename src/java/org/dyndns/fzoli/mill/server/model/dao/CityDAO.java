@@ -36,25 +36,38 @@ public class CityDAO extends AbstractJdbcDAO {
     }
     
     public List<Country> getCountries() {
-        return getCountries(null, null);
+        return getCountries(null, null, true);
     }
     
-    public List<Country> getCountriesById(String id) {
-        return getCountries("ID", id);
+    public Country getCountryById(String id) {
+        return getFirst(getCountries("ID", id, true));
     }
     
-    public List<Country> getCountriesByName(String name) {
-        return getCountries("NAME", name);
+    public Country getCountryByName(String name) {
+        return getFirst(getCountries("NAME", name, true));
     }
     
-    private List<Country> getCountries(String column, String value) {
+    public List<Country> findCountries() {
+        return getCountries(null, null, false);
+    }
+    
+    public List<Country> findCountriesById(String id) {
+        return getCountries("ID", id, false);
+    }
+    
+    public List<Country> findCountriesByName(String name) {
+        return getCountries("NAME", name, false);
+    }
+    
+    private List<Country> getCountries(String column, String value, boolean equals) {
         List<Country> l = new ArrayList<Country>();
         if (!(column.equals("ID") || column.equals("NAME"))) return l;
         value = StringEscapeUtils.escapeSql(value);
         try {
             String sql = "SELECT * FROM COUNTRY";
             if (column != null && value != null) {
-                sql += " WHERE UPPER(" + column + ") = '" + value.toUpperCase() + "'";
+                if (equals) sql += " WHERE UPPER(" + column + ") = '" + value.toUpperCase() + "'";
+                else sql += " WHERE LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
             }
             Statement statement = getConnection().createStatement();
             ResultSet results = statement.executeQuery(sql);
@@ -66,6 +79,11 @@ public class CityDAO extends AbstractJdbcDAO {
             ex.printStackTrace();
         }
         return l;
+    }
+    
+    private static <T> T getFirst(List<T> l) {
+        if (l == null || l.isEmpty()) return null;
+        return l.get(0);
     }
     
 }

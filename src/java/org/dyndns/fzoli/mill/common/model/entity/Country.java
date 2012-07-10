@@ -9,8 +9,8 @@ public class Country {
     private final String ID, NAME;
 
     public Country(String id, String name) {
-        this.ID = id;
-        this.NAME = name;
+        ID = id;
+        NAME = name;
     }
 
     public String getID() {
