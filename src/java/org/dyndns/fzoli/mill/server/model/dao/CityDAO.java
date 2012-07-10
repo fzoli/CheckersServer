@@ -114,23 +114,27 @@ public class CityDAO extends AbstractJdbcDAO {
         return "";
     }
     
-    private List<City> getCities(final String column, String value, final boolean equals) {
-        return getObjects(column, null, value, equals, City.class, "CITY");
+    private List<City> getCities(final String column, final String value, final boolean equals) {
+        return getCities(column, null, value, equals);
     }
     
-    private List<Region> getRegions(final String column, String value, final boolean equals) {
+    private List<City> getCities(final String column, final String column2, final String value, final boolean equals) {
+        return getObjects(column, column2, value, equals, City.class, "CITY");
+    }
+    
+    private List<Region> getRegions(final String column, final String value, final boolean equals) {
         return getObjects(column, null, value, equals, Region.class, "REGION");
     }
     
-    private List<Country> getCountries(final String column, String value, final boolean equals) {
+    private List<Country> getCountries(final String column, final String value, final boolean equals) {
         return getObjects(column, null, value, equals, Country.class, "COUNTRY");
     }
     
     private <T> List<T> getObjects(final String column, final String column2, String value, final boolean equals, final Class<T> clazz, final String from) {
         final List<T> l = new ArrayList<T>();
-        value = StringEscapeUtils.escapeSql(value);
         String sql = "SELECT * FROM " + from;
         if (value != null) {
+            value = StringEscapeUtils.escapeSql(value);
             if (column != null && column2 == null) {
                 sql += WHERE + createFilterString(column, value, equals);
             }
@@ -138,7 +142,8 @@ public class CityDAO extends AbstractJdbcDAO {
                 sql += WHERE + createFilterString(column2, value, equals);
             }
             else if (column != null && column2 != null) {
-                sql += WHERE + createFilterString(column, value, equals) + " OR " + createFilterString(column2, value, equals);
+                if (column.equalsIgnoreCase(column2)) sql += WHERE + createFilterString(column, value, equals);
+                else sql += WHERE + createFilterString(column, value, equals) + " OR " + createFilterString(column2, value, equals);
             }
         }
         sql += ';';
