@@ -147,6 +147,7 @@ abstract class AbstractMillModel<EventObj, PropsObj> extends JSONModel<EventObj,
         this.h = w / 4;
         wr = createRenderer();
         np = createProducer();
+        removeCaptcha();
     }
     
     protected NoiseProducer createProducer() {
