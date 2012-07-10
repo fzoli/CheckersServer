@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.dyndns.fzoli.mill.common.model.entity.City;
 import org.dyndns.fzoli.mill.common.model.entity.Country;
 import org.dyndns.fzoli.mill.common.model.entity.Region;
 
@@ -16,7 +17,7 @@ import org.dyndns.fzoli.mill.common.model.entity.Region;
  */
 public class CityDAO extends AbstractJdbcDAO {
 
-    private static final String ID = "ID", COUNTRY = "COUNTRY", REGION_CODE = "REGION_CODE", NAME = "NAME";
+    private static final String ID = "ID", COUNTRY = "COUNTRY", REGION = "REGION", REGION_CODE = "REGION_CODE", NAME = "NAME", ACCENT_NAME = "ACCENT_NAME", POPULATION = "POPULATION", LATITUDE = "LATITUDE", LONGITUDE = "LONGITUDE";
     
     public List<Country> getCountries() {
         return getCountries(null, null, true);
@@ -110,6 +111,10 @@ public class CityDAO extends AbstractJdbcDAO {
         return "";
     }
     
+    private List<City> getCities(final String column, String value, final boolean equals) {
+        return getObjects(column, value, equals, City.class, "CITY");
+    }
+    
     private List<Region> getRegions(final String column, String value, final boolean equals) {
         return getObjects(column, value, equals, Region.class, "REGION");
     }
@@ -144,7 +149,8 @@ public class CityDAO extends AbstractJdbcDAO {
     private static <T> T createObject(ResultSet results, Class<T> clazz) {
         try {
             if (clazz.equals(Country.class)) return (T) new Country(results.getString(ID), results.getString(NAME));
-            if (clazz.equals(Region.class)) return (T) new Region(Long.parseLong(results.getString(ID)), results.getString(COUNTRY), results.getString(REGION_CODE), results.getString(NAME));
+            if (clazz.equals(Region.class)) return (T) new Region(results.getLong(ID), results.getString(COUNTRY), results.getString(REGION_CODE), results.getString(NAME));
+            if (clazz.equals(City.class)) return (T) new City(results.getLong(ID), results.getLong(REGION), results.getString(NAME), results.getString(ACCENT_NAME), results.getInt(POPULATION), results.getDouble(LATITUDE), results.getDouble(LONGITUDE));
         }
         catch (SQLException ex) {
             ex.printStackTrace();
