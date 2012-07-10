@@ -11,7 +11,7 @@ public class PersonalData {
     private String firstName, lastName, country, region, city;
     private boolean inverseName;
     private Date birthDate;
-    private Long birth;
+    protected Long birth;
     private Sex sex;
 
     public PersonalData(String firstName, String lastName, boolean inverseName, Date birthDate, Sex sex, String country, String region, String city) {

@@ -13,7 +13,7 @@ public class BasePlayer {
     
     private boolean online;
     private String playerName;
-    private Long signUp, signIn;
+    protected Long signUp, signIn;
     private Date signUpDate, signInDate;
     private PersonalData personalData;
     private PlayerStatus playerStatus;
