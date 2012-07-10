@@ -67,6 +67,10 @@ public class PersonalData implements Serializable {
     public void setSex(Sex sex) {
         this.sex = sex;
     }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
     
     public void setInverseName(boolean inverseName) {
         this.inverseName = inverseName;

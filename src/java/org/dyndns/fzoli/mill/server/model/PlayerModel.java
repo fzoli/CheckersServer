@@ -7,13 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
+import org.dyndns.fzoli.mill.common.key.PersonalDataType;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
+import org.dyndns.fzoli.mill.common.model.entity.Sex;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
-import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarEvent;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
@@ -37,7 +38,9 @@ import org.dyndns.fzoli.mvc.server.model.Model;
 public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> implements PlayerKeys {
     
     public static enum SignOutType {
-        RESIGN, KICK, NORMAL
+        RESIGN,
+        KICK,
+        NORMAL
     }
     
     private final static PlayerDAO DAO = new PlayerDAO();
@@ -210,6 +213,64 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.OK;
     }
     
+    private PlayerReturn setPersonalData(PersonalDataType request, String value) {
+        if (value == null || player == null || request == null) return PlayerReturn.NULL;
+        PersonalData data = player.getPersonalData();
+        PlayerReturn ret = PlayerReturn.NOT_OK;
+        try {
+            switch(request) {
+                case FIRST_NAME:
+                    if (InputValidator.isNameValid(value)) {
+                        data.setFirstName(value);
+                        ret = PlayerReturn.OK;
+                    }
+                    break;
+                case LAST_NAME:
+                    if (InputValidator.isNameValid(value)) {
+                        data.setLastName(value);
+                        ret = PlayerReturn.OK;
+                    }
+                    break;
+                case INVERSE_NAME:
+                    data.setInverseName(Boolean.getBoolean(value));
+                    ret = PlayerReturn.OK;
+                    break;
+                case BIRTH_DATE:
+                    Date date = new Date(Long.parseLong(value));
+                    Date now = new Date();
+                    if (!(date.after(now) || Math.abs(date.getTime() - now.getTime()) > 150 * 365.24 * 24 * 60 * 60 * 1000)) {
+                        data.setBirthDate(date);
+                        ret = PlayerReturn.OK;
+                    }
+                    break;
+                case SEX:
+                    data.setSex(Sex.valueOf(value));
+                    ret = PlayerReturn.OK;
+                    break;
+                case COUNTRY:
+                    //TODO
+                    data.setCountry(value);
+                    ret = PlayerReturn.OK;
+                    break;
+                case REGION:
+                    //TODO
+                    data.setRegion(value);
+                    ret = PlayerReturn.OK;
+                    break;
+                case CITY:
+                    //TODO
+                    data.setCity(value);
+                    ret = PlayerReturn.OK;
+                    break;
+            }
+        }
+        catch (Exception ex) {
+            ;
+        }
+        if (ret.equals(PlayerReturn.OK)) commonPlayer = ConvertUtil.createPlayer(this);
+        return ret;
+    }
+    
     private boolean isRequestWrong(String password, boolean safe) {
         return getError(password, safe) != null;
     }
@@ -361,7 +422,22 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (action != null) {
             String value = rm.getFirst(KEY_VALUE);
             if (value != null) {
+                try {
+                    PersonalDataType request = PersonalDataType.valueOf(action);
+                    setPersonalData(request, value);
+                }
+                catch (IllegalArgumentException ex) {
+                    ;
+                }
                 if (action.equals(REQ_SET_ONLINE_STATUS)) return setPlayerState(value).ordinal();
+//                if (action.equals(REQ_SET_FIRST_NAME)) return setPersonalData(PersonalDataType.FIRST_NAME, value).ordinal();
+//                if (action.equals(REQ_SET_LAST_NAME)) return setPersonalData(PersonalDataType.LAST_NAME, value).ordinal();
+//                if (action.equals(REQ_SET_INVERSE_NAME)) return setPersonalData(PersonalDataType.INVERSE_NAME, value).ordinal();
+//                if (action.equals(REQ_SET_BIRTH_DATE)) return setPersonalData(PersonalDataType.BIRTH_DATE, value).ordinal();
+//                if (action.equals(REQ_SET_SEX)) return setPersonalData(PersonalDataType.SEX, value).ordinal();
+//                if (action.equals(REQ_SET_COUNTRY)) return setPersonalData(PersonalDataType.COUNTRY, value).ordinal();
+//                if (action.equals(REQ_SET_REGION)) return setPersonalData(PersonalDataType.REGION, value).ordinal();
+//                if (action.equals(REQ_SET_CITY)) return setPersonalData(PersonalDataType.CITY, value).ordinal();
                 String passwd = rm.getFirst(KEY_PASSWORD);
                 if (passwd != null) {
                     if (action.equals(REQ_SET_EMAIL)) return setEmail(hsr, passwd, value, false).ordinal();
