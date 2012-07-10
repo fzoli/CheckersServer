@@ -5,6 +5,7 @@ package org.dyndns.fzoli.mill.common.model.entity;
  * @author zoli
  */
 public class Region {
+    
     private final long ID;
     private final String COUNTRY, REGION_CODE, NAME;
 
@@ -15,7 +16,7 @@ public class Region {
         NAME = name;
     }
 
-    public long getId() {
+    public long getID() {
         return ID;
     }
 
@@ -29,6 +30,11 @@ public class Region {
 
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + '#' + getID();
     }
     
 }

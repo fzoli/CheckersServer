@@ -23,7 +23,7 @@ public class Country {
 
     @Override
     public String toString() {
-        return getName() + "#" + getID();
+        return getName() + '#' + getID();
     }
     
 }

@@ -22,6 +22,10 @@ public class CityDAO extends AbstractJdbcDAO {
         return getCountries(null, null, true);
     }
     
+    public Country getCountryById(long id) {
+        return getCountryById(Long.toString(id));
+    }
+    
     public Country getCountryById(String id) {
         return getFirst(getCountries(ID, id, true));
     }
@@ -44,6 +48,10 @@ public class CityDAO extends AbstractJdbcDAO {
     
     public List<Region> getRegions() {
         return getRegions(null, null, true);
+    }
+    
+    public Region getRegionById(long id) {
+        return getRegionById(Long.toString(id));
     }
     
     public Region getRegionById(String id) {
@@ -147,6 +155,12 @@ public class CityDAO extends AbstractJdbcDAO {
     private static <T> T getFirst(List<T> l) {
         if (l == null || l.isEmpty()) return null;
         return l.get(0);
+    }
+    
+    public static void main(String[] args) {
+        CityDAO dao = new CityDAO();
+        System.out.println(dao.getCountries());
+        System.out.println(dao.findRegionById("1"));
     }
     
 }
