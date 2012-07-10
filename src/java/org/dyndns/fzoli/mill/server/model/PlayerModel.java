@@ -341,10 +341,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (action.equals(REQ_SIGN_IN)) return signIn(rm.getFirst(KEY_USER), rm.getFirst(KEY_PASSWORD), false).ordinal();
             if (action.equals(REQ_SAFE_SIGN_IN)) return signIn(rm.getFirst(KEY_USER), rm.getFirst(KEY_PASSWORD), true).ordinal();
             String value = rm.getFirst(KEY_VALUE);
-            String passwd = rm.getFirst(KEY_PASSWORD);
             if (value != null) {
                 if (action.equals(REQ_IS_EMAIL_FREE)) return isEmailFree(value) ? 1 : 0;
             }
+            String passwd = rm.getFirst(KEY_PASSWORD);
             if (passwd != null) {
                 if (action.equals(REQ_REVALIDATE_EMAIL)) return validateEmail(hsr, passwd, false).ordinal();
                 if (action.equals(REQ_SAFE_REVALIDATE_EMAIL)) return validateEmail(hsr, passwd, true).ordinal();
@@ -360,9 +360,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         String action = rm.getFirst(KEY_REQUEST);
         if (action != null) {
             String value = rm.getFirst(KEY_VALUE);
-            String passwd = rm.getFirst(KEY_PASSWORD);
             if (value != null) {
                 if (action.equals(REQ_SET_ONLINE_STATUS)) return setPlayerState(value).ordinal();
+                String passwd = rm.getFirst(KEY_PASSWORD);
                 if (passwd != null) {
                     if (action.equals(REQ_SET_EMAIL)) return setEmail(hsr, passwd, value, false).ordinal();
                     if (action.equals(REQ_SAFE_SET_EMAIL)) return setEmail(hsr, passwd, value, true).ordinal();
