@@ -7,6 +7,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dyndns.fzoli.mill.common.model.entity.City;
 import org.dyndns.fzoli.mill.common.model.entity.Country;
 import org.dyndns.fzoli.mill.common.model.entity.Region;
@@ -17,7 +19,8 @@ import org.dyndns.fzoli.mill.common.model.entity.Region;
  */
 public class CityDAO extends AbstractJdbcDAO {
 
-    private static final String ID = "ID", COUNTRY = "COUNTRY", REGION = "REGION", REGION_CODE = "REGION_CODE", NAME = "NAME", ACCENT_NAME = "ACCENT_NAME", POPULATION = "POPULATION", LATITUDE = "LATITUDE", LONGITUDE = "LONGITUDE";
+    private final Log LOG = LogFactory.getLog(CityDAO.class);
+    private static final String ID = "ID", COUNTRY = "COUNTRY", REGION = "REGION", REGION_CODE = "REGION_CODE", NAME = "NAME", ACCENT_NAME = "ACCENT_NAME", POPULATION = "POPULATION", LATITUDE = "LATITUDE", LONGITUDE = "LONGITUDE", WHERE = " WHERE ";
     
     public List<Country> getCountries() {
         return getCountries(null, null, true);
@@ -112,25 +115,34 @@ public class CityDAO extends AbstractJdbcDAO {
     }
     
     private List<City> getCities(final String column, String value, final boolean equals) {
-        return getObjects(column, value, equals, City.class, "CITY");
+        return getObjects(column, null, value, equals, City.class, "CITY");
     }
     
     private List<Region> getRegions(final String column, String value, final boolean equals) {
-        return getObjects(column, value, equals, Region.class, "REGION");
+        return getObjects(column, null, value, equals, Region.class, "REGION");
     }
     
     private List<Country> getCountries(final String column, String value, final boolean equals) {
-        return getObjects(column, value, equals, Country.class, "COUNTRY");
+        return getObjects(column, null, value, equals, Country.class, "COUNTRY");
     }
     
-    private <T> List<T> getObjects(final String column, String value, final boolean equals, final Class<T> clazz, final String from) {
+    private <T> List<T> getObjects(final String column, final String column2, String value, final boolean equals, final Class<T> clazz, final String from) {
         final List<T> l = new ArrayList<T>();
         value = StringEscapeUtils.escapeSql(value);
         String sql = "SELECT * FROM " + from;
         if (value != null) {
-            if (equals) sql += " WHERE UPPER(" + column + ") = '" + value.toUpperCase() + "'";
-            else sql += " WHERE LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
+            if (column != null && column2 == null) {
+                sql += WHERE + createFilterString(column, value, equals);
+            }
+            else if (column == null && column2 != null) {
+                sql += WHERE + createFilterString(column2, value, equals);
+            }
+            else if (column != null && column2 != null) {
+                sql += WHERE + createFilterString(column, value, equals) + " OR " + createFilterString(column2, value, equals);
+            }
         }
+        sql += ';';
+        LOG.info(sql);
         try {
             final Statement statement = getConnection().createStatement();
             final ResultSet results = statement.executeQuery(sql);
@@ -146,7 +158,11 @@ public class CityDAO extends AbstractJdbcDAO {
         return l;
     }
     
-    private static <T> T createObject(ResultSet results, Class<T> clazz) {
+    private static String createFilterString(final String column, final String value, final boolean equals) {
+        return equals ? "UPPER(" + column + ") = '" + value.toUpperCase() + "'" : "LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
+    }
+    
+    private static <T> T createObject(final ResultSet results, final Class<T> clazz) {
         try {
             if (clazz.equals(Country.class)) return (T) new Country(results.getString(ID), results.getString(NAME));
             if (clazz.equals(Region.class)) return (T) new Region(results.getLong(ID), results.getString(COUNTRY), results.getString(REGION_CODE), results.getString(NAME));
@@ -158,7 +174,7 @@ public class CityDAO extends AbstractJdbcDAO {
         return null;
     }
     
-    private static <T> T getFirst(List<T> l) {
+    private static <T> T getFirst(final List<T> l) {
         if (l == null || l.isEmpty()) return null;
         return l.get(0);
     }
