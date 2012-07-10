@@ -424,7 +424,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (value != null) {
                 try {
                     PersonalDataType request = PersonalDataType.valueOf(action);
-                    setPersonalData(request, value);
+                    return setPersonalData(request, value).ordinal();
                 }
                 catch (IllegalArgumentException ex) {
                     ;
