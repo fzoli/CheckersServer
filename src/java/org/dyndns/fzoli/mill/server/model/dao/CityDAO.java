@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
@@ -20,10 +19,50 @@ import org.dyndns.fzoli.mill.common.model.entity.Region;
 public class CityDAO extends AbstractJdbcDAO {
 
     private final Log LOG = LogFactory.getLog(CityDAO.class);
-    private static final String ID = "ID", COUNTRY = "COUNTRY", REGION = "REGION", REGION_CODE = "REGION_CODE", NAME = "NAME", ACCENT_NAME = "ACCENT_NAME", POPULATION = "POPULATION", LATITUDE = "LATITUDE", LONGITUDE = "LONGITUDE";
+    private static final String ID = "ID", COUNTRY = "COUNTRY", REGION = "REGION", REGION_CODE = "REGION_CODE", NAME = "NAME", ACCENT_NAME = "ACCENT_NAME", POPULATION = "POPULATION", LATITUDE = "LATITUDE", LONGITUDE = "LONGITUDE", CITY = "CITY";
 
-    public CityDAO() {
-        getConnection();
+    public Country getCountryByName(String name) {
+        return getFirst(getCountries(NAME, name, true));
+    }
+    
+    public List<Region> getRegionsByCountryId(String countryId) {
+        return getRegions(COUNTRY, countryId, true);
+    }
+    
+    public List<Region> getRegions(String countryName, String regionName) {
+        return getRegionsByCountryAndRegionName(countryName, regionName, true);
+    }
+    
+    public List<Region> getRegionsByCountryName(String countryName) {
+        Country country = getCountryByName(countryName);
+        if (country == null) return new ArrayList<Region>();
+        return getRegionsByCountryId(country.getID());
+    }
+    
+    public List<Country> findCountriesByName(String name) { // country auto complette
+        return getCountries(NAME, name, false);
+    }
+    
+    public List<Region> findRegions(String countryName, String regionName) { // region auto complette
+        return getRegionsByCountryAndRegionName(countryName, regionName, false);
+    }
+    
+    private List<Region> getRegionsByCountryAndRegionName(String countryName, String regionName, boolean equals) {
+        Country country = getCountryByName(countryName);
+        if (country == null) return new ArrayList<Region>();
+        return getObjects(new String[]{COUNTRY, NAME}, new boolean[]{true}, new String[]{country.getID(), regionName}, new boolean[]{true, equals}, Region.class, REGION);
+    }
+    
+    public List<City> findCities(String countryName, String regionName, String cityName) { // city auto complette
+        cityName = StringEscapeUtils.escapeSql(cityName).toUpperCase();
+        List<Region> regions = getRegions(countryName, regionName);
+        String sql = "SELECT * FROM CITY WHERE REGION IN(";
+        for (int i = 0; i < regions.size(); i++) {
+            sql += regions.get(i).getID();
+            if (i != regions.size() - 1) sql += ", ";
+        }
+        sql += ") AND (LOCATE('" + cityName + "', UPPER(NAME)) = 1 OR LOCATE('" + cityName + "', UPPER(ACCENT_NAME)) = 1);";
+        return getObjects(sql, City.class);
     }
     
     public List<Country> getCountries() {
@@ -36,14 +75,6 @@ public class CityDAO extends AbstractJdbcDAO {
     
     public Country getCountryById(String id) {
         return getFirst(getCountries(ID, id, true));
-    }
-    
-    public Country getCountryByName(String name) {
-        return getFirst(getCountries(NAME, name, true));
-    }
-    
-    public List<Country> findCountriesByName(String name) {
-        return getCountries(NAME, name, false);
     }
     
     public List<Region> getRegions() {
@@ -60,10 +91,6 @@ public class CityDAO extends AbstractJdbcDAO {
     
     public List<Region> getRegionsByName(String name) {
         return getRegions(NAME, name, true);
-    }
-    
-    public List<Region> getRegionsByCountryId(String countryId) {
-        return getRegions(COUNTRY, countryId, true);
     }
     
     public List<Region> getRegionsByRegionCode(String regionCode) {
@@ -127,36 +154,39 @@ public class CityDAO extends AbstractJdbcDAO {
     }
     
     private List<City> getCities(final String column, final String column2, final String value, final boolean equals) {
-        return getObjects(new String[]{column, column2}, false, value, equals, City.class, "CITY");
+        return getObjects(new String[]{column, column2}, new boolean[]{false}, new String[]{value, value}, new boolean[]{equals, equals}, City.class, CITY);
     }
     
     private List<Region> getRegions(final String column, final String value, final boolean equals) {
-        return getObjects(column, value, equals, Region.class, "REGION");
+        return getObjects(column, value, equals, Region.class, REGION);
     }
     
     private List<Country> getCountries(final String column, final String value, final boolean equals) {
-        return getObjects(column, value, equals, Country.class, "COUNTRY");
+        return getObjects(column, value, equals, Country.class, COUNTRY);
     }
     
     private <T> List<T> getObjects(final String column, String value, final boolean equals, final Class<T> clazz, final String from) {
-        return getObjects(new String[]{column}, false, value, equals, clazz, from);
+        return getObjects(new String[]{column}, new boolean[]{false}, new String[]{value}, new boolean[]{equals}, clazz, from);
     }
     
-    private <T> List<T> getObjects(final String[] columns, final boolean and, String value, final boolean equals, final Class<T> clazz, final String from) {
-        final List<T> l = new ArrayList<T>();
+    private <T> List<T> getObjects(final String[] columns, final boolean[] ands, String[] values, final boolean[] equals, final Class<T> clazz, final String from) {
         String sql = "SELECT * FROM " + from;
-        if (value != null) {
+        if (values != null) {
             sql += " WHERE ";
-            final String LOGIC = " " + (and ? "AND" : "OR") + " ";
-            value = StringEscapeUtils.escapeSql(value);
-            for (String column : columns) {
-                sql += equals ? "UPPER(" + column + ") = '" + value.toUpperCase() + "'" : "LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
-                sql += LOGIC;
+            final int lastIndex = columns.length - 1;
+            for (int i = 0; i <= lastIndex; i++) {
+                String value = StringEscapeUtils.escapeSql(values[i]);
+                sql += equals[i] ? "UPPER(" + columns[i] + ") = '" + value.toUpperCase() + "'" : "LOCATE('" + value.toUpperCase() + "', UPPER(" + columns[i] + ")) = 1";
+                if (i != lastIndex) sql += " " + (ands[i] ? "AND" : "OR") + " ";
             }
-            sql = sql.substring(0, sql.length() - LOGIC.length());
         }
         sql += ';';
         LOG.info(sql);
+        return getObjects(sql, clazz);
+    }
+    
+    private <T> List<T> getObjects(final String sql, final Class<T> clazz) {
+        final List<T> l = new ArrayList<T>();
         try {
             final Statement statement = getConnection().createStatement();
             final ResultSet results = statement.executeQuery(sql);
@@ -184,13 +214,7 @@ public class CityDAO extends AbstractJdbcDAO {
     public static void main(String[] args) {
         System.out.println("Test started");
         CityDAO dao = new CityDAO();
-        Date start = new Date();
-        List<City> cl = dao.getCitiesByName("Pilis");
-        for (City c : cl) {
-            Region r = dao.getRegionById(c.getRegion());
-            System.out.println(c.getAccentName() + ", " + r.getName() + ", " + dao.getCountryById(r.getCountryID()));
-        }
-        System.out.println("finished in "+(new Date().getTime() - start.getTime())+" ms");
+        System.out.println(dao.findCities("Hungary", "Pest", "Bu"));
     }
     
 }
