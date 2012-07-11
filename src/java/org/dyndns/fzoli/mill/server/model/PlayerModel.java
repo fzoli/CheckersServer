@@ -19,6 +19,7 @@ import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mill.common.permission.Permission;
 import org.dyndns.fzoli.mill.common.permission.Permissions;
+import org.dyndns.fzoli.mill.server.model.dao.CityDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
@@ -43,6 +44,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         NORMAL
     }
     
+    private final static CityDAO CDAO = new CityDAO();
     private final static PlayerDAO DAO = new PlayerDAO();
     private final static ValidatorDAO VDAO = new ValidatorDAO();
     private final static PlayerAvatarDAO ADAO = new PlayerAvatarDAO();
@@ -248,19 +250,24 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                     ret = PlayerReturn.OK;
                     break;
                 case COUNTRY:
-                    //TODO
-                    data.setCountry(value);
-                    ret = PlayerReturn.OK;
+                    if (CDAO.getCountryByName(value) != null) {
+                        data.setCountry(value);
+                        ret = PlayerReturn.OK;
+                    }
                     break;
                 case REGION:
-                    //TODO
-                    data.setRegion(value);
-                    ret = PlayerReturn.OK;
+                    String country = data.getCountry();
+                    if (country != null && !CDAO.getRegions(country, value).isEmpty()) {
+                        data.setRegion(value);
+                        ret = PlayerReturn.OK;
+                    }
                     break;
                 case CITY:
-                    //TODO
-                    data.setCity(value);
-                    ret = PlayerReturn.OK;
+                    String region = data.getRegion();
+                    if (region != null && !CDAO.getCities(data.getCountry(), region, value).isEmpty()) {
+                        data.setCity(value);
+                        ret = PlayerReturn.OK;
+                    }
                     break;
             }
         }

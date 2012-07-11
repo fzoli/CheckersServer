@@ -39,6 +39,10 @@ public class CityDAO extends AbstractJdbcDAO {
         return getRegionsByCountryId(country.getID());
     }
     
+    public List<City> getCities(String countryName, String regionName, String cityName) {
+        return getCities(countryName, regionName, cityName, true);
+    }
+    
     public List<Country> findCountriesByName(String name) { // country auto complette
         return getCountries(NAME, name, false);
     }
@@ -48,15 +52,7 @@ public class CityDAO extends AbstractJdbcDAO {
     }
     
     public List<City> findCities(String countryName, String regionName, String cityName) { // city auto complette
-        cityName = StringEscapeUtils.escapeSql(cityName).toUpperCase();
-        List<Region> regions = getRegions(countryName, regionName);
-        String sql = "SELECT * FROM CITY WHERE REGION IN(";
-        for (int i = 0; i < regions.size(); i++) {
-            sql += regions.get(i).getID();
-            if (i != regions.size() - 1) sql += ", ";
-        }
-        sql += ") AND (LOCATE('" + cityName + "', UPPER(NAME)) = 1 OR LOCATE('" + cityName + "', UPPER(ACCENT_NAME)) = 1);";
-        return getObjects(sql, City.class);
+        return getCities(countryName, regionName, cityName, false);
     }
     
     @Override
@@ -77,6 +73,18 @@ public class CityDAO extends AbstractJdbcDAO {
     @Override
     protected String getPassword() {
         return "";
+    }
+    
+    private List<City> getCities(String countryName, String regionName, String cityName, boolean equals) {
+        cityName = StringEscapeUtils.escapeSql(cityName).toUpperCase();
+        List<Region> regions = getRegions(countryName, regionName);
+        String sql = "SELECT * FROM " + CITY + " WHERE REGION IN(";
+        for (int i = 0; i < regions.size(); i++) {
+            sql += regions.get(i).getID();
+            if (i != regions.size() - 1) sql += ", ";
+        }
+        sql += ") AND (" + (equals ? "UPPER(" + NAME + ") = '" + cityName + "' OR UPPER(" + ACCENT_NAME + ") = '" + cityName + "'" : "LOCATE('" + cityName + "', UPPER(" + NAME + ")) = 1 OR LOCATE('" + cityName + "', UPPER(" + ACCENT_NAME + ")) = 1") + ");";
+        return getObjects(sql, City.class);
     }
     
     private List<Region> getRegionsByCountryAndRegionName(String countryName, String regionName, boolean equals) {
