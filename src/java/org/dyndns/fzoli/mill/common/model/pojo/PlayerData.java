@@ -10,9 +10,11 @@ import org.dyndns.fzoli.mill.common.model.entity.Player;
  */
 public class PlayerData extends BaseOnlinePojo implements BaseCaptchaPojo {
 
+    private static String NULL_STRING = null;
+    
     private Player player;
-    private int captchaWidth;
-    private boolean captchaValidated;
+    private Integer captchaWidth;
+    private Boolean captchaValidated;
     
     private BasePlayer askedPlayer;
     private PlayerList askedPlayerList;
@@ -27,13 +29,13 @@ public class PlayerData extends BaseOnlinePojo implements BaseCaptchaPojo {
     }
     
     public PlayerData(BasePlayer askedPlayer, PlayerList askedPlayerList) {
-        super("");
+        super(NULL_STRING);
         this.askedPlayer = askedPlayer;
         this.askedPlayerList = askedPlayerList;
     }
     
     public PlayerData(List<String> places) {
-        super("");
+        super(NULL_STRING);
         this.places = places;
     }
     
