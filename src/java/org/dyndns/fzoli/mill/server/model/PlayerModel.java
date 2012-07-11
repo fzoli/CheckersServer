@@ -6,9 +6,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
-import org.dyndns.fzoli.location.entity.City;
-import org.dyndns.fzoli.location.entity.Country;
-import org.dyndns.fzoli.location.entity.Region;
+import org.dyndns.fzoli.location.entity.Location;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PersonalDataType;
@@ -468,9 +466,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         String value = rm.getFirst(KEY_VALUE);
         if (player != null && value != null) {
             PersonalData data = player.getPersonalData();
-            if (value.equals(REQ_GET_COUNTRIES)) return new PlayerData(createList(CDAO.findCountriesByName(value), Country.class));
-            if (value.equals(REQ_GET_REGIONS)) return new PlayerData(createList(CDAO.findRegions(data.getCountry(), value), Region.class));
-            if (value.equals(REQ_GET_CITIES)) return new PlayerData(createList(CDAO.findCities(data.getCountry(), data.getRegion(), value), City.class));
+            if (value.equals(REQ_GET_COUNTRIES)) return new PlayerData(createList(CDAO.findCountriesByName(value)));
+            if (value.equals(REQ_GET_REGIONS)) return new PlayerData(createList(CDAO.findRegions(data.getCountry(), value)));
+            if (value.equals(REQ_GET_CITIES)) return new PlayerData(createList(CDAO.findCities(data.getCountry(), data.getRegion(), value)));
         }
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
     }
@@ -479,25 +477,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         signOut(SignOutType.NORMAL);
     }
     
-    private static <T> List<String> createList(List<T> l, Class<T> clazz) {
+    private static List<String> createList(List<? extends Location> l) {
         List<String> ls = new ArrayList<String>();
-        if (clazz.equals(Country.class)) {
-            for (T o : l) {
-                Country c = (Country) o;
-                ls.add(c.getName());
-            }
-        }
-        if (clazz.equals(Region.class)) {
-            for (T o : l) {
-                Region r = (Region) o;
-                ls.add(r.getName());
-            }
-        }
-        if (clazz.equals(City.class)) {
-            for (T o : l) {
-                City c = (City) o;
-                ls.add(c.getAccentName());
-            }
+        for (Location o : l) {
+            ls.add(o.getDisplay());
         }
         return ls;
     }

@@ -4,8 +4,8 @@ package org.dyndns.fzoli.location.entity;
  *
  * @author zoli
  */
-public interface Location {
+public abstract class Location {
     
-    String getDisplay();
+    public abstract String getDisplay();
     
 }

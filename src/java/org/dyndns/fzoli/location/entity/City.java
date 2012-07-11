@@ -4,7 +4,7 @@ package org.dyndns.fzoli.location.entity;
  *
  * @author zoli
  */
-public class City implements Location {
+public class City extends Location {
     
     private final long ID, REGION;
     private final double LATITUDE, LONGITUDE;
