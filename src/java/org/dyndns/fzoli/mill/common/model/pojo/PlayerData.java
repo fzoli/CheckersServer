@@ -53,6 +53,10 @@ public class PlayerData extends BaseOnlinePojo implements BaseCaptchaPojo {
     public PlayerList getAskedPlayerList() {
         return askedPlayerList;
     }
+
+    public List<String> getPlaces() {
+        return places;
+    }
     
     public Player getPlayer() {
         return player;
