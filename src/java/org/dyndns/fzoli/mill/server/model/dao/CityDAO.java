@@ -150,7 +150,7 @@ public class CityDAO extends AbstractJdbcDAO {
             final String LOGIC = " " + (and ? "AND" : "OR") + " ";
             value = StringEscapeUtils.escapeSql(value);
             for (String column : columns) {
-                sql += createFilterString(column, value, equals);
+                sql += equals ? "UPPER(" + column + ") = '" + value.toUpperCase() + "'" : "LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
                 sql += LOGIC;
             }
             sql = sql.substring(0, sql.length() - LOGIC.length());
@@ -161,7 +161,11 @@ public class CityDAO extends AbstractJdbcDAO {
             final Statement statement = getConnection().createStatement();
             final ResultSet results = statement.executeQuery(sql);
             while (results.next()) {
-                l.add(createObject(results, clazz));
+                Object o = null;
+                if (clazz.equals(Country.class)) o = new Country(results.getString(ID), results.getString(NAME));
+                if (clazz.equals(Region.class)) o = new Region(results.getLong(ID), results.getString(COUNTRY), results.getString(REGION_CODE), results.getString(NAME));
+                if (clazz.equals(City.class)) o = new City(results.getLong(ID), results.getLong(REGION), results.getString(NAME), results.getString(ACCENT_NAME), results.getInt(POPULATION), results.getDouble(LATITUDE), results.getDouble(LONGITUDE));
+                if (o != null) l.add((T)o);
             }
             results.close();
             statement.close();
@@ -170,22 +174,6 @@ public class CityDAO extends AbstractJdbcDAO {
             ex.printStackTrace();
         }
         return l;
-    }
-    
-    private static String createFilterString(final String column, final String value, final boolean equals) {
-        return equals ? "UPPER(" + column + ") = '" + value.toUpperCase() + "'" : "LOCATE('" + value.toUpperCase() + "', UPPER(" + column + ")) = 1";
-    }
-    
-    private static <T> T createObject(final ResultSet results, final Class<T> clazz) {
-        try {
-            if (clazz.equals(Country.class)) return (T) new Country(results.getString(ID), results.getString(NAME));
-            if (clazz.equals(Region.class)) return (T) new Region(results.getLong(ID), results.getString(COUNTRY), results.getString(REGION_CODE), results.getString(NAME));
-            if (clazz.equals(City.class)) return (T) new City(results.getLong(ID), results.getLong(REGION), results.getString(NAME), results.getString(ACCENT_NAME), results.getInt(POPULATION), results.getDouble(LATITUDE), results.getDouble(LONGITUDE));
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return null;
     }
     
     private static <T> T getFirst(final List<T> l) {
