@@ -20,7 +20,7 @@ public class Region {
         return ID;
     }
 
-    public String getCountry() {
+    public String getCountryID() {
         return COUNTRY;
     }
 
