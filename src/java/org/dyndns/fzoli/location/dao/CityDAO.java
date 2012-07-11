@@ -23,7 +23,7 @@ public abstract class CityDAO extends AbstractJdbcDAO {
     private static final String ID = "ID", COUNTRY = "COUNTRY", REGION = "REGION", REGION_CODE = "REGION_CODE", NAME = "NAME", ACCENT_NAME = "ACCENT_NAME", POPULATION = "POPULATION", LATITUDE = "LATITUDE", LONGITUDE = "LONGITUDE", CITY = "CITY";
 
     public Country getCountryByName(String name) {
-        if (name == null) return null;
+        if (name == null || name.isEmpty()) return null;
         return getFirst(getCountries(NAME, name, true));
     }
     
@@ -46,7 +46,7 @@ public abstract class CityDAO extends AbstractJdbcDAO {
     }
     
     public List<Country> findCountriesByName(String name) { // country auto complette
-        if (name == null) return new ArrayList<Country>();
+        if (name == null || name.isEmpty()) return new ArrayList<Country>();
         return getCountries(NAME, name, false);
     }
     
