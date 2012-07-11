@@ -281,7 +281,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
         if (ret.equals(PlayerReturn.OK)) {
             commonPlayer = ConvertUtil.createPlayer(this);
-            //TODO: eseményjelzés
+            callOnPlayerChanged(player, PlayerChangeType.PERSONAL_DATA);
         }
         return ret;
     }
@@ -330,12 +330,21 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             case AVATAR_DISABLE:
                 onAvatarEnabled(false);
                 break;
+            case PERSONAL_DATA:
+                onPersonalDataChanged(p);
+                break;
         }
     }
     
     public void onValidate(boolean add) {
         commonPlayer = ConvertUtil.createPlayer(this);
         addEvent(new PlayerEvent(commonPlayer, add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
+    }
+    
+    private void onPersonalDataChanged(Player p) {
+        if (player != p) {
+            addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.PERSONAL_DATA_CHANGE));
+        }
     }
     
     private void onAvatarChange(Player p) {
