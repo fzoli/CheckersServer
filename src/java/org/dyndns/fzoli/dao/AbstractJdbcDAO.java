@@ -1,4 +1,4 @@
-package org.dyndns.fzoli.mill.server.model.dao;
+package org.dyndns.fzoli.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @author zoli
  */
-abstract class AbstractJdbcDAO {
+public abstract class AbstractJdbcDAO {
     
     private static final Map<String, Connection> CONNECTIONS = new HashMap<String, Connection>();
     

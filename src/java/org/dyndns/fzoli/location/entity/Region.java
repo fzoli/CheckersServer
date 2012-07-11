@@ -1,10 +1,10 @@
-package org.dyndns.fzoli.mill.common.model.entity;
+package org.dyndns.fzoli.location.entity;
 
 /**
  *
  * @author zoli
  */
-public class Region {
+public class Region implements Location {
     
     private final long ID;
     private final String COUNTRY, REGION_CODE, NAME;
@@ -35,6 +35,11 @@ public class Region {
     @Override
     public String toString() {
         return getName() + '#' + getID();
+    }
+    
+    @Override
+    public String getDisplay() {
+        return getName();
     }
     
 }

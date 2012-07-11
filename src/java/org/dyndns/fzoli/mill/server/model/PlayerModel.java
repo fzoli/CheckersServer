@@ -1,10 +1,14 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
+import org.dyndns.fzoli.location.entity.City;
+import org.dyndns.fzoli.location.entity.Country;
+import org.dyndns.fzoli.location.entity.Region;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PersonalDataType;
@@ -252,6 +256,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 case COUNTRY:
                     if (CDAO.getCountryByName(value) != null) {
                         data.setCountry(value);
+                        data.setRegion(null);
+                        data.setCity(null);
                         ret = PlayerReturn.OK;
                     }
                     break;
@@ -259,6 +265,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                     String country = data.getCountry();
                     if (country != null && !CDAO.getRegions(country, value).isEmpty()) {
                         data.setRegion(value);
+                        data.setCity(null);
                         ret = PlayerReturn.OK;
                     }
                     break;
@@ -274,7 +281,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         catch (Exception ex) {
             ;
         }
-        if (ret.equals(PlayerReturn.OK)) commonPlayer = ConvertUtil.createPlayer(this);
+        if (ret.equals(PlayerReturn.OK)) {
+            commonPlayer = ConvertUtil.createPlayer(this);
+            //TODO: eseményjelzés
+        }
         return ret;
     }
     
@@ -437,14 +447,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                     ;
                 }
                 if (action.equals(REQ_SET_ONLINE_STATUS)) return setPlayerState(value).ordinal();
-//                if (action.equals(REQ_SET_FIRST_NAME)) return setPersonalData(PersonalDataType.FIRST_NAME, value).ordinal();
-//                if (action.equals(REQ_SET_LAST_NAME)) return setPersonalData(PersonalDataType.LAST_NAME, value).ordinal();
-//                if (action.equals(REQ_SET_INVERSE_NAME)) return setPersonalData(PersonalDataType.INVERSE_NAME, value).ordinal();
-//                if (action.equals(REQ_SET_BIRTH_DATE)) return setPersonalData(PersonalDataType.BIRTH_DATE, value).ordinal();
-//                if (action.equals(REQ_SET_SEX)) return setPersonalData(PersonalDataType.SEX, value).ordinal();
-//                if (action.equals(REQ_SET_COUNTRY)) return setPersonalData(PersonalDataType.COUNTRY, value).ordinal();
-//                if (action.equals(REQ_SET_REGION)) return setPersonalData(PersonalDataType.REGION, value).ordinal();
-//                if (action.equals(REQ_SET_CITY)) return setPersonalData(PersonalDataType.CITY, value).ordinal();
                 String passwd = rm.getFirst(KEY_PASSWORD);
                 if (passwd != null) {
                     if (action.equals(REQ_SET_EMAIL)) return setEmail(hsr, passwd, value, false).ordinal();
@@ -460,12 +462,44 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     @Override
     protected PlayerData getProperties(HttpServletRequest hsr, RequestMap rm) {
         String user = rm.getFirst(KEY_USER);
-        if (user != null) return new PlayerData(findPlayer(user), findPlayerList(user));
+        if (user != null) {
+            return new PlayerData(findPlayer(user), findPlayerList(user));
+        }
+        String value = rm.getFirst(KEY_VALUE);
+        if (player != null && value != null) {
+            PersonalData data = player.getPersonalData();
+            if (value.equals(REQ_GET_COUNTRIES)) return new PlayerData(createList(CDAO.findCountriesByName(value), Country.class));
+            if (value.equals(REQ_GET_REGIONS)) return new PlayerData(createList(CDAO.findRegions(data.getCountry(), value), Region.class));
+            if (value.equals(REQ_GET_CITIES)) return new PlayerData(createList(CDAO.findCities(data.getCountry(), data.getRegion(), value), City.class));
+        }
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
     }
     
     public void onDisconnect() {
         signOut(SignOutType.NORMAL);
+    }
+    
+    private static <T> List<String> createList(List<T> l, Class<T> clazz) {
+        List<String> ls = new ArrayList<String>();
+        if (clazz.equals(Country.class)) {
+            for (T o : l) {
+                Country c = (Country) o;
+                ls.add(c.getName());
+            }
+        }
+        if (clazz.equals(Region.class)) {
+            for (T o : l) {
+                Region r = (Region) o;
+                ls.add(r.getName());
+            }
+        }
+        if (clazz.equals(City.class)) {
+            for (T o : l) {
+                City c = (City) o;
+                ls.add(c.getAccentName());
+            }
+        }
+        return ls;
     }
     
 }

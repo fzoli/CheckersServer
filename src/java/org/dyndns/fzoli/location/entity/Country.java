@@ -1,10 +1,10 @@
-package org.dyndns.fzoli.mill.common.model.entity;
+package org.dyndns.fzoli.location.entity;
 
 /**
  *
  * @author zoli
  */
-public class Country {
+public class Country implements Location {
     
     private final String ID, NAME;
 
@@ -24,6 +24,11 @@ public class Country {
     @Override
     public String toString() {
         return getName() + '#' + getID();
+    }
+    
+    @Override
+    public String getDisplay() {
+        return getName();
     }
     
 }
