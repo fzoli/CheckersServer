@@ -469,8 +469,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     @Override
     protected PlayerData getProperties(HttpServletRequest hsr, RequestMap rm) {
         String user = rm.getFirst(KEY_USER);
-        if (user != null) {
-            return new PlayerData(findPlayer(user), findPlayerList(user));
+        if (user != null && player != null) {
+            if (user.equals(player.getPlayerName())) return new PlayerData(commonPlayer, null);
+            else return new PlayerData(findPlayer(user), findPlayerList(user));
         }
         String value = rm.getFirst(KEY_VALUE);
         String action = rm.getFirst(KEY_REQUEST);
