@@ -47,12 +47,6 @@ public class CityDAO extends AbstractJdbcDAO {
         return getRegionsByCountryAndRegionName(countryName, regionName, false);
     }
     
-    private List<Region> getRegionsByCountryAndRegionName(String countryName, String regionName, boolean equals) {
-        Country country = getCountryByName(countryName);
-        if (country == null) return new ArrayList<Region>();
-        return getObjects(new String[]{COUNTRY, NAME}, new boolean[]{true}, new String[]{country.getID(), regionName}, new boolean[]{true, equals}, Region.class, REGION);
-    }
-    
     public List<City> findCities(String countryName, String regionName, String cityName) { // city auto complette
         cityName = StringEscapeUtils.escapeSql(cityName).toUpperCase();
         List<Region> regions = getRegions(countryName, regionName);
@@ -65,69 +59,69 @@ public class CityDAO extends AbstractJdbcDAO {
         return getObjects(sql, City.class);
     }
     
-    public List<Country> getCountries() {
-        return getCountries(null, null, true);
-    }
-    
-    public Country getCountryById(long id) {
-        return getCountryById(Long.toString(id));
-    }
-    
-    public Country getCountryById(String id) {
-        return getFirst(getCountries(ID, id, true));
-    }
-    
-    public List<Region> getRegions() {
-        return getRegions(null, null, true);
-    }
-    
-    public Region getRegionById(long id) {
-        return getRegionById(Long.toString(id));
-    }
-    
-    public Region getRegionById(String id) {
-        return getFirst(getRegions(ID, id, true));
-    }
-    
-    public List<Region> getRegionsByName(String name) {
-        return getRegions(NAME, name, true);
-    }
-    
-    public List<Region> getRegionsByRegionCode(String regionCode) {
-        return getRegions(REGION_CODE, regionCode, true);
-    }
-    
-    public List<Region> findRegionsByName(String name) {
-        return getRegions(NAME, name, false);
-    }
-    
-    public List<Region> findRegionsByCountryId(String countryId) {
-        return getRegions(COUNTRY, countryId, false);
-    }
-    
-    public City getCityById(long id) {
-        return getCityById(Long.toString(id));
-    }
-    
-    public City getCityById(String id) {
-        return getFirst(getCities(ID, id, true));
-    }
-    
-    public List<City> getCitiesByRegionCode(long regionCode) {
-        return getCitiesByRegionCode(Long.toString(regionCode));
-    }
-    
-    public List<City> getCitiesByRegionCode(String regionCode) {
-        return getCities(REGION, regionCode, true);
-    }
-    
-    public List<City> getCitiesByName(String name) {
-        return getCities(NAME, ACCENT_NAME, name, true);
-    }
-    
-    public List<City> findCitiesByName(String name) {
-        return getCities(NAME, ACCENT_NAME, name, false);
-    }
+//    public List<Country> getCountries() {
+//        return getCountries(null, null, true);
+//    }
+//    
+//    public Country getCountryById(long id) {
+//        return getCountryById(Long.toString(id));
+//    }
+//    
+//    public Country getCountryById(String id) {
+//        return getFirst(getCountries(ID, id, true));
+//    }
+//    
+//    public List<Region> getRegions() {
+//        return getRegions(null, null, true);
+//    }
+//    
+//    public Region getRegionById(long id) {
+//        return getRegionById(Long.toString(id));
+//    }
+//    
+//    public Region getRegionById(String id) {
+//        return getFirst(getRegions(ID, id, true));
+//    }
+//    
+//    public List<Region> getRegionsByName(String name) {
+//        return getRegions(NAME, name, true);
+//    }
+//    
+//    public List<Region> getRegionsByRegionCode(String regionCode) {
+//        return getRegions(REGION_CODE, regionCode, true);
+//    }
+//    
+//    public List<Region> findRegionsByName(String name) {
+//        return getRegions(NAME, name, false);
+//    }
+//    
+//    public List<Region> findRegionsByCountryId(String countryId) {
+//        return getRegions(COUNTRY, countryId, false);
+//    }
+//    
+//    public City getCityById(long id) {
+//        return getCityById(Long.toString(id));
+//    }
+//    
+//    public City getCityById(String id) {
+//        return getFirst(getCities(ID, id, true));
+//    }
+//    
+//    public List<City> getCitiesByRegionCode(long regionCode) {
+//        return getCitiesByRegionCode(Long.toString(regionCode));
+//    }
+//    
+//    public List<City> getCitiesByRegionCode(String regionCode) {
+//        return getCities(REGION, regionCode, true);
+//    }
+//    
+//    public List<City> getCitiesByName(String name) {
+//        return getCities(NAME, ACCENT_NAME, name, true);
+//    }
+//    
+//    public List<City> findCitiesByName(String name) {
+//        return getCities(NAME, ACCENT_NAME, name, false);
+//    }
     
     @Override
     protected String getUrl() {
@@ -149,12 +143,18 @@ public class CityDAO extends AbstractJdbcDAO {
         return "";
     }
     
-    private List<City> getCities(final String column, final String value, final boolean equals) {
-        return getCities(column, null, value, equals);
-    }
-    
-    private List<City> getCities(final String column, final String column2, final String value, final boolean equals) {
-        return getObjects(new String[]{column, column2}, new boolean[]{false}, new String[]{value, value}, new boolean[]{equals, equals}, City.class, CITY);
+//    private List<City> getCities(final String column, final String value, final boolean equals) {
+//        return getCities(column, null, value, equals);
+//    }
+//    
+//    private List<City> getCities(final String column, final String column2, final String value, final boolean equals) {
+//        return getObjects(new String[]{column, column2}, new boolean[]{false}, new String[]{value, value}, new boolean[]{equals, equals}, City.class, CITY);
+//    }
+
+    private List<Region> getRegionsByCountryAndRegionName(String countryName, String regionName, boolean equals) {
+        Country country = getCountryByName(countryName);
+        if (country == null) return new ArrayList<Region>();
+        return getObjects(new String[]{COUNTRY, NAME}, new boolean[]{true}, new String[]{country.getID(), regionName}, new boolean[]{true, equals}, Region.class, REGION);
     }
     
     private List<Region> getRegions(final String column, final String value, final boolean equals) {
@@ -211,10 +211,10 @@ public class CityDAO extends AbstractJdbcDAO {
         return l.get(0);
     }
     
-    public static void main(String[] args) {
-        System.out.println("Test started");
-        CityDAO dao = new CityDAO();
-        System.out.println(dao.findCities("Hungary", "Pest", "Bu"));
-    }
+//    public static void main(String[] args) {
+//        System.out.println("Test started");
+//        CityDAO dao = new CityDAO();
+//        System.out.println(dao.findCities("Hungary", "Pest", "Bu"));
+//    }
     
 }
