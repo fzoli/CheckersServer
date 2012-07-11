@@ -473,11 +473,12 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             return new PlayerData(findPlayer(user), findPlayerList(user));
         }
         String value = rm.getFirst(KEY_VALUE);
-        if (player != null && value != null) {
+        String action = rm.getFirst(KEY_REQUEST);
+        if (player != null && value != null && action != null) {
             PersonalData data = player.getPersonalData();
-            if (value.equals(REQ_GET_COUNTRIES)) return new PlayerData(createList(CDAO.findCountriesByName(value)));
-            if (value.equals(REQ_GET_REGIONS)) return new PlayerData(createList(CDAO.findRegions(data.getCountry(), value)));
-            if (value.equals(REQ_GET_CITIES)) return new PlayerData(createList(CDAO.findCities(data.getCountry(), data.getRegion(), value)));
+            if (action.equals(REQ_GET_COUNTRIES)) return new PlayerData(createList(CDAO.findCountriesByName(value)));
+            if (action.equals(REQ_GET_REGIONS)) return new PlayerData(createList(CDAO.findRegions(data.getCountry(), value)));
+            if (action.equals(REQ_GET_CITIES)) return new PlayerData(createList(CDAO.findCities(data.getCountry(), data.getRegion(), value)));
         }
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
     }
