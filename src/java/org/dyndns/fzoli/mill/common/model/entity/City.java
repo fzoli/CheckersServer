@@ -48,5 +48,10 @@ public class City {
     public double getLongitude() {
         return LONGITUDE;
     }
+
+    @Override
+    public String toString() {
+        return getName() + '#' + getID();
+    }
     
 }
