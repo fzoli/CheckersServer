@@ -322,6 +322,12 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 onSignInOut(p, false, false);
                 break;
             case STATE_ONLINE:
+                if (changedPlayers.contains(p)) {
+                    synchronized(changedPlayers) {
+                        changedPlayers.remove(p);
+                    }
+                    onPersonalDataChanged(p);
+                }
                 onSignInOut(p, true, false);
                 break;
             case SUSPEND:
@@ -359,10 +365,19 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         addEvent(new PlayerEvent(commonPlayer, add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
     }
     
+    private final List<Player> changedPlayers = new ArrayList<Player>();
+    
     private void onPersonalDataChanged(Player p) {
-        if (player != p && isEventImportant(player, p)) {
-            commonPlayer = ConvertUtil.createPlayer(this);
-            addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.PERSONAL_DATA_CHANGE));
+        if (player != p) {
+            if (isEventImportant(player, p)) {
+                commonPlayer = ConvertUtil.createPlayer(this);
+                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.PERSONAL_DATA_CHANGE));
+            }
+            else {
+                synchronized(changedPlayers) {
+                    changedPlayers.add(p);
+                }
+            }
         }
     }
     
