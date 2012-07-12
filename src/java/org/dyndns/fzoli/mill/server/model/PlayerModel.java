@@ -245,7 +245,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                     break;
                 case BIRTH_DATE:
                     Date date = new Date(Long.parseLong(value));
-                    if (!date.equals(data.getBirthDate()) && InputValidator.isBirthDateValid(date)) {
+                    if (InputValidator.isBirthDateValid(date)) {
                         data.setBirthDate(date);
                         ret = PlayerReturn.OK;
                     }
