@@ -8,7 +8,7 @@ public class CityDAO extends org.dyndns.fzoli.location.dao.CityDAO {
 
     @Override
     protected String getLocation() {
-        return "~/cities";
+        return "tcp://localhost/~/cities";
     }
     
 }
