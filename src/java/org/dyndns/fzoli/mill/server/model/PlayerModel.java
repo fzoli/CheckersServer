@@ -218,6 +218,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     private PlayerReturn setPersonalData(PersonalDataType request, String value) {
+        if (!isCaptchaValidated()) return PlayerReturn.NOT_OK;
         if (value == null || player == null || request == null) return PlayerReturn.NULL;
         PersonalData data = player.getPersonalData();
         PlayerReturn ret = PlayerReturn.NOT_OK;
@@ -351,6 +352,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private void onPersonalDataChanged(Player p) {
         if (player != p) {
+            commonPlayer = ConvertUtil.createPlayer(this);
             addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.PERSONAL_DATA_CHANGE));
         }
     }

@@ -170,6 +170,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
     }
     
+    public BasePlayer findPlayer(String playerName) {
+        return findPlayer(getCache().getPlayer().createMergedPlayerList(), playerName);
+    }
+    
     private BasePlayer findPlayer(List<BasePlayer> l, String name) {
         for (BasePlayer p : l) {
             if (p.getPlayerName().equals(name)) return p;
