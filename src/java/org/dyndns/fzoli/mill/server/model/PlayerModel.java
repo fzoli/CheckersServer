@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
-import org.dyndns.fzoli.location.entity.City;
 import org.dyndns.fzoli.location.entity.Location;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
@@ -381,6 +380,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (findPlayer(p.getPlayerName()) != null) {
             if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) {
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), suspend ? PlayerEvent.PlayerEventType.SUSPEND : PlayerEvent.PlayerEventType.UNSUSPEND));
+            }
+            else {
+                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), false));
             }
         }
     }
