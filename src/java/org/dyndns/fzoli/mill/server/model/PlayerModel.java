@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
+import org.dyndns.fzoli.location.entity.City;
 import org.dyndns.fzoli.location.entity.Location;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
@@ -252,7 +253,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                     ret = PlayerReturn.OK;
                     break;
                 case COUNTRY:
-                    if (CDAO.getCountryByName(value) != null) {
+                    String country = data.getCountry();
+                    if ((country == null || !country.equals(value)) && CDAO.getCountryByName(value) != null) {
                         data.setCountry(value);
                         data.setRegion(null);
                         data.setCity(null);
@@ -260,16 +262,18 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                     }
                     break;
                 case REGION:
-                    String country = data.getCountry();
-                    if (country != null && !CDAO.getRegions(country, value).isEmpty()) {
+                    String region = data.getRegion();
+                    country = data.getCountry();
+                    if (country != null && (region == null || !region.equals(value)) && !CDAO.getRegions(country, value).isEmpty()) {
                         data.setRegion(value);
                         data.setCity(null);
                         ret = PlayerReturn.OK;
                     }
                     break;
                 case CITY:
-                    String region = data.getRegion();
-                    if (region != null && !CDAO.getCities(data.getCountry(), region, value).isEmpty()) {
+                    String city = data.getCity();
+                    region = data.getRegion();
+                    if (region != null && (city == null || !city.equals(value)) && !CDAO.getCities(data.getCountry(), region, value).isEmpty()) {
                         data.setCity(value);
                         ret = PlayerReturn.OK;
                     }

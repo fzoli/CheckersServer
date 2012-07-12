@@ -81,7 +81,7 @@ public abstract class CityDAO extends AbstractJdbcDAO {
     }
     
     private List<City> getCities(String countryName, String regionName, String cityName, boolean equals) {
-        cityName = StringEscapeUtils.escapeSql(cityName).toUpperCase();
+        cityName = StringEscapeUtils.escapeSql(cityName);
         List<Region> regions = getRegions(countryName, regionName);
         if (regions.isEmpty()) return new ArrayList<City>();
         String sql = "SELECT * FROM " + CITY + " WHERE REGION IN(";
@@ -89,7 +89,8 @@ public abstract class CityDAO extends AbstractJdbcDAO {
             sql += regions.get(i).getID();
             if (i != regions.size() - 1) sql += ", ";
         }
-        sql += ") AND (" + (equals ? "UPPER(" + NAME + ") = '" + cityName + "' OR UPPER(" + ACCENT_NAME + ") = '" + cityName + "'" : "LOCATE('" + cityName + "', UPPER(" + NAME + ")) = 1 OR LOCATE('" + cityName + "', UPPER(" + ACCENT_NAME + ")) = 1") + ");";
+        sql += ") AND (" + (equals ? (/*NAME + " = '" + cityName + "' OR " + */ACCENT_NAME + " = '" + cityName + "'") : ("LOCATE('" + cityName.toUpperCase() + "', UPPER(" + NAME + ")) = 1 OR LOCATE('" + cityName.toUpperCase() + "', UPPER(" + ACCENT_NAME + ")) = 1")) + ");";
+        LOG.info(sql);
         return getObjects(sql, City.class);
     }
     
@@ -118,7 +119,7 @@ public abstract class CityDAO extends AbstractJdbcDAO {
             final int lastIndex = columns.length - 1;
             for (int i = 0; i <= lastIndex; i++) {
                 String value = StringEscapeUtils.escapeSql(values[i]);
-                sql += equals[i] ? "UPPER(" + columns[i] + ") = '" + value.toUpperCase() + "'" : "LOCATE('" + value.toUpperCase() + "', UPPER(" + columns[i] + ")) = 1";
+                sql += equals[i] ? columns[i] + " = '" + value + "'" : "LOCATE('" + value.toUpperCase() + "', UPPER(" + columns[i] + ")) = 1";
                 if (i != lastIndex) sql += " " + (ands[i] ? "AND" : "OR") + " ";
             }
         }
