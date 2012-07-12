@@ -80,15 +80,6 @@ public class PlayerAvatarModel extends AbstractOnlineModel<PlayerAvatarEvent, Pl
         return PlayerAvatarReturn.OK;
     }
     
-    public static boolean isEventImportant(Player me, Player p) {
-        if (me != null && me != p) {
-            if ((p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     private static BufferedImage resize(BufferedImage img, int scale) {
         return Scalr.resize(img, Scalr.Method.QUALITY, scale, 0, Scalr.OP_ANTIALIAS);
     }

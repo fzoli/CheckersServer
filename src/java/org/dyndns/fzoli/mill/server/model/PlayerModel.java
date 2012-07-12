@@ -345,20 +345,29 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
     }
     
+    public static boolean isEventImportant(Player me, Player p) {
+        if (me != null && me != p) {
+            if ((p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void onValidate(boolean add) {
         commonPlayer = ConvertUtil.createPlayer(this);
         addEvent(new PlayerEvent(commonPlayer, add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
     }
     
     private void onPersonalDataChanged(Player p) {
-        if (player != p) {
+        if (player != p && isEventImportant(player, p)) {
             commonPlayer = ConvertUtil.createPlayer(this);
             addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.PERSONAL_DATA_CHANGE));
         }
     }
     
     private void onAvatarChange(Player p) {
-        if (PlayerAvatarModel.isEventImportant(getPlayer(), p)) {
+        if (isEventImportant(getPlayer(), p)) {
             addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.AVATAR_CHANGE));
         }
     }
