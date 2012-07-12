@@ -225,32 +225,38 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         try {
             switch(request) {
                 case FIRST_NAME:
-                    if (InputValidator.isNameValid(value)) {
+                    if (InputValidator.isNameValid(value) && !value.equals(data.getFirstName())) {
                         data.setFirstName(value);
                         ret = PlayerReturn.OK;
                     }
                     break;
                 case LAST_NAME:
-                    if (InputValidator.isNameValid(value)) {
+                    if (InputValidator.isNameValid(value) && !value.equals(data.getLastName())) {
                         data.setLastName(value);
                         ret = PlayerReturn.OK;
                     }
                     break;
                 case INVERSE_NAME:
-                    data.setInverseName(Boolean.getBoolean(value));
-                    ret = PlayerReturn.OK;
+                    boolean b = Boolean.parseBoolean(value);
+                    if (b != data.isInverseName()) {
+                        data.setInverseName(b);
+                        ret = PlayerReturn.OK;
+                    }
                     break;
                 case BIRTH_DATE:
                     Date date = new Date(Long.parseLong(value));
                     Date now = new Date();
-                    if (!(date.after(now) || Math.abs(date.getTime() - now.getTime()) > 150 * 365.24 * 24 * 60 * 60 * 1000)) {
+                    if (!date.equals(data.getBirthDate()) && !(date.after(now) || Math.abs(date.getTime() - now.getTime()) > 150 * 365.24 * 24 * 60 * 60 * 1000)) {
                         data.setBirthDate(date);
                         ret = PlayerReturn.OK;
                     }
                     break;
                 case SEX:
-                    data.setSex(Sex.valueOf(value));
-                    ret = PlayerReturn.OK;
+                    Sex s = Sex.valueOf(value);
+                    if (!s.equals(data.getSex())) {
+                        data.setSex(s);
+                        ret = PlayerReturn.OK;
+                    }
                     break;
                 case COUNTRY:
                     String country = data.getCountry();
@@ -281,7 +287,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             }
         }
         catch (Exception ex) {
-            ;
+            ex.printStackTrace();
         }
         if (ret.equals(PlayerReturn.OK)) {
             commonPlayer = ConvertUtil.createPlayer(this);
