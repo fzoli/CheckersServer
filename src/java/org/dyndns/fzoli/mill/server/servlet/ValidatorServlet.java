@@ -102,7 +102,7 @@ public class ValidatorServlet extends HttpServlet {
     }
     
     private static String getName(Player player) {
-        return player == null ? null : player.getPersonalData() == null ? player.getPlayerName() : player.getPersonalData().getFirstName() == null ? player.getName() : player.getPersonalData().getFirstName();
+        return player == null ? null : player.getFirstName();
     }
     
     public static String getEmailValidationSubject(HttpServletRequest hsr) {

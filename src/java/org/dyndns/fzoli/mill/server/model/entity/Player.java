@@ -260,6 +260,10 @@ public class Player implements Serializable {
         signInDate = new Date();
     }
     
+    public String getFirstName() {
+        return getPersonalData() == null ? getPlayerName() : getPersonalData().getFirstName() == null ? getName() : getPersonalData().getFirstName();
+    }
+    
     @Override
     public String toString() {
         return playerName + '#' + getId();
