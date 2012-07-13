@@ -1,14 +1,8 @@
-package org.dyndns.fzoli.mill.common.permission;
+package org.dyndns.fzoli.mill.common;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author zoli
- */
-public final class Permissions {
-    
 /** Kuka...
  *  Egy adott jog gyakorlásának alap feltétele, hogy a maszk adjon rá jogot.
  *  A három kiegészítő alapelv:
@@ -64,15 +58,55 @@ public final class Permissions {
  *    - A programon belül soha nem adható senkinek és nem vehető el senkitől.
  *    - A programon belül nem tudja saját magát kitörölni ellentétben a többiekkel.
  */
-    
-    public static final Permission[] PERMISSIONS = Permission.values();
-    public static final int MIN = 0, MAX = (int) Math.pow(2, PERMISSIONS.length) - 1, ROOT = -1;
 
-    private Permissions() {
+/**
+ *
+ * @author zoli
+ */
+public enum Permission {
+    
+    STATISTICS_HIDE,
+    INVISIBLE_STATUS_DETECT,
+    SUSPENDED_PLAYER_DETECT,
+    HIDDEN_PLAYER_DETECT,
+    HIDDENABLE,
+    SEE_EVERYONES_AVATAR,
+    CHAT_EVERYONE,
+    SYSTEM_MESSAGE,
+    PLAYER_BANN,
+    PLAYER_DELETE,
+    PERMISSION_EDIT,
+    SHIELD_MODE;
+    
+    public static final int ROOT = -1;
+    private static final int MIN = 0, MAX = (int) Math.pow(2, Permission.values().length) - 1;
+    
+    public int getMask() {
+        return (int) Math.pow(2, ordinal());
     }
     
-    private static int getMask(Permission permission) {
-        return (int) Math.pow(2, permission.ordinal());
+    public boolean hasPermission(int mask) {
+        if (mask == ROOT) return true;
+        if (mask < MIN || mask > MAX) return false;
+        return (mask & getMask()) != 0;
+    }
+    
+    public int incPermission(int mask) {
+        if (!hasPermission(mask)) return mask + getMask();
+        else return mask;
+    }
+    
+    public int decPermission(int mask) {
+        if (hasPermission(mask)) return mask - getMask();
+        else return mask;
+    }
+    
+    public static List<Permission> getPermissions(int mask) {
+        List<Permission> ps = new ArrayList<Permission>();
+        for (Permission p : Permission.values()) {
+            if (p.hasPermission(mask)) ps.add(p);
+        }
+        return ps;
     }
     
     public static int getMask(List<Permission> permissions) {
@@ -81,44 +115,9 @@ public final class Permissions {
         for (Permission p : permissions) {
             if (tmp.contains(p)) continue;
             tmp.add(p);
-            i += getMask(p);
+            i += p.getMask();
         }
         return i;
-    }
-    
-    public static boolean hasPermission(int mask, Permission permission) {
-        if (mask == ROOT) return true;
-        if (mask < MIN) return false;
-        return (mask & getMask(permission)) != 0;
-    }
-    
-    public static List<Permission> getPermissions(int mask) {
-        List<Permission> ps = new ArrayList<Permission>();
-        for (Permission p : PERMISSIONS) {
-            if (hasPermission(mask, p)) ps.add(p);
-        }
-        return ps;
-    }
-    
-    public static int incPermission(int mask, Permission permission) {
-        if (!hasPermission(mask, permission)) return mask + getMask(permission);
-        else return mask;
-    }
-    
-    public static int decPermission(int mask, Permission permission) {
-        if (hasPermission(mask, permission)) return mask - getMask(permission);
-        else return mask;
-    }
-    
-    private static void print(int i) {
-        System.out.println(i + " = " + getMask(getPermissions(i)) + ": " + getPermissions(i));
-    }
-    
-    public static void main(String[] args) {
-        print(ROOT);
-        for (int i = MIN; i <= MAX; i++) {
-            print(i);
-        }
     }
     
 }

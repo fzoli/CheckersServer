@@ -12,7 +12,7 @@ import org.dyndns.fzoli.mill.common.key.PlayerAvatarReturn;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerAvatarEvent;
-import org.dyndns.fzoli.mill.common.permission.Permission;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.server.Resource;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;

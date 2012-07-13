@@ -8,8 +8,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-import org.dyndns.fzoli.mill.common.permission.Permission;
-import org.dyndns.fzoli.mill.common.permission.Permissions;
+import org.dyndns.fzoli.mill.common.Permission;
 
 /**
  *
@@ -18,7 +17,7 @@ import org.dyndns.fzoli.mill.common.permission.Permissions;
 public class PermissionGenerator extends JFrame implements ActionListener {
 
     private final JLabel lb = new JLabel("0");
-    private final Permission[] permissions = Permissions.PERMISSIONS;
+    private final Permission[] permissions = Permission.values();
     private final List<JCheckBox> cbs = new ArrayList<JCheckBox>();
     
     public PermissionGenerator() {

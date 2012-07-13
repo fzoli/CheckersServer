@@ -5,8 +5,7 @@ import java.util.*;
 import javax.persistence.*;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
-import org.dyndns.fzoli.mill.common.permission.Permission;
-import org.dyndns.fzoli.mill.common.permission.Permissions;
+import org.dyndns.fzoli.mill.common.Permission;
 
 /**
  *
@@ -80,7 +79,7 @@ public class Player implements Serializable {
     }
     
     private static List<Permission> getPermissions(int mask) {
-        return Permissions.getPermissions(mask);
+        return Permission.getPermissions(mask);
     }
     
     public OnlineStatus getOnlineStatus() {
@@ -117,7 +116,7 @@ public class Player implements Serializable {
     }
     
     public boolean isRoot() {
-        return getPermissionMask(false) == Permissions.ROOT;
+        return getPermissionMask(false) == Permission.ROOT;
     }
     
     public boolean hasPermission(boolean active, Permission p) {
@@ -125,7 +124,7 @@ public class Player implements Serializable {
     }
     
     private static boolean hasPermission(int mask, Permission p) {
-        return Permissions.hasPermission(mask, p);
+        return p.hasPermission(mask);
     }
     
     public Date getSignInDate() {
@@ -211,7 +210,7 @@ public class Player implements Serializable {
     }
     
     public void setPermissionMask(int permission) {
-        if (getPermissionMask(false) == Permissions.ROOT || permission == Permissions.ROOT) return; // ROOT jog nem vehető el és nem is adható a programon belül
+        if (getPermissionMask(false) == Permission.ROOT || permission == Permission.ROOT) return; // ROOT jog nem vehető el és nem is adható a programon belül
         List<Permission> oldPermissions = getPermissions(false);
         List<Permission> activePermissions = getPermissions(true);
         List<Permission> newPermissions = getPermissions(permission);
@@ -220,11 +219,11 @@ public class Player implements Serializable {
             if (newPermissions.contains(p) && !activePermissions.contains(p)) activePermissions.add(p); // az éppen most kapott jogokat az aktív jogokba tenni
         }
         this.permission = permission; // új jog beállítása
-        setActivePermissionMask(Permissions.getMask(activePermissions)); // új aktív jog beállítása
+        setActivePermissionMask(Permission.getMask(activePermissions)); // új aktív jog beállítása
     }
     
     public void setActivePermissionMask(int permission) {
-        if (hasPermission(false, Permission.SHIELD_MODE)) permission = Permissions.incPermission(permission, Permission.SHIELD_MODE); // ha van shield_mode joga, aktívvá kell tenni minden esetben
+        if (hasPermission(false, Permission.SHIELD_MODE)) permission = Permission.SHIELD_MODE.incPermission(permission); // ha van shield_mode joga, aktívvá kell tenni minden esetben
         this.activePermission = permission;
     }
 

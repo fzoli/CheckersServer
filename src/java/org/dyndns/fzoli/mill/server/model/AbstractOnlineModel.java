@@ -4,7 +4,7 @@ import java.util.List;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
-import org.dyndns.fzoli.mill.common.permission.Permission;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mvc.server.model.Model;
 import org.dyndns.fzoli.mvc.server.model.bean.ModelBean;

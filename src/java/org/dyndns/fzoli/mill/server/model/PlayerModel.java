@@ -19,8 +19,7 @@ import org.dyndns.fzoli.mill.common.model.entity.Sex;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
-import org.dyndns.fzoli.mill.common.permission.Permission;
-import org.dyndns.fzoli.mill.common.permission.Permissions;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.server.model.dao.CityDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
@@ -201,7 +200,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn suspendAccount(String password, boolean safe) {
         if (isRequestWrong(password, safe)) return getError(password, safe);
-        if (player.getPermissionMask(false) == Permissions.ROOT) return PlayerReturn.NO_CHANGE;
+        if (player.getPermissionMask(false) == Permission.ROOT) return PlayerReturn.NO_CHANGE;
         player.setPersonalData(new PersonalData());
         player.setPlayerStatus(PlayerStatus.SUSPENDED);
         player.setOnlineStatus(OnlineStatus.ONLINE);
