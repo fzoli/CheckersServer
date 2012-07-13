@@ -421,7 +421,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), suspend ? PlayerEvent.PlayerEventType.SUSPEND : PlayerEvent.PlayerEventType.UNSUSPEND));
             }
             else {
-                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), false)); //TODO: ez helyett egy olyan jelzés küldése, hogy frissüljön a BasePlayer objektum
+                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.RELOAD));
             }
         }
     }
