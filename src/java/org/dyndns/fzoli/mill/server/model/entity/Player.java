@@ -205,6 +205,7 @@ public class Player implements Serializable {
     }
     
     public boolean canUsePermission(Player target, Permission permission) {
+        if (target.isRoot()) return false; // ha a célpont root, senki nem jogosult joggyakorlásra (még egy másik root sem)
         if (target.hasPermission(false, Permission.SHIELD_MODE) && !isRoot()) return false; // ha a célpontnak van SHIELD_MODE joga ÉS a kérő nem ROOT, akkor nem használhatja a célponton a kért jogot
         return hasPermission(true, permission); // egyéb esetben ha aktív a kért jog, használhatja a célponton azt
     }
