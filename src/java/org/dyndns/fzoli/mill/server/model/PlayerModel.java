@@ -337,7 +337,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 onUnsuspend(p);
                 break;
             case AVATAR_CHANGE:
-                onAvatarChange(p);
+                onAvatarChange(p); //TODO: state_online mintájára invisible status bug kivédése
                 break;
             case AVATAR_ENABLE:
                 onAvatarEnabled(true);
@@ -408,7 +408,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), suspend ? PlayerEvent.PlayerEventType.SUSPEND : PlayerEvent.PlayerEventType.UNSUSPEND));
             }
             else {
-                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), false));
+                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), false)); //TODO: ez helyett egy olyan jelzés küldése, hogy frissüljön a BasePlayer objektum
             }
         }
     }
