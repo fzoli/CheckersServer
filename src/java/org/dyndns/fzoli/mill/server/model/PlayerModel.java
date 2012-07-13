@@ -290,6 +290,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
         if (ret.equals(PlayerReturn.OK)) {
             commonPlayer = ConvertUtil.createPlayer(this);
+            DAO.save(player);
             callOnPlayerChanged(player, PlayerChangeType.PERSONAL_DATA);
         }
         return ret;

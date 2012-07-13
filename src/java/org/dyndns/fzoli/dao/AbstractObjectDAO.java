@@ -14,6 +14,10 @@ import javax.persistence.Persistence;
 public abstract class AbstractObjectDAO {
     
     private static final Map<String, EntityManager> MANAGERS = new HashMap<String, EntityManager>();
+
+//    public AbstractObjectDAO() {
+//        getEntityManager();
+//    }
     
     protected abstract String getPath();
     

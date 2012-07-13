@@ -12,6 +12,10 @@ import java.util.Map;
 public abstract class AbstractJdbcDAO {
     
     private static final Map<String, Connection> CONNECTIONS = new HashMap<String, Connection>();
+
+//    public AbstractJdbcDAO() {
+//        if(getConnection() == null) throw new NullPointerException("JDBC connection is null");
+//    }
     
     protected abstract String getUrl();
     
