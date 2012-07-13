@@ -3,11 +3,13 @@ package org.dyndns.fzoli.mill.server.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.email.GMailSender;
 import org.dyndns.fzoli.location.entity.Location;
 import org.dyndns.fzoli.mill.common.InputValidator;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.key.PersonalDataType;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
@@ -19,7 +21,6 @@ import org.dyndns.fzoli.mill.common.model.entity.Sex;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
-import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.server.model.dao.CityDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
@@ -44,7 +45,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         KICK,
         NORMAL
     }
-    
+
     private final static CityDAO CDAO = new CityDAO();
     private final static PlayerDAO DAO = new PlayerDAO();
     private final static ValidatorDAO VDAO = new ValidatorDAO();
@@ -53,6 +54,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     private Player player;
     private org.dyndns.fzoli.mill.common.model.entity.Player commonPlayer;
 
+    private final HashMap<Player, PlayerChangeType> changedPlayers = new HashMap<Player, PlayerChangeType>();
+    
     @Override
     public Player getPlayer() {
         return player;
@@ -322,11 +325,18 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 onSignInOut(p, false, false);
                 break;
             case STATE_ONLINE:
-                if (changedPlayers.contains(p)) {
+                if (changedPlayers.containsKey(p)) {
                     synchronized(changedPlayers) {
+                        switch (changedPlayers.get(p)) {
+                            case PERSONAL_DATA:
+                                onPersonalDataChanged(p);
+                                break;
+                            case AVATAR_CHANGE:
+                                onAvatarChange(p);
+                                break;
+                        }
                         changedPlayers.remove(p);
                     }
-                    onPersonalDataChanged(p);
                 }
                 onSignInOut(p, true, false);
                 break;
@@ -337,7 +347,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 onUnsuspend(p);
                 break;
             case AVATAR_CHANGE:
-                onAvatarChange(p); //TODO: state_online mintájára invisible status bug kivédése
+                onAvatarChange(p);
                 break;
             case AVATAR_ENABLE:
                 onAvatarEnabled(true);
@@ -365,8 +375,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         addEvent(new PlayerEvent(commonPlayer, add ? PlayerEvent.PlayerEventType.VALIDATE : PlayerEvent.PlayerEventType.INVALIDATE));
     }
     
-    private final List<Player> changedPlayers = new ArrayList<Player>();
-    
     private void onPersonalDataChanged(Player p) {
         if (player != p) {
             if (isEventImportant(player, p)) {
@@ -375,7 +383,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             }
             else {
                 synchronized(changedPlayers) {
-                    changedPlayers.add(p);
+                    changedPlayers.put(p, PlayerChangeType.PERSONAL_DATA);
                 }
             }
         }
@@ -384,6 +392,11 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     private void onAvatarChange(Player p) {
         if (isEventImportant(getPlayer(), p)) {
             addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.AVATAR_CHANGE));
+        }
+        else {
+            synchronized(changedPlayers) {
+                changedPlayers.put(p, PlayerChangeType.AVATAR_CHANGE);
+            }
         }
     }
     
