@@ -6,7 +6,6 @@ import org.dyndns.fzoli.mill.common.key.PersonalDataType;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
-import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerEvent;
 import org.dyndns.fzoli.mvc.client.connection.Connection;
