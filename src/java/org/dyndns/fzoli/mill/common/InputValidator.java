@@ -1,6 +1,5 @@
 package org.dyndns.fzoli.mill.common;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 import org.apache.commons.codec.binary.Hex;
