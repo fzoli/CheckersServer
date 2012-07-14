@@ -422,6 +422,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             }
             else {
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.RELOAD));
+                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), false)); // kijelentkezés szimulálása
             }
         }
     }
