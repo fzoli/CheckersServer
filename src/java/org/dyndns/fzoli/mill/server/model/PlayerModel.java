@@ -214,8 +214,9 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             avatar.reset();
             ADAO.save(avatar);
         }
-        callOnPlayerChanged(player, PlayerChangeType.SUSPEND);
+        Player tmp = player;
         signOut(SignOutType.KICK);
+        callOnPlayerChanged(tmp, PlayerChangeType.SUSPEND);
         return PlayerReturn.OK;
     }
     
@@ -422,7 +423,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             }
             else {
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), PlayerEvent.PlayerEventType.RELOAD));
-                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), false)); // kijelentkezés szimulálása
             }
         }
     }
