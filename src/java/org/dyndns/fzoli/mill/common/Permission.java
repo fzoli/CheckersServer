@@ -91,6 +91,10 @@ public enum Permission {
         GROUP = group;
     }
     
+    public Group getGroup() {
+        return GROUP;
+    }
+    
     public int getMask() {
         return getMask(this);
     }
