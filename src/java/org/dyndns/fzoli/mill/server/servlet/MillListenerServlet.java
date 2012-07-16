@@ -46,7 +46,7 @@ public final class MillListenerServlet extends JSONListenerServlet {
                         HttpSession s = bean.getSession();
                         if (s == null) continue;
                         try {
-                            if (now.getTime() - s.getLastAccessedTime() >= 30000) {
+                            if (now.getTime() - s.getLastAccessedTime() >= getServletUtils().getEventTimeout() + getServletUtils().getReconnectWait()) {
                                 PlayerModel m = (PlayerModel) bean.getModel(ModelKeys.PLAYER);
                                 if (m == null) continue;
                                 m.onDisconnect();
