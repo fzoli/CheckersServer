@@ -135,6 +135,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (player != null && isCaptchaValidated()) {
             player.setActivePermissionMask(mask);
             DAO.save(player);
+            commonPlayer = ConvertUtil.createPlayer(this);
             return PlayerReturn.OK;
         }
         return PlayerReturn.NOT_OK;
