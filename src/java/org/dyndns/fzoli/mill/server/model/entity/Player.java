@@ -217,7 +217,7 @@ public class Player implements Serializable {
         List<Permission> newPermissions = getPermissions(permission);
         for (Permission p : oldPermissions) {
             if (oldPermissions.contains(p) && !newPermissions.contains(p)) activePermissions.remove(p); // az elvett jogokat el kell venni az aktív jogokból
-            if (newPermissions.contains(p) && !activePermissions.contains(p)) activePermissions.add(p); // az éppen most kapott jogokat az aktív jogokba tenni
+            if (newPermissions.contains(p) && !activePermissions.contains(p) && !p.getGroup().equals(Permission.Group.STATE_INVERSE)) activePermissions.add(p); // az éppen most kapott jogokat az aktív jogokba tenni, ha nem mód csoportban van a jog
         }
         this.permission = permission; // új jog beállítása
         setActivePermissionMask(Permission.getMask(activePermissions)); // új aktív jog beállítása
