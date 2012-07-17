@@ -225,7 +225,12 @@ public class Player implements Serializable {
     
     public void setActivePermissionMask(int permission) {
         if (hasPermission(false, Permission.SHIELD_MODE)) permission = Permission.SHIELD_MODE.incPermission(permission); // ha van shield_mode joga, aktívvá kell tenni minden esetben
-        this.activePermission = permission;
+        List<Permission> selected = Permission.getPermissions(permission);
+        int mask = 0;
+        for (Permission p : selected) {
+            if (hasPermission(false, p)) mask = p.incPermission(mask);
+        }
+        this.activePermission = mask;
     }
 
     public void setAvatarEnabled(boolean avatarEnabled) {

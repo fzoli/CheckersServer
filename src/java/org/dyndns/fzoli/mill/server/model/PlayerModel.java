@@ -131,6 +131,15 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return PlayerReturn.OK;
     }
 
+    private PlayerReturn setActivePermission(int mask) {
+        if (player != null && isCaptchaValidated()) {
+            player.setActivePermissionMask(mask);
+            DAO.save(player);
+            return PlayerReturn.OK;
+        }
+        return PlayerReturn.NOT_OK;
+    }
+    
     private PlayerReturn setPlayerState(String state) {
         if (player != null) {
             try {
@@ -416,6 +425,28 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         addEvent(new PlayerEvent(commonPlayer, enabled ? PlayerEvent.PlayerEventType.AVATAR_ENABLE : PlayerEvent.PlayerEventType.AVATAR_DISABLE));
     }
     
+    private void onSignInOut(Player p, boolean signIn, boolean sign) {
+        if (player != null) {
+            boolean canDetect = player.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT);
+            if (sign && p.getOnlineStatus().equals(OnlineStatus.INVISIBLE) && !canDetect) return; //ha be/ki-jelentkezés van és láthatatlan és nincs láthatatlanság detektáló jog, akkor nem kell jelezni
+            if (!sign && canDetect) return; // ha állapot váltás történt (tehát nem be/ki-jelentkezés) és van láthatatlanság detektáló jog, nem kell jelezni
+            System.out.print("sign " + p.getPlayerName() + " " + (signIn ? "in" : "out") + " detected on session of " + player.getPlayerName() + "...");
+            if (player.isFriend(p)) {
+                System.out.println("sent.");
+                BasePlayer bp = commonPlayer.findPlayer(p.getPlayerName());
+                bp.setOnline(signIn);
+                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), signIn));
+            }
+            else {
+                System.out.println("not sent.");
+            }
+        }
+    }
+    
+    public void onDisconnect() {
+        signOut(SignOutType.NORMAL);
+    }
+    
     private void addSuspendEvent(Player p, boolean suspend) {
         if (findPlayer(p.getPlayerName()) != null) {
             if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) {
@@ -448,24 +479,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (findPlayer(playerName, commonPlayer.getPossibleFriends()) != null) return PlayerData.PlayerList.POSSIBLE_FRIENDS;
         }
         return PlayerData.PlayerList.FRIENDS;
-    }
-    
-    private void onSignInOut(Player p, boolean signIn, boolean sign) {
-        if (player != null) {
-            boolean canDetect = player.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT);
-            if (sign && p.getOnlineStatus().equals(OnlineStatus.INVISIBLE) && !canDetect) return; //ha be/ki-jelentkezés van és láthatatlan és nincs láthatatlanság detektáló jog, akkor nem kell jelezni
-            if (!sign && canDetect) return; // ha állapot váltás történt (tehát nem be/ki-jelentkezés) és van láthatatlanság detektáló jog, nem kell jelezni
-            System.out.print("sign " + p.getPlayerName() + " " + (signIn ? "in" : "out") + " detected on session of " + player.getPlayerName() + "...");
-            if (player.isFriend(p)) {
-                System.out.println("sent.");
-                BasePlayer bp = commonPlayer.findPlayer(p.getPlayerName());
-                bp.setOnline(signIn);
-                addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), signIn));
-            }
-            else {
-                System.out.println("not sent.");
-            }
-        }
     }
     
     @Override
@@ -504,6 +517,12 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 catch (IllegalArgumentException ex) {
                     ;
                 }
+                try {
+                    if (action.equals(REQ_SET_ACTIVE_PERMISSION)) return setActivePermission(Integer.parseInt(value)).ordinal();
+                }
+                catch (NumberFormatException ex) {
+                    ;
+                }
                 if (action.equals(REQ_SET_ONLINE_STATUS)) return setPlayerState(value).ordinal();
                 String passwd = rm.getFirst(KEY_PASSWORD);
                 if (passwd != null) {
@@ -533,10 +552,6 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (action.equals(REQ_GET_CITIES)) return new PlayerData(createList(CDAO.findCities(data.getCountry(), data.getRegion(), value)));
         }
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
-    }
-    
-    public void onDisconnect() {
-        signOut(SignOutType.NORMAL);
     }
     
     private static List<String> createList(List<? extends Location> l) {
