@@ -2,6 +2,7 @@ package org.dyndns.fzoli.mill.server.model;
 
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ChatKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatData;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatEvent;
@@ -44,7 +45,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
     }
 
     @Override
-    protected int setProperty(HttpServletRequest hsr, RequestMap rm) {
+    protected int askModel(HttpServletRequest hsr, RequestMap rm) {
         Player me = getPlayer();
         String action = rm.getFirst(KEY_REQUEST);
         if (me != null && action != null) {
@@ -59,7 +60,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     }
                     String value = rm.getFirst(KEY_VALUE);
                     if (value != null) {
-                        if (action.equals(REQ_SEND_MESSAGE)) {
+                        if (action.equals(REQ_SEND_MESSAGE) && (me.getFriendList().contains(p) || me.canUsePermission(p, Permission.CHAT_EVERYONE))) {
                             Message msg = new Message(p, value);
                             me.getPostedMessages().add(msg);
                             DAO.save(me);
@@ -78,6 +79,11 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
         if (evt.getMessage().getAddress().equals(getPlayerName())) {
             addEvent(evt);
         }
+    }
+
+    @Override
+    protected int setProperty(HttpServletRequest hsr, RequestMap rm) {
+        return 0;
     }
 
 }
