@@ -3,6 +3,7 @@ package org.dyndns.fzoli.mill.server.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
+import org.dyndns.fzoli.mill.common.model.entity.Message;
 import org.dyndns.fzoli.mill.common.model.entity.PersonalData;
 import org.dyndns.fzoli.mill.common.model.entity.Player;
 import org.dyndns.fzoli.mill.server.model.AbstractOnlineModel;
@@ -40,6 +41,21 @@ public class ConvertUtil {
     public static PersonalData createPersonalData(org.dyndns.fzoli.mill.server.model.entity.PersonalData d) {
         if (d == null) return null;
         return new PersonalData(d.getFirstName(), d.getLastName(), d.isInverseName(), d.getBirthDate(), d.getSex(), d.getCountry(), d.getRegion(), d.getCity());
+    }
+    
+    public static List<Message> createMessageList(List<org.dyndns.fzoli.mill.server.model.entity.Message> l) {
+        List<Message> ls = new ArrayList<Message>();
+        if (l != null) {
+            for (org.dyndns.fzoli.mill.server.model.entity.Message m : l) {
+                ls.add(createMessage(m));
+            }
+        }
+        return ls;
+    }
+    
+    public static Message createMessage(org.dyndns.fzoli.mill.server.model.entity.Message m) {
+        if (m == null) return null;
+        return new Message(m.getSender().getName(), m.getText(), m.getSendDate());
     }
     
 }
