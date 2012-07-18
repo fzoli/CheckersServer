@@ -3,9 +3,9 @@ package org.dyndns.fzoli.mill.server.model.entity;
 import java.io.Serializable;
 import java.util.*;
 import javax.persistence.*;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
-import org.dyndns.fzoli.mill.common.Permission;
 
 /**
  *
@@ -57,6 +57,8 @@ public class Player implements Serializable {
     @OneToMany(mappedBy = "address")
     private List<Message> receivedMessages;
 
+    private HashMap<Player, Date> messageReadDates = new HashMap<Player, Date>();
+    
     protected Player() {
     }
 
@@ -151,6 +153,24 @@ public class Player implements Serializable {
         return personalData;
     }
 
+    public List<Message> getUnreadedMessages(Player p) {
+        List<Message> l = new ArrayList<Message>();
+        Date d = messageReadDates.get(p);
+        if (receivedMessages != null) {
+            if (d == null) {
+                for (Message m : receivedMessages) {
+                    if (m.getSender().equals(p)) l.add(m);
+                }
+            }
+            else {
+                for (Message m : receivedMessages) {
+                    if (m.getSender().equals(p) && m.getSendDate().after(d)) l.add(m);
+                }
+            }
+        }
+        return l;
+    }
+    
     public List<Message> getReceivedMessages() {
         return receivedMessages;
     }
@@ -259,6 +279,10 @@ public class Player implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    public void updateMessageReadDate(Player p) {
+        messageReadDates.put(p, new Date());
     }
     
     public void updateSignInDate() {
