@@ -2,7 +2,6 @@ package org.dyndns.fzoli.mill.common.model.pojo;
 
 import java.util.List;
 import org.dyndns.fzoli.mill.common.model.entity.Message;
-import org.dyndns.fzoli.mill.common.model.entity.Player;
 
 /**
  *
