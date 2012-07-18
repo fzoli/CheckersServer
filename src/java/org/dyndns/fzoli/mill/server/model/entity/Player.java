@@ -153,10 +153,31 @@ public class Player implements Serializable {
         return personalData;
     }
 
+    public List<Message> getMessages(Player p, Date d) {
+        List<Message> l = new ArrayList<Message>();
+        if (receivedMessages != null && p != null && d != null) {
+            for (Message m : postedMessages) {
+                if (m.getSender().equals(p) && (m.getSendDate().after(d) || m.getSendDate().equals(d))) l.add(m);
+            }
+            for (Message m : receivedMessages) {
+                if (m.getSender().equals(p) && (m.getSendDate().after(d) || m.getSendDate().equals(d))) l.add(m);
+            }
+            Collections.sort(l, new Comparator<Message>() {
+
+                @Override
+                public int compare(Message m1, Message m2) {
+                    return m1.getSendDate().compareTo(m2.getSendDate());
+                }
+                
+            });
+        }
+        return l;
+    }
+    
     public List<Message> getUnreadedMessages(Player p) {
         List<Message> l = new ArrayList<Message>();
         Date d = messageReadDates.get(p);
-        if (receivedMessages != null) {
+        if (receivedMessages != null && p != null) {
             if (d == null) {
                 for (Message m : receivedMessages) {
                     if (m.getSender().equals(p)) l.add(m);

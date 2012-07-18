@@ -8,11 +8,12 @@ import java.util.Date;
  */
 public class Message {
     
-    private String sender, text;
+    private String sender, address, text;
     private Date sendDate;
     protected long sendTime;
 
-    public Message(String sender, String text, Date sendDate) {
+    public Message(String address, String sender, String text, Date sendDate) {
+        this.address = address;
         this.sender = sender;
         this.text = text;
         this.sendDate = sendDate;
@@ -21,6 +22,10 @@ public class Message {
 
     public String getText() {
         return text;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public String getSender() {

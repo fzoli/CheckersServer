@@ -26,7 +26,8 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
         AVATAR_CHANGE,
         AVATAR_ENABLE,
         AVATAR_DISABLE,
-        PERSONAL_DATA
+        PERSONAL_DATA,
+        NEW_MESSAGE
     }
     
     public boolean isOnline(Player p) {
@@ -58,6 +59,23 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
     
     protected void onPlayerChanged(Player p, PlayerChangeType type) {
         ;
+    }
+    
+    protected void onPlayerChanged(Player p, EventObj evt) {
+        ;
+    }
+    
+    protected void callOnPlayerChanged(final Player p, final EventObj evt) {
+        iterateEveryModel(new ModelIterator() {
+
+            @Override
+            public void handler(String string, Model model) {
+                if (model instanceof AbstractOnlineModel && model.getClass().equals(this.getClass())) {
+                    ((AbstractOnlineModel)model).onPlayerChanged(p, evt);
+                }
+            }
+
+        });
     }
     
     protected void callOnPlayerChanged(final Player p, final PlayerChangeType type) {

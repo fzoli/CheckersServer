@@ -55,7 +55,7 @@ public class ConvertUtil {
     
     public static Message createMessage(org.dyndns.fzoli.mill.server.model.entity.Message m) {
         if (m == null) return null;
-        return new Message(m.getSender().getName(), m.getText(), m.getSendDate());
+        return new Message(m.getAddress().getPlayerName(), m.getSender().getName(), m.getText(), m.getSendDate());
     }
     
 }
