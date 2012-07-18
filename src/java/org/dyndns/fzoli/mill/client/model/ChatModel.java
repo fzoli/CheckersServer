@@ -12,7 +12,7 @@ import org.dyndns.fzoli.mvc.client.connection.Connection;
  */
 public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implements ChatKeys {
 
-    public ChatModel(Connection connection) {
+    public ChatModel(Connection<Object, Object> connection) {
         super(connection, ModelKeys.CHAT, ChatEvent.class, ChatData.class);
     }
     
