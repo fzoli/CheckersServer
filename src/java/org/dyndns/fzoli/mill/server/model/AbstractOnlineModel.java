@@ -1,10 +1,10 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.util.List;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
-import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mvc.server.model.Model;
 import org.dyndns.fzoli.mvc.server.model.bean.ModelBean;
@@ -65,12 +65,12 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
         ;
     }
     
-    protected void callOnPlayerChanged(final Player p, final EventObj evt) {
+    protected void callOnPlayerChanged(final Class clazz, final Player p, final EventObj evt) {
         iterateEveryModel(new ModelIterator() {
 
             @Override
             public void handler(String string, Model model) {
-                if (model instanceof AbstractOnlineModel && model.getClass().equals(this.getClass())) {
+                if (model instanceof AbstractOnlineModel && model.getClass().equals(clazz)) {
                     ((AbstractOnlineModel)model).onPlayerChanged(p, evt);
                 }
             }

@@ -71,16 +71,16 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                             DAO.save(msg);
                             me.getPostedMessages().add(msg);
                             DAO.save(me);
-                            callOnPlayerChanged(p, new ChatEvent(me.getPlayerName(), ConvertUtil.createMessage(msg, me.getName())));
-                            List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
-                            for (PlayerModel model : models) {
-                                Player pl = model.getPlayer();
-                                if (pl != null && p.equals(pl)) {
-                                    model.reinitPlayer();
-                                    break;
-                                }
-                            }
-                            reinitPlayer();
+                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(me.getPlayerName(), ConvertUtil.createMessage(msg, me.getName())));
+//                            List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
+//                            for (PlayerModel model : models) {
+//                                Player pl = model.getPlayer();
+//                                if (pl != null && p.equals(pl)) {
+//                                    model.reinitPlayer();
+//                                    break;
+//                                }
+//                            }
+//                            reinitPlayer();
                             return 1;
                         }
                     }

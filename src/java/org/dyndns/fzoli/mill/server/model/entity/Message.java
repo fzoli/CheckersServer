@@ -22,7 +22,7 @@ public class Message implements Serializable {
 
     private String text;
     
-    @OneToMany(mappedBy="postedMessages")
+    @OneToMany(/*fetch=FetchType.LAZY, cascade=CascadeType.ALL, */mappedBy="postedMessages")
     private Player sender;
     
     @ManyToOne
