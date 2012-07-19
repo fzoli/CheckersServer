@@ -1,6 +1,7 @@
 package org.dyndns.fzoli.mill.server.model.map;
 
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
+import org.dyndns.fzoli.mill.server.model.ChatModel;
 import org.dyndns.fzoli.mill.server.model.PlayerAvatarModel;
 import org.dyndns.fzoli.mill.server.model.PlayerBuilderModel;
 import org.dyndns.fzoli.mill.server.model.PlayerModel;
@@ -24,6 +25,7 @@ public final class MillModelMap extends ModelMap<JSONModel> implements ModelKeys
         if (key.equals(PLAYER_BUILDER)) return new PlayerBuilderModel();
         if (key.equals(PLAYER)) return new PlayerModel();
         if (key.equals(PLAYER_AVATAR)) return new PlayerAvatarModel();
+        if (key.equals(CHAT)) return new ChatModel();
         return super.init(key);
     }
     
