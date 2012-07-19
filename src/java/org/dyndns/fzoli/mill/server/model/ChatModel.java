@@ -1,9 +1,11 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.util.Date;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ChatKeys;
+import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatData;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatEvent;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
@@ -70,6 +72,15 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                             me.getPostedMessages().add(msg);
                             DAO.save(me);
                             callOnPlayerChanged(p, new ChatEvent(me.getPlayerName(), ConvertUtil.createMessage(msg, me.getName())));
+                            List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
+                            for (PlayerModel model : models) {
+                                Player pl = model.getPlayer();
+                                if (pl != null && p.equals(pl)) {
+                                    model.reinitPlayer();
+                                    break;
+                                }
+                            }
+                            reinitPlayer();
                             return 1;
                         }
                     }
