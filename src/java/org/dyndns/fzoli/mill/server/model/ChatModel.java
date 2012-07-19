@@ -54,9 +54,13 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                 Player p = DAO.getPlayer(player);
                 if (p != null) {
                     if (action.equals(REQ_UPDATE_READ_DATE)) {
-                        me.updateMessageReadDate(p);
-                        DAO.save(me);
-                        return 1;
+                        if (me.updateMessageReadDate(p)) {
+                            DAO.save(me);
+                            return 1;
+                        }
+                        else {
+                            return 0;
+                        }
                     }
                     String value = rm.getFirst(KEY_VALUE);
                     if (value != null) {

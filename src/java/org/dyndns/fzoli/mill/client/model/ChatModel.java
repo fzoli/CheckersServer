@@ -30,7 +30,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
     }
     
     public void updateReadDate(String playerName, ModelActionListener<Integer> callback) {
-        askModel(new RequestMap().setFirst(KEY_REQUEST, REQ_UPDATE_READ_DATE), callback);
+        askModel(new RequestMap().setFirst(KEY_REQUEST, REQ_UPDATE_READ_DATE).setFirst(KEY_PLAYER, playerName), callback);
     }
     
     public void sendMessage(String playerName, String text, ModelActionListener<Integer> callback) {
