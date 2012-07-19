@@ -7,6 +7,7 @@ import org.dyndns.fzoli.mill.common.model.entity.Message;
 import org.dyndns.fzoli.mill.common.model.entity.PersonalData;
 import org.dyndns.fzoli.mill.common.model.entity.Player;
 import org.dyndns.fzoli.mill.server.model.AbstractOnlineModel;
+import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 
 /**
  *
@@ -54,8 +55,12 @@ public class ConvertUtil {
     }
     
     public static Message createMessage(org.dyndns.fzoli.mill.server.model.entity.Message m) {
+        return createMessage(m, null);
+    }
+    
+    public static Message createMessage(org.dyndns.fzoli.mill.server.model.entity.Message m, String defSender) {
         if (m == null) return null;
-        return new Message(m.getAddress().getPlayerName(), m.getSender().getName(), m.getText(), m.getSendDate());
+        return new Message(m.getAddress().getPlayerName(), m.getSender() == null ? defSender : m.getSender().getName(), m.getText(), m.getSendDate());
     }
     
 }

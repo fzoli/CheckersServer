@@ -5,6 +5,7 @@ import javax.persistence.TypedQuery;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.PlayerBuilderReturn;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
+import org.dyndns.fzoli.mill.server.model.entity.Message;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 
 /**
@@ -12,6 +13,18 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  * @author zoli
  */
 public class PlayerDAO extends AbstractObjectDAO {
+    
+    public Message getMessage(Message m) {
+        if (m == null) return null;
+        try {
+            TypedQuery<Message> query = getEntityManager().createQuery("SELECT m FROM Message m WHERE m.address = :address AND m.text = :text AND m.sendDate = :date", Message.class);
+            return query.setParameter("address", m.getAddress()).setParameter("text", m.getText()).setParameter("date", m.getSendDate()).getSingleResult();
+        }
+        catch (PersistenceException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
     
     public Player getPlayer(String name) {
         if (name == null) return null;
@@ -107,6 +120,10 @@ public class PlayerDAO extends AbstractObjectDAO {
     
     public boolean save(Player player) {
         return save(player, Player.class);
+    }
+    
+    public boolean save(Message message) {
+        return save(message, Message.class);
     }
     
 }

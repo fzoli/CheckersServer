@@ -66,9 +66,10 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     if (value != null) {
                         if (action.equals(REQ_SEND_MESSAGE) && (me.getFriendList().contains(p) || me.canUsePermission(p, Permission.CHAT_EVERYONE))) {
                             Message msg = new Message(p, value);
+                            DAO.save(msg);
                             me.getPostedMessages().add(msg);
                             DAO.save(me);
-                            callOnPlayerChanged(p, new ChatEvent(me.getPlayerName(), ConvertUtil.createMessage(msg)));
+                            callOnPlayerChanged(p, new ChatEvent(me.getPlayerName(), ConvertUtil.createMessage(msg, me.getName())));
                             return 1;
                         }
                     }
