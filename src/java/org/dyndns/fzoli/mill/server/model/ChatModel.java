@@ -1,11 +1,10 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.util.Date;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.dyndns.fzoli.mill.common.DateUtil;
 import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ChatKeys;
-import org.dyndns.fzoli.mill.common.key.ModelKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatData;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatEvent;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
@@ -50,6 +49,16 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
     protected int askModel(HttpServletRequest hsr, RequestMap rm) {
         Player me = getPlayer();
         String action = rm.getFirst(KEY_REQUEST);
+        if (action != null && action.equals(REQ_SYNC)) {
+            try {
+                long remote = Long.parseLong(rm.getFirst(KEY_DATE));
+                long local = DateUtil.getDateInTimeZone(new Date(), "GMT").getTime();
+                return (int)(local - remote);
+            }
+            catch (Exception ex) {
+                return 0;
+            }
+        }
         if (me != null && action != null) {
             String player = rm.getFirst(KEY_PLAYER);
             if (player != null) {
