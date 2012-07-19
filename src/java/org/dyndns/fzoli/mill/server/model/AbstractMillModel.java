@@ -20,6 +20,7 @@ import nl.captcha.text.renderer.ColoredEdgesWordRenderer;
 import nl.captcha.text.renderer.WordRenderer;
 import org.dyndns.fzoli.mill.common.key.BaseKeys;
 import org.dyndns.fzoli.mill.common.key.ModelKeys;
+import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 import org.dyndns.fzoli.mvc.server.model.JSONModel;
@@ -93,6 +94,12 @@ abstract class AbstractMillModel<EventObj, PropsObj> extends JSONModel<EventObj,
         PlayerModel model = getPlayerModel();
         if (model == null) return null;
         return model.getPlayer();
+    }
+    
+    public void reinitPlayer() {
+        PlayerModel model = getPlayerModel();
+        if (model == null) return;
+        model.reinitPlayer();
     }
     
     public org.dyndns.fzoli.mill.common.model.entity.Player getCommonPlayer() {

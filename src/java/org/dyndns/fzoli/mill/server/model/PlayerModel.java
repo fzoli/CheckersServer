@@ -60,7 +60,15 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     public Player getPlayer() {
         return player;
     }
-
+    
+    @Override
+    public void reinitPlayer() {
+        if (player != null) {
+            player = DAO.getPlayer(player.getPlayerName());
+            commonPlayer = ConvertUtil.createPlayer(this);
+        }
+    }
+    
     @Override
     public org.dyndns.fzoli.mill.common.model.entity.Player getCommonPlayer() {
         return commonPlayer;
