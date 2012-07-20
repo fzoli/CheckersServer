@@ -203,10 +203,10 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn validateEmail(HttpServletRequest hsr, String password, boolean safe) {
         if (isRequestWrong(password, safe)) return getError(password, safe);
-        return validateEmail(hsr);
+        return validateEmail(hsr, player);
     }
     
-    public PlayerReturn validateEmail(HttpServletRequest hsr) {
+    public PlayerReturn validateEmail(HttpServletRequest hsr, Player player) {
         if (player != null && player.getEmail() != null) {
             if (player.isValidated()) return PlayerReturn.NO_CHANGE;
             if (player.getEmail().isEmpty()) return PlayerReturn.NULL;

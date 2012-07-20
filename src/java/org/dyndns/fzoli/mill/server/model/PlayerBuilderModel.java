@@ -71,13 +71,14 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
         if (!isCaptchaValidated()) return PlayerBuilderReturn.WRONG_CAPTCHA;
         if (validate(false)) return PlayerBuilderReturn.VALIDATED;
         if (InputValidator.isPasswordValid(password, hash) && InputValidator.isUserIdValid(user) && InputValidator.isEmailValid(email)) {
-            PlayerBuilderReturn ret = DAO.createPlayer(new Player(user, password, email), hash);
+            Player player = new Player(user, password, email);
+            PlayerBuilderReturn ret = DAO.createPlayer(player, hash);
             if (ret == PlayerBuilderReturn.OK) {
                 addStaticEvent();
                 validate(true);
                 removeCaptcha();
                 getPlayerModel(true).signIn(user, password, hash);
-                getPlayerModel().validateEmail(sr);
+                getPlayerModel().validateEmail(sr, player);
             }
             return ret;
         }
