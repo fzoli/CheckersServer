@@ -54,7 +54,7 @@ public class Player implements Serializable {
     @ManyToOne
     private List<Message> postedMessages = new ArrayList<Message>();
     
-    @OneToMany(mappedBy = "postedMessages")
+    @OneToMany(mappedBy = "address")
     private List<Message> receivedMessages;
 
     private HashMap<Player, Date> messageReadDates = new HashMap<Player, Date>();
