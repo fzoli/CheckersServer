@@ -67,7 +67,7 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
         return PlayerBuilderReturn.INVALID_EMAIL;
     }
     
-    public PlayerBuilderReturn createUser(String password, boolean hash) {
+    public PlayerBuilderReturn createUser(HttpServletRequest sr, String password, boolean hash) {
         if (!isCaptchaValidated()) return PlayerBuilderReturn.WRONG_CAPTCHA;
         if (validate(false)) return PlayerBuilderReturn.VALIDATED;
         if (InputValidator.isPasswordValid(password, hash) && InputValidator.isUserIdValid(user) && InputValidator.isEmailValid(email)) {
@@ -77,6 +77,7 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
                 validate(true);
                 removeCaptcha();
                 getPlayerModel(true).signIn(user, password, hash);
+                getPlayerModel().validateEmail(sr);
             }
             return ret;
         }
@@ -89,8 +90,8 @@ public class PlayerBuilderModel extends AbstractMillModel<PlayerBuilderEvent, Pl
         String value = m.getFirst(KEY_VALUE);
         if (action != null) {
             if (action.equals(REQ_VALIDATE)) return (validate(true) ? PlayerBuilderReturn.VALIDATED : PlayerBuilderReturn.NOT_VALIDATED).ordinal();
-            if (action.equals(REQ_CREATE)) return createUser(value, false).ordinal();
-            if (action.equals(REQ_SAFE_CREATE)) return createUser(value, true).ordinal();
+            if (action.equals(REQ_CREATE)) return createUser(sr, value, false).ordinal();
+            if (action.equals(REQ_SAFE_CREATE)) return createUser(sr, value, true).ordinal();
         }
         return super.askModel(sr, m);
     }

@@ -203,20 +203,31 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private PlayerReturn validateEmail(HttpServletRequest hsr, String password, boolean safe) {
         if (isRequestWrong(password, safe)) return getError(password, safe);
-        if (player.isValidated()) return PlayerReturn.NO_CHANGE;
-        if (player.getEmail().isEmpty()) return PlayerReturn.NULL;
-        File config = MillControllerServlet.getEmailConfig(hsr);
-        try {
-            String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
-            GMailSender.sendEmail(config, player.getEmail(), ValidatorServlet.getEmailValidationSubject(hsr), ValidatorServlet.createValidationEmail(hsr, key, player));
-            VDAO.setKey(player, key);
-            removeCaptcha();
-            return PlayerReturn.OK;
+        return validateEmail(hsr);
+    }
+    
+    public PlayerReturn validateEmail(HttpServletRequest hsr) {
+        if (player != null && player.getEmail() != null) {
+            if (player.isValidated()) return PlayerReturn.NO_CHANGE;
+            if (player.getEmail().isEmpty()) return PlayerReturn.NULL;
+            File config = MillControllerServlet.getEmailConfig(hsr);
+            try {
+                String key = InputValidator.md5Hex(player.getEmail() + new Date().getTime() + Math.random());
+                GMailSender.sendEmail(config, player.getEmail(), ValidatorServlet.getEmailValidationSubject(hsr), ValidatorServlet.createValidationEmail(hsr, key, player));
+                VDAO.setKey(player, key);
+                removeCaptcha();
+                List<Player> players = DAO.getPlayers();
+                for (Player p : players) {
+                    if (!player.getPlayerName().equals(p.getPlayerName()) && player.getEmail().equals(p.getEmail())) p.setEmail("");
+                }
+                return PlayerReturn.OK;
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+                return PlayerReturn.ERROR;
+            }
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            return PlayerReturn.ERROR;
-        }
+        return PlayerReturn.NULL;
     }
     
     private PlayerReturn suspendAccount(String password, boolean safe) {

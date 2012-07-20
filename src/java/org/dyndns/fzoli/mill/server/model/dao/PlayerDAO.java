@@ -1,5 +1,6 @@
 package org.dyndns.fzoli.mill.server.model.dao;
 
+import java.util.List;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import org.dyndns.fzoli.mill.common.InputValidator;
@@ -19,6 +20,16 @@ public class PlayerDAO extends AbstractObjectDAO {
         try {
             TypedQuery<Message> query = getEntityManager().createQuery("SELECT m FROM Message m WHERE m.address = :address AND m.text = :text AND m.sendDate = :date", Message.class);
             return query.setParameter("address", m.getAddress()).setParameter("text", m.getText()).setParameter("date", m.getSendDate()).getSingleResult();
+        }
+        catch (PersistenceException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public List<Player> getPlayers() {
+        try {
+            return getEntityManager().createQuery("SELECT p FROM Player p", Player.class).getResultList();
         }
         catch (PersistenceException ex) {
             ex.printStackTrace();

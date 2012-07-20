@@ -226,6 +226,7 @@ public class Player implements Serializable {
 
     private List<Player> filterList(List<Player> ls) {
         List<Player> l = new ArrayList<Player>();
+        if (ls == null) return l;
         for (Player p : ls) {
             switch (p.getPlayerStatus()) {
                 case NORMAL:
