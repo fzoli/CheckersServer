@@ -5,7 +5,6 @@ import java.util.*;
 import javax.persistence.*;
 import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
-import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 
 /**
@@ -23,7 +22,7 @@ public class Player implements Serializable {
     
     private int permission = 0, activePermission = 0;
     
-    private boolean validated = false, avatarEnabled = true;
+    private boolean validated = false, suspended = false, avatarEnabled = true;
     
     @Column(nullable = false)
     private String playerName, password, email;
@@ -37,9 +36,6 @@ public class Player implements Serializable {
     
     @Enumerated(EnumType.STRING)
     private OnlineStatus onlineStatus = OnlineStatus.ONLINE;
-    
-    @Enumerated(EnumType.STRING)
-    private PlayerStatus playerStatus = PlayerStatus.NORMAL;
     
     @ManyToMany
     private List<Player> friendList = new ArrayList<Player>(), 
@@ -82,10 +78,14 @@ public class Player implements Serializable {
         return onlineStatus;
     }
 
-    public PlayerStatus getPlayerStatus() {
-        return playerStatus;
+    public boolean isValidated() {
+        return validated;
     }
     
+    public boolean isSuspended() {
+        return suspended;
+    }
+
     public String getName() {
         if (getPersonalData() == null) return getPlayerName();
         String n = getPersonalData().getName();
@@ -105,10 +105,6 @@ public class Player implements Serializable {
 
     public boolean isAvatarEnabled() {
         return avatarEnabled;
-    }
-    
-    public boolean isValidated() {
-        return validated;
     }
     
     public boolean isRoot() {
@@ -209,7 +205,7 @@ public class Player implements Serializable {
     }
 
     public List<Player> getPossibleFriends() {
-        return filterList(DAO.getPlayerPossibleFriends(this));
+        return filterList(DAO.getPossibleFriends(this));
     }
     
     public List<Player> getBlockedUserList() {
@@ -220,15 +216,11 @@ public class Player implements Serializable {
         List<Player> l = new ArrayList<Player>();
         if (ls == null) return l;
         for (Player p : ls) {
-            switch (p.getPlayerStatus()) {
-                case NORMAL:
-                    l.add(p);
-                    break;
-                case HIDDEN:
-                    if (canUsePermission(p, Permission.HIDDEN_PLAYER_DETECT)) l.add(p);
-                    break;
-                case SUSPENDED:
-                    if (canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) l.add(p);
+            if (p.isSuspended()) {
+                if (canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) l.add(p);
+            }
+            else {
+                l.add(p);
             }
         }
         Collections.sort(l, new Comparator<Player>() {
@@ -278,13 +270,13 @@ public class Player implements Serializable {
     public void setValidated(boolean validated) {
         this.validated = validated;
     }
-
+    
     public void setOnlineStatus(OnlineStatus playerState) {
         this.onlineStatus = playerState;
     }
 
-    public void setPlayerStatus(PlayerStatus playerStatus) {
-        this.playerStatus = playerStatus;
+    public void setSuspended(boolean suspended) {
+        this.suspended = suspended;
     }
     
     public void setPassword(String password) {

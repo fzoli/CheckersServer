@@ -16,7 +16,6 @@ import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
-import org.dyndns.fzoli.mill.common.model.entity.PlayerStatus;
 import org.dyndns.fzoli.mill.common.model.entity.Sex;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerData;
@@ -83,8 +82,8 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (ret == PlayerReturn.OK) {
             if (player != null) signOut(SignOutType.RESIGN);
             player = DAO.getPlayer(name);
-            boolean unsuspend = player.getPlayerStatus().equals(PlayerStatus.SUSPENDED);
-            if (unsuspend) player.setPlayerStatus(PlayerStatus.NORMAL);
+            boolean unsuspend = player.isSuspended();
+            if (unsuspend) player.setSuspended(false);
             player.updateSignInDate();
             DAO.save(player);
             commonPlayer = ConvertUtil.createPlayer(this);
@@ -234,7 +233,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         if (isRequestWrong(password, safe)) return getError(password, safe);
         if (player.getPermissionMask(false) == Permission.ROOT) return PlayerReturn.NO_CHANGE;
         player.setPersonalData(new PersonalData());
-        player.setPlayerStatus(PlayerStatus.SUSPENDED);
+        player.setSuspended(true);
         player.setOnlineStatus(OnlineStatus.ONLINE);
         player.setPermissionMask(0);
         DAO.save(player);
@@ -393,7 +392,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     public static boolean isEventImportant(Player me, Player p) {
         if (me != null && me != p) {
-            if ((p.getFriendList().contains(me) || me.canUsePermission(p, Permission.SEE_EVERYONES_AVATAR)) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
+            if (p.getFriendList().contains(me) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
                 return true;
             }
         }

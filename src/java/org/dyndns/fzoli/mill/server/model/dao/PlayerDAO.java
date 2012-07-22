@@ -15,7 +15,7 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  */
 public class PlayerDAO extends AbstractObjectDAO {
     
-    public List<Player> getPlayerPossibleFriends(Player player) {
+    public List<Player> getPossibleFriends(Player player) {
         try {
             return getEntityManager().createQuery("SELECT p FROM Player p WHERE :player MEMBER OF p.friendWishList", Player.class).setParameter("player", player).getResultList();
         }
