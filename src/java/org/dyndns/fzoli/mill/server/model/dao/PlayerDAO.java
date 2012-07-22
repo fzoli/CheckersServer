@@ -15,17 +15,38 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  */
 public class PlayerDAO extends AbstractObjectDAO {
     
-    public Message getMessage(Message m) {
-        if (m == null) return null;
+    public List<Player> getPlayerPossibleFriends(Player player) {
         try {
-            TypedQuery<Message> query = getEntityManager().createQuery("SELECT m FROM Message m WHERE m.address = :address AND m.text = :text AND m.sendDate = :date", Message.class);
-            return query.setParameter("address", m.getAddress()).setParameter("text", m.getText()).setParameter("date", m.getSendDate()).getSingleResult();
+            return getEntityManager().createQuery("SELECT p FROM Player p WHERE :player MEMBER OF p.friendWishList", Player.class).setParameter("player", player).getResultList();
         }
         catch (PersistenceException ex) {
             ex.printStackTrace();
             return null;
         }
     }
+    
+    public List<Message> getMessages(Player address) {
+        try {
+            TypedQuery<Message> query = getEntityManager().createQuery("SELECT m FROM Message m WHERE m.address = :address", Message.class);
+            return query.setParameter("address", address).getResultList();
+        }
+        catch (PersistenceException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+//    public Message getMessage(Message m) {
+//        if (m == null) return null;
+//        try {
+//            TypedQuery<Message> query = getEntityManager().createQuery("SELECT m FROM Message m WHERE m.address = :address AND m.text = :text AND m.sendDate = :date", Message.class);
+//            return query.setParameter("address", m.getAddress()).setParameter("text", m.getText()).setParameter("date", m.getSendDate()).getSingleResult();
+//        }
+//        catch (PersistenceException ex) {
+//            ex.printStackTrace();
+//            return null;
+//        }
+//    }
     
     public List<Player> getPlayers() {
         try {

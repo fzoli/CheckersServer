@@ -46,12 +46,23 @@ public class Player implements Serializable {
                          friendWishList = new ArrayList<Player>(), 
                          blockedUserList = new ArrayList<Player>();
     
+//    @ManyToMany(mappedBy = "friendWishList")
+//    private List<Player> possibleFriends;
+//    
+//    @ManyToMany(mappedBy = "blockedUserList")
+//    private List<Player> invisibleUsers;
+    
     @ManyToOne
     private List<Message> postedMessages = new ArrayList<Message>();
     
+//    @OneToMany(mappedBy = "address")
+//    private List<Message> receivedMessages;
+
     private HashMap<Player, Date> messageReadDates = new HashMap<Player, Date>();
     
+    //TEMP code start
     private final static PlayerDAO DAO = new PlayerDAO();
+    //TEMP code end
     
     protected Player() {
     }
@@ -192,6 +203,10 @@ public class Player implements Serializable {
         return l;
     }
     
+//    public List<Message> getReceivedMessages() {
+//        return receivedMessages;
+//    }
+
     public List<Message> getReceivedMessages() {
         return DAO.getMessages(this);
     }
@@ -208,6 +223,10 @@ public class Player implements Serializable {
         return filterList(friendWishList);
     }
 
+//    public List<Player> getPossibleFriends() {
+//        return filterList(possibleFriends);
+//    }
+
     public List<Player> getPossibleFriends() {
         return filterList(DAO.getPlayerPossibleFriends(this));
     }
@@ -215,6 +234,10 @@ public class Player implements Serializable {
     public List<Player> getBlockedUserList() {
         return filterList(blockedUserList);
     }
+
+//    public List<Player> getInvisibleUsers() {
+//        return invisibleUsers;
+//    }
 
     private List<Player> filterList(List<Player> ls) {
         List<Player> l = new ArrayList<Player>();
