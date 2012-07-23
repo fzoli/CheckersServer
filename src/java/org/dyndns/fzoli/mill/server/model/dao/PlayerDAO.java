@@ -16,6 +16,8 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  */
 public class PlayerDAO extends AbstractObjectDAO {
     
+    private static final boolean DELETE_MESSAGES = true;
+    
     public List<Player> getPossibleFriends(Player player) {
         try {
             return getEntityManager().createQuery("SELECT p FROM Player p WHERE :player MEMBER OF p.friendWishList", Player.class).setParameter("player", player).getResultList();
@@ -39,14 +41,25 @@ public class PlayerDAO extends AbstractObjectDAO {
     
     public boolean removeMessages(Player p1, Player p2) {
         if (p1 == null || p2 == null) return false;
-        EntityTransaction tr = getEntityManager().getTransaction();
         try {
-            tr.begin();
-            getEntityManager().createQuery("DELETE FROM Message m WHERE (m.sender.playerName = :p1 AND m.address.playerName = :p2) OR (m.sender.playerName = :p2 AND m.address.playerName = :p1)")
-                    .setParameter("p1", p1.getPlayerName())
-                    .setParameter("p2", p2.getPlayerName())
-                    .executeUpdate();
-            tr.commit();
+            List<Message> messages = getEntityManager().createQuery("SELECT m FROM Message m WHERE (m.sender.playerName = :p1 AND m.address.playerName = :p2) OR (m.sender.playerName = :p2 AND m.address.playerName = :p1)", Message.class)
+                .setParameter("p1", p1.getPlayerName())
+                .setParameter("p2", p2.getPlayerName())
+                .getResultList();
+            if (DELETE_MESSAGES) {
+                EntityTransaction tr = getEntityManager().getTransaction();
+                tr.begin();
+                getEntityManager().createQuery("DELETE FROM Message m WHERE (m.sender.playerName = :p1 AND m.address.playerName = :p2) OR (m.sender.playerName = :p2 AND m.address.playerName = :p1)")
+                        .setParameter("p1", p1.getPlayerName())
+                        .setParameter("p2", p2.getPlayerName())
+                        .executeUpdate();
+                tr.commit();
+            }
+            for (Message m : messages) {
+                Player p = m.getSender();
+                p.getPostedMessages().remove(m);
+                save(p);
+            }
             return true;
         }
         catch (PersistenceException ex) {

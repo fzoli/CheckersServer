@@ -59,5 +59,14 @@ public class Message implements Serializable {
     public void setText(String text) {
         this.text = text;
     }
+
+    public void setSender(Player sender) {
+        this.sender = sender;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + '#' + getId();
+    }
     
 }
