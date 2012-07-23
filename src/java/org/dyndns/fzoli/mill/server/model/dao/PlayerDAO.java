@@ -38,12 +38,13 @@ public class PlayerDAO extends AbstractObjectDAO {
     }
     
     public boolean removeMessages(Player p1, Player p2) {
+        if (p1 == null || p2 == null) return false;
         EntityTransaction tr = getEntityManager().getTransaction();
         try {
             tr.begin();
-            getEntityManager().createQuery("DELETE FROM Message m WHERE (m.sender = :p1 AND m.address = :p2) OR (m.sender = :p2 AND m.address = :p1)")
-                    .setParameter("p1", p1)
-                    .setParameter("p2", p2)
+            getEntityManager().createQuery("DELETE FROM Message m WHERE (m.sender.playerName = :p1 AND m.address.playerName = :p2) OR (m.sender.playerName = :p2 AND m.address.playerName = :p1)")
+                    .setParameter("p1", p1.getPlayerName())
+                    .setParameter("p2", p2.getPlayerName())
                     .executeUpdate();
             tr.commit();
             return true;
