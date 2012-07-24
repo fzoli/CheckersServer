@@ -33,7 +33,7 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
     public boolean isOnline(Player p) {
         Player player = getPlayer();
         if (player.equals(p)) return player.getOnlineStatus().equals(OnlineStatus.ONLINE);
-        if (!player.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT)) {
+        if (!player.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS)) {
             if (!player.getFriendList().contains(p)) return false;
             if (p.getOnlineStatus().equals(OnlineStatus.INVISIBLE)) return false;
         }

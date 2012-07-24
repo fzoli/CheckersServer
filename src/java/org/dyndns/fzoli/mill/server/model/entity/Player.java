@@ -219,7 +219,7 @@ public class Player implements Serializable {
         if (ls == null) return l;
         for (Player p : ls) {
             if (p.isSuspended()) {
-                if (canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) l.add(p);
+                if (canUsePermission(p, Permission.DETECT_SUSPENDED_PLAYER)) l.add(p);
             }
             else {
                 l.add(p);

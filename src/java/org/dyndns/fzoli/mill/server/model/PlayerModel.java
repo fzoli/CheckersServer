@@ -392,7 +392,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     public static boolean isEventImportant(Player me, Player p) {
         if (me != null && me != p) {
-            if (p.getFriendList().contains(me) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT))) {
+            if (p.getFriendList().contains(me) && (p.getOnlineStatus().equals(OnlineStatus.ONLINE) || me.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS))) {
                 return true;
             }
         }
@@ -446,7 +446,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private void onSignInOut(Player p, boolean signIn, boolean sign) {
         if (player != null) {
-            boolean canDetect = player.canUsePermission(p, Permission.INVISIBLE_STATUS_DETECT);
+            boolean canDetect = player.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS);
             if (sign && p.getOnlineStatus().equals(OnlineStatus.INVISIBLE) && !canDetect) return; //ha be/ki-jelentkezés van és láthatatlan és nincs láthatatlanság detektáló jog, akkor nem kell jelezni
             if (!sign && canDetect) return; // ha állapot váltás történt (tehát nem be/ki-jelentkezés) és van láthatatlanság detektáló jog, nem kell jelezni
             System.out.print("sign " + p.getPlayerName() + " " + (signIn ? "in" : "out") + " detected on session of " + player.getPlayerName() + "...");
@@ -468,7 +468,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     
     private void addSuspendEvent(Player p, boolean suspend) {
         if (findPlayer(p.getPlayerName()) != null) {
-            if (!player.canUsePermission(p, Permission.SUSPENDED_PLAYER_DETECT)) {
+            if (!player.canUsePermission(p, Permission.DETECT_SUSPENDED_PLAYER)) {
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), suspend ? PlayerEvent.PlayerEventType.SUSPEND : PlayerEvent.PlayerEventType.UNSUSPEND));
             }
             else {
