@@ -61,17 +61,17 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
         ;
     }
     
-    protected void onPlayerChanged(Player p, EventObj evt) {
+    protected void onPlayerChanged(EventObj evt) {
         ;
     }
     
-    protected void callOnPlayerChanged(final Class clazz, final Player p, final EventObj evt) {
+    protected void callOnPlayerChanged(final Class clazz, final EventObj evt) {
         iterateEveryModel(new ModelIterator() {
 
             @Override
             public void handler(String string, Model model) {
                 if (model instanceof AbstractOnlineModel && model.getClass().equals(clazz)) {
-                    ((AbstractOnlineModel)model).onPlayerChanged(p, evt);
+                    ((AbstractOnlineModel)model).onPlayerChanged(evt);
                 }
             }
 

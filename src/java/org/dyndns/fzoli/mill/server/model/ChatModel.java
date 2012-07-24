@@ -74,7 +74,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     }
                     if (action.equals(REQ_REMOVE_MESSAGES)) {
                         if (DAO.removeMessages(me, p)) {
-                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
+                            callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
                             return 1;
                         }
                         else return 0;
@@ -87,7 +87,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                             me.getPostedMessages().add(msg);
                             DAO.save(me);
                             msg.setSender(me);
-                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(p.getPlayerName(), ConvertUtil.createMessage(msg/*, me.getName()*/)));
+                            callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), ConvertUtil.createMessage(msg/*, me.getName()*/)));
 //                            List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
 //                            for (PlayerModel model : models) {
 //                                Player pl = model.getPlayer();
@@ -107,8 +107,8 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
     }
 
     @Override
-    protected void onPlayerChanged(Player p, ChatEvent evt) {
-        if (evt.isClear() && p.getPlayerName().equals(getPlayerName())) {
+    protected void onPlayerChanged(ChatEvent evt) {
+        if (evt.isClear() && evt.getPlayerName().equals(getPlayerName())) {
             addEvent(evt);
         }
         if (!evt.isClear() && evt.getMessage().getAddress().equals(getPlayerName())) {
