@@ -79,7 +79,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     }
                     String value = rm.getFirst(KEY_VALUE);
                     if (value != null) {
-                        if (action.equals(REQ_SEND_MESSAGE) && (me.getFriendList().contains(p) || me.canUsePermission(p, Permission.CHAT_EVERYONE))) {
+                        if (action.equals(REQ_SEND_MESSAGE) && (me.getFriendList().contains(p)/* || me.canUsePermission(p, Permission.CHAT_EVERYONE)*/)) {
                             Message msg = new Message(p, value);
                             DAO.save(msg);
                             me.getPostedMessages().add(msg);
