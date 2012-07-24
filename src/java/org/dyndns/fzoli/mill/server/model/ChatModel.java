@@ -74,7 +74,10 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                         }
                     }
                     if (action.equals(REQ_REMOVE_MESSAGES)) {
-                        if (DAO.removeMessages(me, p)) return 1;
+                        if (DAO.removeMessages(me, p)) {
+                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(me.getPlayerName(), p.getPlayerName()));
+                            return 1;
+                        }
                         else return 0;
                     }
                     String value = rm.getFirst(KEY_VALUE);
