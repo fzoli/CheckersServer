@@ -178,6 +178,20 @@ public class Player implements Serializable {
         return l;
     }
     
+    public Map<String, Integer> getUnreadedMessagesCount() {
+        HashMap<String, Integer> counts = new HashMap<String, Integer>();
+        List<Message> receivedMessages = getReceivedMessages();
+        synchronized (receivedMessages) {
+            for (Message m : receivedMessages) {
+                Player p = m.getSender();
+                if (!counts.containsKey(p.getPlayerName())) {
+                    counts.put(p.getPlayerName(), getUnreadedMessages(p).size());
+                }
+            }
+        }
+        return counts;
+    }
+    
     public List<Message> getUnreadedMessages(Player p) {
         List<Message> l = new ArrayList<Message>();
         Date d = messageReadDates.get(p);

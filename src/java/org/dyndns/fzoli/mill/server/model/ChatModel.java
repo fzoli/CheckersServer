@@ -42,7 +42,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                 }
             }
         }
-        return new ChatData(getPlayerName());
+        return new ChatData(getPlayerName(), me == null ? null : me.getUnreadedMessagesCount());
     }
 
     @Override
