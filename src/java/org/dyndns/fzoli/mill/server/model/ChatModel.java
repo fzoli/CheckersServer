@@ -3,7 +3,6 @@ package org.dyndns.fzoli.mill.server.model;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.DateUtil;
-import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ChatKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatData;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatEvent;
@@ -75,7 +74,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     }
                     if (action.equals(REQ_REMOVE_MESSAGES)) {
                         if (DAO.removeMessages(me, p)) {
-                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(me.getPlayerName(), p.getPlayerName()));
+                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
                             return 1;
                         }
                         else return 0;
@@ -88,7 +87,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                             me.getPostedMessages().add(msg);
                             DAO.save(me);
                             msg.setSender(me);
-                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(me.getPlayerName(), ConvertUtil.createMessage(msg/*, me.getName()*/)));
+                            callOnPlayerChanged(ChatModel.class, p, new ChatEvent(p.getPlayerName(), ConvertUtil.createMessage(msg/*, me.getName()*/)));
 //                            List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
 //                            for (PlayerModel model : models) {
 //                                Player pl = model.getPlayer();
@@ -109,7 +108,10 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
 
     @Override
     protected void onPlayerChanged(Player p, ChatEvent evt) {
-        if (evt.getMessage().getAddress().equals(getPlayerName())) {
+        if (evt.isClear() && p.getPlayerName().equals(getPlayerName())) {
+            addEvent(evt);
+        }
+        if (!evt.isClear() && evt.getMessage().getAddress().equals(getPlayerName())) {
             addEvent(evt);
         }
     }
