@@ -81,22 +81,24 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     }
                     String value = rm.getFirst(KEY_VALUE);
                     if (value != null) {
-                        if (action.equals(REQ_SEND_MESSAGE) && (me.getFriendList().contains(p)/* || me.canUsePermission(p, Permission.CHAT_EVERYONE)*/)) {
-                            Message msg = new Message(p, value);
-                            DAO.save(msg);
-                            me.getPostedMessages().add(msg);
-                            DAO.save(me);
-                            msg.setSender(me);
-                            callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), ConvertUtil.createMessage(msg/*, me.getName()*/)));
-//                            List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
-//                            for (PlayerModel model : models) {
-//                                Player pl = model.getPlayer();
-//                                if (pl != null && p.equals(pl)) {
-//                                    model.reinitPlayer();
-//                                    break;
+                        if (action.equals(REQ_SEND_MESSAGE)) {
+                            if ((p.getFriendList().contains(me) && me.getFriendList().contains(p))/* || me.canUsePermission(p, Permission.CHAT_EVERYONE)*/) {
+                                Message msg = new Message(p, value);
+                                DAO.save(msg);
+                                me.getPostedMessages().add(msg);
+                                DAO.save(me);
+                                msg.setSender(me);
+                                callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), ConvertUtil.createMessage(msg/*, me.getName()*/)));
+//                                List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
+//                                for (PlayerModel model : models) {
+//                                    Player pl = model.getPlayer();
+//                                    if (pl != null && p.equals(pl)) {
+//                                        model.reinitPlayer();
+//                                        break;
+//                                    }
 //                                }
-//                            }
-//                            reinitPlayer();
+//                                reinitPlayer();
+                            }
                             return 1;
                         }
                     }
