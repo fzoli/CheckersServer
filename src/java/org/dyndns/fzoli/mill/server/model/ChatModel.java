@@ -75,7 +75,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     }
                     if (action.equals(REQ_REMOVE_MESSAGES)) {
                         if (DAO.removeMessages(me, p)) {
-                            if (me.getFriendList().contains(p)) callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
+                            if (me.getFriendList().contains(p) || p.canUsePermission(me, Permission.SEND_PERSON_MESSAGE)) callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
                             return 1;
                         }
                         else {
