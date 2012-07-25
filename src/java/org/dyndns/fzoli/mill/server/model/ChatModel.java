@@ -63,26 +63,28 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
             if (player != null) {
                 Player p = DAO.getPlayer(player);
                 if (p != null) {
-                    if (action.equals(REQ_UPDATE_READ_DATE)) {
-                        if (me.updateMessageReadDate(p)) {
-                            DAO.save(me);
-                            return 1;
+                    if ((p.getFriendList().contains(me) && me.getFriendList().contains(p))/* || me.canUsePermission(p, Permission.CHAT_EVERYONE)*/) {
+                        if (action.equals(REQ_UPDATE_READ_DATE)) {
+                            if (me.updateMessageReadDate(p)) {
+                                DAO.save(me);
+                                return 1;
+                            }
+                            else {
+                                return 0;
+                            }
                         }
-                        else {
-                            return 0;
+                        if (action.equals(REQ_REMOVE_MESSAGES)) {
+                            if (DAO.removeMessages(me, p)) {
+                                callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
+                                return 1;
+                            }
+                            else {
+                                return 0;
+                            }
                         }
-                    }
-                    if (action.equals(REQ_REMOVE_MESSAGES)) {
-                        if (DAO.removeMessages(me, p)) {
-                            callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
-                            return 1;
-                        }
-                        else return 0;
-                    }
-                    String value = rm.getFirst(KEY_VALUE);
-                    if (value != null) {
-                        if (action.equals(REQ_SEND_MESSAGE)) {
-                            if ((p.getFriendList().contains(me) && me.getFriendList().contains(p))/* || me.canUsePermission(p, Permission.CHAT_EVERYONE)*/) {
+                        String value = rm.getFirst(KEY_VALUE);
+                        if (value != null) {
+                            if (action.equals(REQ_SEND_MESSAGE)) {
                                 Message msg = new Message(p, value);
                                 DAO.save(msg);
                                 me.getPostedMessages().add(msg);
@@ -98,9 +100,12 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
 //                                    }
 //                                }
 //                                reinitPlayer();
+                                return 1;
                             }
-                            return 1;
                         }
+                    }
+                    else {
+                        return 1;
                     }
                 }
             }
