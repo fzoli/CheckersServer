@@ -34,7 +34,7 @@ public abstract class AbstractOnlineModel<EventObj extends BaseOnlinePojo, Props
         Player player = getPlayer();
         if (player.equals(p)) return player.getOnlineStatus().equals(OnlineStatus.ONLINE);
         if (!player.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS)) {
-            if (!player.getFriendList().contains(p)) return false;
+            if (!p.getFriendList().contains(player)) return false;
             if (p.getOnlineStatus().equals(OnlineStatus.INVISIBLE)) return false;
         }
         List<ModelBean> beans = ModelBeanRegister.getModelBeans();

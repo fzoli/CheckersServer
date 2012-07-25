@@ -450,7 +450,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
             if (sign && p.getOnlineStatus().equals(OnlineStatus.INVISIBLE) && !canDetect) return; //ha be/ki-jelentkezés van és láthatatlan és nincs láthatatlanság detektáló jog, akkor nem kell jelezni
             if (!sign && canDetect) return; // ha állapot váltás történt (tehát nem be/ki-jelentkezés) és van láthatatlanság detektáló jog, nem kell jelezni
             System.out.print("sign " + p.getPlayerName() + " " + (signIn ? "in" : "out") + " detected on session of " + player.getPlayerName() + "...");
-            if (player.isFriend(p)) {
+            if (p.isFriend(player) && player.isFriend(p)) {
                 System.out.println("sent.");
                 BasePlayer bp = commonPlayer.findPlayer(p.getPlayerName());
                 bp.setOnline(signIn);
