@@ -3,6 +3,7 @@ package org.dyndns.fzoli.mill.server.model;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.DateUtil;
+import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ChatKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatData;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatEvent;
@@ -63,7 +64,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
             if (player != null) {
                 Player p = DAO.getPlayer(player);
                 if (p != null) {
-                    boolean friends = (p.getFriendList().contains(me) && me.getFriendList().contains(p))/* || me.canUsePermission(p, Permission.CHAT_EVERYONE)*/;
+                    boolean isFriend = (p.getFriendList().contains(me)/* && me.getFriendList().contains(p)*/)/* || me.canUsePermission(p, Permission.CHAT_EVERYONE)*/;
                     if (action.equals(REQ_UPDATE_READ_DATE)) {
                         if (me.updateMessageReadDate(p)) {
                             DAO.save(me);
@@ -75,14 +76,14 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                     }
                     if (action.equals(REQ_REMOVE_MESSAGES)) {
                         if (DAO.removeMessages(me, p)) {
-                            if (friends) callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
+                            if (isFriend) callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), me.getPlayerName()));
                             return 1;
                         }
                         else {
                             return 0;
                         }
                     }
-                    if (friends) {
+                    if (isFriend || me.canUsePermission(p, Permission.SEND_PERSON_MESSAGE)) {
                         String value = rm.getFirst(KEY_VALUE);
                         if (value != null) {
                             if (action.equals(REQ_SEND_MESSAGE)) {
@@ -106,7 +107,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                         }
                     }
                     else {
-                        return 1;
+                        return me.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS) ? 0 : 1;
                     }
                 }
             }
