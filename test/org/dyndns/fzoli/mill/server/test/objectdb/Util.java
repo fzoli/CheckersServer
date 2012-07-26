@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.*;
 import javax.persistence.*;
 
+/**
+ * Entity class.
+ * @author zoli
+ */
 @Entity
 class Player implements Serializable {
     
@@ -65,6 +69,10 @@ class Player implements Serializable {
     
 }    
 
+/**
+ * Entity class.
+ * @author zoli
+ */
 @Entity
 class Message implements Serializable {
 
@@ -124,6 +132,10 @@ class Message implements Serializable {
     
 }
 
+/**
+ * Helper class.
+ * @author zoli
+ */
 class Util {
     
     static final String PLAYER1 = "player1", PLAYER2 = "player2";

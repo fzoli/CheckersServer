@@ -4,13 +4,18 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import static org.dyndns.fzoli.mill.server.test.objectdb.Util.*;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * ObjectDB second test.
+ * 1. Create database connection.
+ * 2. Check whether FirstTest finished.
+ * 3. Clear messages.
+ * 4. Try read players.
+ * 5. Create two messages.
+ * 6. Reading back and testing.
  * @author zoli
  */
 public class SecondTest {
@@ -39,7 +44,7 @@ public class SecondTest {
         System.out.println("Clear messages.");
         remove(db, Message.class);
         
-        System.out.println("Read players.");
+        System.out.println("Try read players.");
         Player p1 = getPlayer(db, PLAYER1);
         assertNotNull(p1);
         Player p2 = getPlayer(db, PLAYER2);
