@@ -44,7 +44,7 @@ public class SecondTest {
         System.out.println("Clear messages.");
         remove(db, Message.class);
         
-        System.out.println("Try read players.");
+        System.out.println("Try read players...");
         Player p1 = getPlayer(db, PLAYER1);
         assertNotNull(p1);
         Player p2 = getPlayer(db, PLAYER2);
@@ -62,7 +62,7 @@ public class SecondTest {
         p2.getPostedMessages().add(m2);
         assertTrue(save(db, p2));
         
-        System.out.println("Testing.");
+        System.out.println("Testing...");
         List<Message> messages = getMessages(db, PLAYER1);
         assertNotNull(messages);
         assertEquals(1, messages.size());
