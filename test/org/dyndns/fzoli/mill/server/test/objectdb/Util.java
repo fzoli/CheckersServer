@@ -6,6 +6,15 @@ import java.util.Map;
 import javax.persistence.*;
 
 /**
+ * Player's online statuses.
+ * @author zoli
+ */
+enum OnlineStatus {
+    ONLINE,
+    INVISIBLE
+}
+
+/**
  * Helper class.
  * @author zoli
  */

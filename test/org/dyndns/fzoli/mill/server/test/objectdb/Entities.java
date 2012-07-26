@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
+
 /**
  * Entity class.
  * @author zoli
@@ -21,6 +22,9 @@ class Player implements Serializable {
     
     private String playerName;
 
+    @Enumerated(EnumType.STRING)
+    private OnlineStatus onlineStatus = OnlineStatus.ONLINE;
+    
     @ManyToMany
     private List<Player> friendWishList = new ArrayList<Player>();
     
@@ -47,6 +51,10 @@ class Player implements Serializable {
     public String getPlayerName() {
         return playerName;
     }
+
+    public OnlineStatus getOnlineStatus() {
+        return onlineStatus;
+    }
     
     public List<Message> getReceivedMessages() {
         return receivedMessages;
@@ -70,7 +78,6 @@ class Player implements Serializable {
     }
     
 }    
-
 /**
  * Entity class.
  * @author zoli

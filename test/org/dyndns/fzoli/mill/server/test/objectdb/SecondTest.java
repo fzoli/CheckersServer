@@ -67,6 +67,7 @@ public class SecondTest {
         assertNotNull(messages);
         assertEquals(1, messages.size());
         assertEquals(1, p1.getReceivedMessages().size());
+        assertEquals(OnlineStatus.ONLINE, p1.getOnlineStatus());
         
     }
      
