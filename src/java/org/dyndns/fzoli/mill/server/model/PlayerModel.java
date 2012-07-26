@@ -42,6 +42,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     public static enum SignOutType {
         RESIGN,
         KICK,
+        DISCONNECT,
         NORMAL
     }
 
@@ -122,7 +123,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         }
         player = null;
         commonPlayer = null;
-        if (type == SignOutType.KICK) { // ha másik sessionben bejelentkeztek
+        if (type == SignOutType.KICK || type == SignOutType.DISCONNECT) { // ha másik sessionben bejelentkeztek vagy megszakadt a klienssel a kapcsolat
             iterateBeanModels(new ModelIterator() {
 
                 @Override
@@ -463,7 +464,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
     }
     
     public void onDisconnect() {
-        signOut(SignOutType.NORMAL);
+        signOut(SignOutType.DISCONNECT);
     }
     
     private void addSuspendEvent(Player p, boolean suspend) {
