@@ -180,10 +180,10 @@ class Util {
         }
     }
     
-    static List<Message> getMessages(EntityManager db, String playerName) {
+    static List<Message> getMessages(EntityManager db, String senderPlayerName) {
         TypedQuery<Message> query = db.createQuery("SELECT m FROM Message m WHERE m.sender.playerName = :name", Message.class);
         try {
-            return query.setParameter("name", playerName).getResultList();
+            return query.setParameter("name", senderPlayerName).getResultList();
         }
         catch (PersistenceException ex) {
             ex.printStackTrace();

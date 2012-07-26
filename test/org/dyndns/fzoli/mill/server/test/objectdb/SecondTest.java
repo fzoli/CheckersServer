@@ -52,15 +52,15 @@ public class SecondTest {
         
         System.out.println("Create message 1.");
         Message m1 = new Message(p2, "message 1");
-        save(db, m1);
+        assertTrue(save(db, m1));
         p1.getPostedMessages().add(m1);
-        save(db, p1);
+        assertTrue(save(db, p1));
         
         System.out.println("Create message 2.");
         Message m2 = new Message(p1, "message 2");
-        save(db, m2);
+        assertTrue(save(db, m2));
         p2.getPostedMessages().add(m2);
-        save(db, p2);
+        assertTrue(save(db, p2));
         
         System.out.println("Testing.");
         List<Message> messages = getMessages(db, PLAYER1);

@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.persistence.EntityManager;
 import static org.dyndns.fzoli.mill.server.test.objectdb.Util.*;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,16 +65,16 @@ public class FirstTest {
         System.out.println("Creating players.");
         Player p1 = new Player(PLAYER1);
         Player p2 = new Player(PLAYER2);
-        save(db, p1);
-        save(db, p2);
+        assertTrue(save(db, p1));
+        assertTrue(save(db, p2));
         
         System.out.println("Add player2 to player1's list.");
         p1.getFriendWishList().add(p2);
-        save(db, p1);
+        assertTrue(save(db, p1));
         if (inverseAdd) {
             System.out.println("Add player1 to player2's list.");
             p2.getFriendWishList().add(p1);
-            save(db, p2);
+            assertTrue(save(db, p2));
         }
         
         System.out.println("Recreate database connection.");
@@ -82,9 +83,9 @@ public class FirstTest {
         
         System.out.println("Try read players...");
         System.out.println("Read " + PLAYER1 + '.');
-        getPlayer(db, PLAYER1);
+        assertNotNull(getPlayer(db, PLAYER1));
         System.out.println("Read " + PLAYER2 + '.');
-        getPlayer(db, PLAYER2);
+        assertNotNull(getPlayer(db, PLAYER2));
         
     }
     
