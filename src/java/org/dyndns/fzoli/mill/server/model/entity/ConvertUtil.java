@@ -59,7 +59,7 @@ public class ConvertUtil {
     
     private static Message createMessage(org.dyndns.fzoli.mill.server.model.entity.Message m, String defSender) {
         if (m == null) return null;
-        return new Message(m.getAddress().getPlayerName(), m.getSender() == null ? defSender : m.getSender().getPlayerName(), m.getText(), m.getSendDate());
+        return new Message(m.getAddress().getPlayerName(), m.getSender() == null ? defSender : m.getSender().getPlayerName(), m.getText(), m.getSendDate(), m.getType());
     }
     
 }

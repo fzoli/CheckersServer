@@ -3,6 +3,7 @@ package org.dyndns.fzoli.mill.server.model.entity;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
+import org.dyndns.fzoli.mill.common.model.entity.MessageType;
 
 /**
  *
@@ -22,6 +23,9 @@ public class Message implements Serializable {
 
     private String text;
     
+    @Enumerated(EnumType.STRING)
+    private MessageType type = MessageType.CHAT;
+    
     @OneToMany(/*fetch=FetchType.LAZY, cascade=CascadeType.ALL, */mappedBy="postedMessages")
     private Player sender;
     
@@ -40,6 +44,10 @@ public class Message implements Serializable {
         return id;
     }
 
+    public MessageType getType() {
+        return type;
+    }
+
     public String getText() {
         return text;
     }
@@ -54,6 +62,10 @@ public class Message implements Serializable {
 
     public Player getAddress() {
         return address;
+    }
+
+    public void setType(MessageType type) {
+        this.type = type;
     }
 
     public void setText(String text) {
