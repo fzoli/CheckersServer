@@ -99,8 +99,9 @@ public class Message implements Serializable {
         this.text = text;
     }
 
-    public void setSender(Player sender) {
+    public Message setSender(Player sender) {
         this.sender = sender;
+        return this;
     }
 
     @Override

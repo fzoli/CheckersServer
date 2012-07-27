@@ -15,6 +15,7 @@ import org.dyndns.fzoli.mill.common.key.PersonalDataType;
 import org.dyndns.fzoli.mill.common.key.PlayerKeys;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
+import org.dyndns.fzoli.mill.common.model.entity.MessageType;
 import org.dyndns.fzoli.mill.common.model.entity.OnlineStatus;
 import org.dyndns.fzoli.mill.common.model.entity.Sex;
 import org.dyndns.fzoli.mill.common.model.pojo.BaseOnlinePojo;
@@ -453,6 +454,13 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         addEvent(new PlayerEvent(commonPlayer, enabled ? PlayerEvent.PlayerEventType.AVATAR_ENABLE : PlayerEvent.PlayerEventType.AVATAR_DISABLE));
     }
     
+    private void sendSystemMessage(Player sender, MessageType.SystemMessage type) {
+        Object model = getModelMap().get(ModelKeys.CHAT, false);
+        if (model != null && player != null && sender != null) {
+            ((ChatModel) model).sendMessage(new Message(player, type).setSender(sender));
+        }
+    }
+    
     private void onSignInOut(Player p, boolean signIn, boolean sign) {
         if (player != null) {
             boolean canDetect = player.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS);
@@ -464,13 +472,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 BasePlayer bp = commonPlayer.findPlayer(p.getPlayerName());
                 bp.setOnline(signIn);
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), signIn));
-                //TODO!!!
-//                if (p.isFriend(player) || player.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS)) {
-//                    Object model = getModelMap().get(ModelKeys.CHAT, false);
-//                    if (model != null) {
-//                        ((ChatModel)model).sendMessage(new Message(p, KEY_USER));
-//                    }
-//                }
+                sendSystemMessage(p, signIn ? MessageType.SystemMessage.SIGN_IN : MessageType.SystemMessage.SIGN_OUT);
             }
             else {
                 System.out.println("not sent.");
