@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 import org.dyndns.fzoli.mill.common.model.entity.MessageType;
+import org.dyndns.fzoli.mill.common.model.entity.MessageType.SystemMessage;
 
 /**
  *
@@ -26,6 +27,9 @@ public class Message implements Serializable {
     @Enumerated(EnumType.STRING)
     private MessageType type = MessageType.CHAT;
     
+    @Enumerated(EnumType.STRING)
+    private SystemMessage msg;
+    
     @OneToMany(/*fetch=FetchType.LAZY, cascade=CascadeType.ALL, */mappedBy="postedMessages")
     private Player sender;
     
@@ -35,9 +39,24 @@ public class Message implements Serializable {
     protected Message() {
     }
     
+    public Message(Player address, SystemMessage msg) {
+        this(address, null, msg);
+        this.type = MessageType.SYSTEM;
+    }
+    
     public Message(Player address, String text) {
+        this(address, text, false);
+    }
+    
+    public Message(Player address, String text, boolean support) {
+        this(address, text, null);
+        this.type = support ? MessageType.SUPPORT : MessageType.CHAT;
+    }
+    
+    private Message(Player address, String text, SystemMessage msg) {
         this.address = address;
         this.text = text;
+        this.msg = msg;
     }
     
     public Long getId() {
@@ -46,6 +65,10 @@ public class Message implements Serializable {
 
     public MessageType getType() {
         return type;
+    }
+
+    public SystemMessage getSystemMessage() {
+        return msg;
     }
 
     public String getText() {
@@ -66,6 +89,10 @@ public class Message implements Serializable {
 
     public void setType(MessageType type) {
         this.type = type;
+    }
+
+    public void setSystemMessage(SystemMessage msg) {
+        this.msg = msg;
     }
 
     public void setText(String text) {
