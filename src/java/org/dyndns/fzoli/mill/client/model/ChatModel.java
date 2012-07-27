@@ -44,10 +44,6 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
         askModel(new RequestMap().setFirst(KEY_REQUEST, REQ_REMOVE_MESSAGES).setFirst(KEY_PLAYER, playerName), callback);
     }
     
-    public void fireClose(String playerName, ModelActionListener<Integer> callback) {
-        askModel(new RequestMap().setFirst(KEY_REQUEST, REQ_FIRE_CLOSED).setFirst(KEY_PLAYER, playerName), callback);
-    }
-    
     public void updateReadDate(String playerName, ModelActionListener<Integer> callback) {
         askModel(new RequestMap().setFirst(KEY_REQUEST, REQ_UPDATE_READ_DATE).setFirst(KEY_PLAYER, playerName), callback);
     }

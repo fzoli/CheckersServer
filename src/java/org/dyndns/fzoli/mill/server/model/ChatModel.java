@@ -23,39 +23,8 @@ import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implements ChatKeys {
 
     private static final PlayerDAO DAO = new PlayerDAO();
-    private static final Map<Player, Map<Player, Boolean>> INFOS = new HashMap<Player, Map<Player, Boolean>>();
     
-    private boolean isOpen(Player p) {
-        Player me = getPlayer();
-        if (me != null) {
-            Map<Player, Boolean> info = INFOS.get(me);
-            if (info != null) {
-                Boolean open = info.get(p);
-                if (open != null) return open;
-            }
-        }
-        return false;
-    }
-    
-    private void setOpen(Player p, boolean open) {
-        Player me = getPlayer();
-        if (me != null) {
-            Map<Player, Boolean> info = INFOS.get(p);
-            if (info == null) {
-                info = new HashMap<Player, Boolean>();
-                INFOS.put(p, info);
-            }
-            info.put(me, open);
-        }
-    }
-    
-    private boolean shouldReceiveEvent(Player p) {
-        Player me = getPlayer();
-        if (me == null || p == null) return false;
-        return isOpen(p) && (p.isFriend(me) || me.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS));
-    }
-    
-    public void sendMessage(Message message) {
+    private void sendMessage(Message message) {
         callOnPlayerChanged(ChatModel.class, new ChatEvent(message.getAddress().getPlayerName(), ConvertUtil.createMessage(message)));
     }
     
@@ -102,20 +71,9 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
             if (player != null) {
                 Player p = DAO.getPlayer(player);
                 if (p != null) {
-                    if (action.equals(REQ_FIRE_CLOSED)) {
-                        setOpen(p, false);
-                        if (shouldReceiveEvent(p)) {
-                            sendMessage(new Message(p, MessageType.SystemMessage.CHAT_CLOSE));
-                        }
-                        return 1;
-                    }
                     if (action.equals(REQ_UPDATE_READ_DATE)) {
                         if (me.updateMessageReadDate(p)) {
                             DAO.save(me);
-                            setOpen(p, true);
-                            if (shouldReceiveEvent(p)) {
-                                sendMessage(new Message(p, MessageType.SystemMessage.CHAT_OPEN));
-                            }
                             return 1;
                         }
                         else {
