@@ -25,6 +25,7 @@ import org.dyndns.fzoli.mill.server.model.dao.PlayerAvatarDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.dao.ValidatorDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
+import org.dyndns.fzoli.mill.server.model.entity.Message;
 import org.dyndns.fzoli.mill.server.model.entity.PersonalData;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 import org.dyndns.fzoli.mill.server.model.entity.PlayerAvatar;
@@ -463,6 +464,13 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
                 BasePlayer bp = commonPlayer.findPlayer(p.getPlayerName());
                 bp.setOnline(signIn);
                 addEvent(new PlayerEvent(commonPlayer, p.getPlayerName(), signIn));
+                //TODO!!!
+//                if (p.isFriend(player) || player.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS)) {
+//                    Object model = getModelMap().get(ModelKeys.CHAT, false);
+//                    if (model != null) {
+//                        ((ChatModel)model).sendMessage(new Message(p, KEY_USER));
+//                    }
+//                }
             }
             else {
                 System.out.println("not sent.");

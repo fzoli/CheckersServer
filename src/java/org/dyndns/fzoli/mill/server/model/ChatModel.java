@@ -24,7 +24,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
 
     private static final PlayerDAO DAO = new PlayerDAO();
     
-    private void sendMessage(Message message) {
+    public void sendMessage(Message message) {
         callOnPlayerChanged(ChatModel.class, new ChatEvent(message.getAddress().getPlayerName(), ConvertUtil.createMessage(message)));
     }
     
