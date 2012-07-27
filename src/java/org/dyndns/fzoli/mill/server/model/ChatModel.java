@@ -1,10 +1,13 @@
 package org.dyndns.fzoli.mill.server.model;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.DateUtil;
 import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.ChatKeys;
+import org.dyndns.fzoli.mill.common.model.entity.MessageType;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatData;
 import org.dyndns.fzoli.mill.common.model.pojo.ChatEvent;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
@@ -19,7 +22,42 @@ import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
  */
 public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implements ChatKeys {
 
-    private static PlayerDAO DAO = new PlayerDAO();
+    private static final PlayerDAO DAO = new PlayerDAO();
+    private static final Map<Player, Map<Player, Boolean>> INFOS = new HashMap<Player, Map<Player, Boolean>>();
+    
+    private boolean isOpen(Player p) {
+        Player me = getPlayer();
+        if (me != null) {
+            Map<Player, Boolean> info = INFOS.get(me);
+            if (info != null) {
+                Boolean open = info.get(p);
+                if (open != null) return open;
+            }
+        }
+        return false;
+    }
+    
+    private void setOpen(Player p, boolean open) {
+        Player me = getPlayer();
+        if (me != null) {
+            Map<Player, Boolean> info = INFOS.get(p);
+            if (info == null) {
+                info = new HashMap<Player, Boolean>();
+                INFOS.put(p, info);
+            }
+            info.put(me, open);
+        }
+    }
+    
+    private boolean shouldReceiveEvent(Player p) {
+        Player me = getPlayer();
+        if (me == null || p == null) return false;
+        return isOpen(p) && (p.isFriend(me) || me.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS));
+    }
+    
+    private void sendMessage(Message message) {
+        callOnPlayerChanged(ChatModel.class, new ChatEvent(message.getAddress().getPlayerName(), ConvertUtil.createMessage(message)));
+    }
     
     @Override
     protected ChatData getProperties(HttpServletRequest hsr, RequestMap rm) {
@@ -64,9 +102,19 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
             if (player != null) {
                 Player p = DAO.getPlayer(player);
                 if (p != null) {
+                    if (action.equals(REQ_FIRE_CLOSED)) {
+                        setOpen(p, false);
+                        if (shouldReceiveEvent(p)) {
+                            sendMessage(new Message(p, MessageType.SystemMessage.CHAT_CLOSE));
+                        }
+                    }
                     if (action.equals(REQ_UPDATE_READ_DATE)) {
                         if (me.updateMessageReadDate(p)) {
                             DAO.save(me);
+                            setOpen(p, true);
+                            if (shouldReceiveEvent(p)) {
+                                sendMessage(new Message(p, MessageType.SystemMessage.CHAT_OPEN));
+                            }
                             return 1;
                         }
                         else {
@@ -91,16 +139,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                                 me.getPostedMessages().add(msg);
                                 DAO.save(me);
                                 msg.setSender(me);
-                                callOnPlayerChanged(ChatModel.class, new ChatEvent(p.getPlayerName(), ConvertUtil.createMessage(msg/*, me.getName()*/)));
-//                                List<PlayerModel> models = findModels(ModelKeys.PLAYER, false, PlayerModel.class);
-//                                for (PlayerModel model : models) {
-//                                    Player pl = model.getPlayer();
-//                                    if (pl != null && p.equals(pl)) {
-//                                        model.reinitPlayer();
-//                                        break;
-//                                    }
-//                                }
-//                                reinitPlayer();
+                                sendMessage(msg);
                                 return 1;
                             }
                         }
