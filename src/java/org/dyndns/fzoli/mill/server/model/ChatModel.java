@@ -107,6 +107,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
                         if (shouldReceiveEvent(p)) {
                             sendMessage(new Message(p, MessageType.SystemMessage.CHAT_CLOSE));
                         }
+                        return 1;
                     }
                     if (action.equals(REQ_UPDATE_READ_DATE)) {
                         if (me.updateMessageReadDate(p)) {
