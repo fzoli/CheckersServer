@@ -55,7 +55,7 @@ public class ChatModel extends AbstractOnlineModel<ChatEvent, ChatData> implemen
         return isOpen(p) && (p.isFriend(me) || me.canUsePermission(p, Permission.DETECT_INVISIBLE_STATUS));
     }
     
-    private void sendMessage(Message message) {
+    public void sendMessage(Message message) {
         callOnPlayerChanged(ChatModel.class, new ChatEvent(message.getAddress().getPlayerName(), ConvertUtil.createMessage(message)));
     }
     
