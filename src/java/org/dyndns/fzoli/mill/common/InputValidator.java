@@ -22,10 +22,6 @@ public class InputValidator {
     private final static Pattern PATTERN_NAME = Pattern.compile("^[\\p{L}]{1,}[.]{0,1}[ ]{0,1}[\\p{L}-]{1,18}[\\p{L}]{1,1}$");
     private final static Pattern PATTERN_EMAIL = Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", Pattern.CASE_INSENSITIVE);
     private final static Pattern PATTERN_CAPTCHA = Pattern.compile("^[qwertzuopasdfghjkyxcvbnm]{6,6}$", Pattern.CASE_INSENSITIVE);
-//    private static final Pattern PATTERN_AGES = Pattern.compile("^([1-9]{1,1}[0-9]{0,2}){1,1}$");
-//    private static final Pattern PATTERN_AGES = Pattern.compile("^([1-9]{1,1}[0-9]{0,2}){1,1}(-[1-9]{1,1}[0-9]{0,2}){0,1}$");
-//    private static final Pattern PATTERN_AGES = Pattern.compile("^[ ]{0,}([1-9]{1,1}[0-9]{0,2}){1,1}(-[1-9]{1,1}[0-9]{0,2}){0,1}[ ]{0,}$");
-//    private static final Pattern PATTERN_AGES = Pattern.compile("^[\\s]{0,}([1-9]{1,1}[0-9]{0,2}){1,1}([\\s]{0,}-[\\s]{0,}([1-9]{1,1}[0-9]{0,2})){0,1}[\\s]{0,}$");    
     private static final Pattern PATTERN_AGES = Pattern.compile("^\\s*([1-9]{1,1}\\d{0,2}){1,1}(\\s*-\\s*([1-9]{1,1}\\d{0,2}))?\\s*$");
     
     public static class AgeInterval {
@@ -47,7 +43,7 @@ public class InputValidator {
 
         @Override
         public String toString() {
-            return "[" + from + (to == null ? "" : "," + to) + "]";
+            return "[" + (from == null ? "empty" : (from + (to == null ? "" : "," + to))) + "]";
         }
         
     }
@@ -65,7 +61,7 @@ public class InputValidator {
                 return new AgeInterval(from, to);
             }
         }
-        return null;
+        return new AgeInterval(null, null);
     }
     
     public static boolean isCaptchaValid(String value) {

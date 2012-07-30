@@ -2,14 +2,12 @@ package org.dyndns.fzoli.mill.server.model.dao;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import org.apache.commons.lang.time.DateUtils;
 import org.dyndns.fzoli.mill.common.InputValidator;
+import org.dyndns.fzoli.mill.common.InputValidator.AgeInterval;
 import org.dyndns.fzoli.mill.common.key.PlayerBuilderReturn;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
 import org.dyndns.fzoli.mill.common.model.entity.Sex;
@@ -73,18 +71,6 @@ public class PlayerDAO extends AbstractObjectDAO {
         }
     }
     
-//    public Message getMessage(Message m) {
-//        if (m == null) return null;
-//        try {
-//            TypedQuery<Message> query = getEntityManager().createQuery("SELECT m FROM Message m WHERE m.address = :address AND m.text = :text AND m.sendDate = :date", Message.class);
-//            return query.setParameter("address", m.getAddress()).setParameter("text", m.getText()).setParameter("date", m.getSendDate()).getSingleResult();
-//        }
-//        catch (PersistenceException ex) {
-//            ex.printStackTrace();
-//            return null;
-//        }
-//    }
-    
     public List<Player> getPlayers() {
         try {
             return getEntityManager().createQuery("SELECT p FROM Player p", Player.class).getResultList();
@@ -95,18 +81,9 @@ public class PlayerDAO extends AbstractObjectDAO {
         }
     }
     
-    public static void main(String[] args) {
-        while (true) {
-            System.out.print("Test age string: ");
-            Scanner s = new Scanner(System.in);
-            String line = s.nextLine();
-            System.out.println(InputValidator.getAges(line));
-        }
-    }
-    
     public List<Player> getPlayers(String names, String age, Sex sex, String country, String region, String city) {
-        
-        return getPlayers(names, null, null, sex, country, region, city);
+        AgeInterval ages = InputValidator.getAges(age);
+        return getPlayers(names, ages.getFrom(), ages.getTo(), sex, country, region, city);
     }
     
     public List<Player> getPlayers(String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
