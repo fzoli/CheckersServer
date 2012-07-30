@@ -1,12 +1,18 @@
 package org.dyndns.fzoli.mill.server.model.dao;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
+import org.apache.commons.lang.time.DateUtils;
 import org.dyndns.fzoli.mill.common.InputValidator;
 import org.dyndns.fzoli.mill.common.key.PlayerBuilderReturn;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
+import org.dyndns.fzoli.mill.common.model.entity.Sex;
 import org.dyndns.fzoli.mill.server.model.entity.Message;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
 
@@ -82,6 +88,44 @@ public class PlayerDAO extends AbstractObjectDAO {
     public List<Player> getPlayers() {
         try {
             return getEntityManager().createQuery("SELECT p FROM Player p", Player.class).getResultList();
+        }
+        catch (PersistenceException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static void main(String[] args) {
+        while (true) {
+            System.out.print("Test age string: ");
+            Scanner s = new Scanner(System.in);
+            String line = s.nextLine();
+            System.out.println(InputValidator.getAges(line));
+        }
+    }
+    
+    public List<Player> getPlayers(String names, String age, Sex sex, String country, String region, String city) {
+        
+        return getPlayers(names, null, null, sex, country, region, city);
+    }
+    
+    public List<Player> getPlayers(String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
+        try {
+            return getEntityManager().createQuery("SELECT p FROM Player p WHERE "
+                    + "(:name IS NULL OR :name = '' OR upper(p.playerName) LIKE upper(:name) OR upper(p.personalData.firstName) LIKE upper(:name) OR upper(p.personalData.lastName) LIKE upper(:name)) AND "
+                    + "(:dateFrom IS NULL OR :dateTo IS NULL OR p.personalData.birthDate BETWEEN :dateFrom AND :dateTo) AND "
+                    + "(:sex IS NULL OR p.personalData.sex = :sex) AND "
+                    + "((:country IS NULL OR :country = '' OR p.personalData.country = :country) AND "
+                    + "(:region IS NULL OR :region = '' OR p.personalData.region = :region) AND "
+                    + "(:city IS NULL OR :city = '' OR p.personalData.city = :city))", Player.class)
+                    .setParameter("name", names)
+                    .setParameter("dateFrom", ageTo == null ? null : DateUtils.addYears(new Date(), -1 * ageTo))
+                    .setParameter("dateTo", ageFrom == null ? null : DateUtils.addYears(new Date(), -1 * ageFrom))
+                    .setParameter("sex", sex)
+                    .setParameter("country", country)
+                    .setParameter("region", region)
+                    .setParameter("city", city)
+                    .getResultList();
         }
         catch (PersistenceException ex) {
             ex.printStackTrace();

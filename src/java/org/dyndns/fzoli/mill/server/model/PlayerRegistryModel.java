@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.key.PlayerRegistryKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerRegistryData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerRegistryEvent;
+import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 
 /**
@@ -12,6 +13,8 @@ import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
  */
 public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent, PlayerRegistryData> implements PlayerRegistryKeys {
 
+    private static PlayerDAO DAO = new PlayerDAO();
+    
     @Override
     protected PlayerRegistryData getProperties(HttpServletRequest hsr, RequestMap rm) {
         return new PlayerRegistryData(getPlayerName());
