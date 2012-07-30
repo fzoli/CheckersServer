@@ -36,7 +36,7 @@ public class LanguageServlet extends HttpServlet {
     
     private void redirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String referer = req.getHeader("Referer");
-        resp.sendRedirect(referer == null ? ("/" + req.getServletContext().getContextPath()) : referer);
+        resp.sendRedirect(referer == null ? (req.getServletContext().getContextPath()) : referer);
     }
     
     @Override
