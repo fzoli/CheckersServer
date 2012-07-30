@@ -110,20 +110,27 @@ public class LanguageResource {
     }
     
     public static String createLanguageUrls(ServletRequest hsr, String url, Locale defLocale, boolean startAmp) {
+        return createLanguageUrls(hsr, url, defLocale, startAmp, null);
+    }
+    
+    public static String createLanguageUrls(ServletRequest hsr, String url, Locale defLocale, boolean startAmp, String clazz) {
+        if (clazz == null) clazz = "lang_url";
         StringBuilder langs = new StringBuilder();
         List<Locale> locales = getLocales(hsr.getServletContext());
-        appendLangUrl(langs, url, defLocale, startAmp);
+        appendLangUrl(langs, url, defLocale, startAmp, clazz);
         for (Locale locale : locales) {
-            appendLangUrl(langs, url, locale, startAmp);
+            appendLangUrl(langs, url, locale, startAmp, clazz);
         }
         return langs.substring(0, langs.length() - 7);
     }
     
-    private static void appendLangUrl(StringBuilder langs, String langUrl, Locale locale, boolean startAmp) {
+    private static void appendLangUrl(StringBuilder langs, String langUrl, Locale locale, boolean startAmp, String clazz) {
         String start = startAmp ? "&amp;" : "?";
         String dl = locale.getDisplayLanguage();
         dl = String.valueOf(dl.charAt(0)).toUpperCase() + dl.substring(1);
-        langs.append("<a class=\"lang_url\" href=\"")
+        langs.append("<a class=\"")
+        .append(clazz)
+        .append("\" href=\"")
         .append(langUrl)
         .append(start)
         .append(LanguageServlet.KEY_LANG)
