@@ -3,7 +3,6 @@ package org.dyndns.fzoli.mill.server.model;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.PlayerRegistryKeys;
 import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerRegistryData;
