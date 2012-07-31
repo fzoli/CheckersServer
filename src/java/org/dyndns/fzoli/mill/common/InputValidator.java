@@ -27,20 +27,32 @@ public class InputValidator {
     public static class AgeInterval {
         
         private final Integer from, to;
-
+        
+        public AgeInterval() {
+            this(null);
+        }
+        
+        public AgeInterval(Integer number) {
+            this(number, null);
+        }
+        
         public AgeInterval(Integer from, Integer to) {
             this.from = from;
             this.to = to;
         }
-
+        
         public Integer getFrom() {
             return from;
         }
-
+        
         public Integer getTo() {
             return to == null ? from : to;
         }
-
+        
+        public boolean isEmpty() {
+            return from == null;
+        }
+        
         @Override
         public String toString() {
             return "[" + (from == null ? "empty" : (from + (to == null ? "" : "," + to))) + "]";
@@ -49,7 +61,7 @@ public class InputValidator {
     }
     
     public static boolean isAgesValid(String value) {
-        return getAges(value) != null;
+        return !getAges(value).isEmpty();
     }
     
     public static AgeInterval getAges(String value) {
@@ -61,7 +73,7 @@ public class InputValidator {
                 return new AgeInterval(from, to);
             }
         }
-        return new AgeInterval(null, null);
+        return new AgeInterval();
     }
     
     public static boolean isCaptchaValid(String value) {
