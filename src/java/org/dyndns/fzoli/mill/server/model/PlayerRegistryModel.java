@@ -25,15 +25,8 @@ public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent
     
     public List<BasePlayer> findPlayers(String names, String age, String sexName, String country, String region, String city) {
         Player me = getPlayer();
-        List<Player> l;
-        if (me != null) {
-            l = DAO.getPlayers(page, me, names, age, sexName, country, region, city);
-            setParams(names, age, sexName, country, region, city);
-        }
-        else {
-            l = new ArrayList<Player>();
-        }
-        return ConvertUtil.createPlayerList(this, l);
+        if (me != null) setParams(names, age, sexName, country, region, city);
+        return ConvertUtil.createPlayerList(this, DAO.getPlayers(page, me, names, age, sexName, country, region, city));
     }
     
     @Override
