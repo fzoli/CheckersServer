@@ -1,7 +1,5 @@
 package org.dyndns.fzoli.mill.server.model.dao;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityTransaction;
@@ -9,14 +7,12 @@ import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import org.apache.commons.lang.time.DateUtils;
 import org.dyndns.fzoli.mill.common.InputValidator;
-import org.dyndns.fzoli.mill.common.InputValidator.AgeInterval;
 import org.dyndns.fzoli.mill.common.Permission;
 import org.dyndns.fzoli.mill.common.key.PlayerBuilderReturn;
 import org.dyndns.fzoli.mill.common.key.PlayerReturn;
 import org.dyndns.fzoli.mill.common.model.entity.Sex;
 import org.dyndns.fzoli.mill.server.model.entity.Message;
 import org.dyndns.fzoli.mill.server.model.entity.Player;
-import sun.net.ftp.FtpDirEntry;
 
 /**
  *
