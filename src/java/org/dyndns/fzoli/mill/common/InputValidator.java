@@ -65,6 +65,7 @@ public class InputValidator {
     }
     
     public static AgeInterval getAges(String value) {
+        if (value == null) return new AgeInterval();
         Matcher m = PATTERN_AGES.matcher(value);
         if (m.matches()) {
             Integer from = parseInt(m.group(1));

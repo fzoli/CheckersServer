@@ -81,30 +81,46 @@ public class PlayerDAO extends AbstractObjectDAO {
         }
     }
     
-    public List<Player> getPlayers(String names, String age, String sexName, String country, String region, String city) {
-        Sex sex;
-        try {
-            sex = Sex.valueOf(sexName);
-        }
-        catch (Exception ex) {
-            sex = null;
-        }
+    public long getPlayerCount(String names, String age, String sexName, String country, String region, String city) {
         InputValidator.AgeInterval ages = InputValidator.getAges(age);
-        return getPlayers(names, ages.getFrom(), ages.getTo(), sex, country, region, city);
+        return getPlayerCount(names, ages.getFrom(), ages.getTo(), getSex(sexName), country, region, city);
     }
     
-    public List<Player> getPlayers(String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
+    public List<Player> getPlayers(int page, String names, String age, String sexName, String country, String region, String city) {
+        InputValidator.AgeInterval ages = InputValidator.getAges(age);
+        return getPlayers(page, names, ages.getFrom(), ages.getTo(), getSex(sexName), country, region, city);
+    }
+    
+    public long getPlayerCount(String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
+        try {
+            List<Long> l = getPlayers(Long.class, null, names, ageFrom, ageTo, sex, country, region, city);
+            if (l.isEmpty()) return 0;
+            return l.get(0);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return -1;
+        }
+    }
+    
+    public List<Player> getPlayers(int page, String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
+        return getPlayers(Player.class, page, names, ageFrom, ageTo, sex, country, region, city);
+    }
+    
+    private <T> List<T> getPlayers(Class<T> clazz, Integer page, String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
         if (country == null || country.trim().isEmpty()) country = region = city = null;
         else if (region == null || region.trim().isEmpty()) region = city = null;
              else if (city != null && city.trim().isEmpty()) city = null;
         try {
-            return getEntityManager().createQuery("SELECT p FROM Player p WHERE "
+            return getEntityManager().createQuery("SELECT " + (clazz.equals(Player.class) ? "p" : "count(p)") + " FROM Player p WHERE "
                     + "(:name IS NULL OR :name = '' OR upper(p.playerName) LIKE upper(:name) OR upper(p.personalData.firstName) LIKE upper(:name) OR upper(p.personalData.lastName) LIKE upper(:name)) AND "
                     + "(:dateFrom IS NULL OR :dateTo IS NULL OR p.personalData.birthDate BETWEEN :dateFrom AND :dateTo) AND "
                     + "(:sex IS NULL OR p.personalData.sex = :sex) AND "
                     + "((:country IS NULL OR :country = '' OR p.personalData.country = :country) AND "
                     + "(:region IS NULL OR :region = '' OR p.personalData.region = :region) AND "
-                    + "(:city IS NULL OR :city = '' OR p.personalData.city = :city))", Player.class)
+                    + "(:city IS NULL OR :city = '' OR p.personalData.city = :city))", clazz)
+                    .setMaxResults(25)
+                    .setFirstResult(clazz.equals(Player.class) && page > 0 ? (page - 1) * 25 : 0)
                     .setParameter("name", names)
                     .setParameter("dateFrom", ageTo == null ? null : DateUtils.addYears(new Date(), -1 * ageTo))
                     .setParameter("dateTo", ageFrom == null ? null : DateUtils.addYears(new Date(), -1 * ageFrom))
@@ -218,6 +234,15 @@ public class PlayerDAO extends AbstractObjectDAO {
     
     public boolean save(Message message) {
         return save(message, Message.class);
+    }
+    
+    private Sex getSex(String name) {
+        try {
+            return Sex.valueOf(name);
+        }
+        catch (Exception ex) {
+            return null;
+        }
     }
     
 }

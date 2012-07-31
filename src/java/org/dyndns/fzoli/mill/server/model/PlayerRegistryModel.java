@@ -21,11 +21,14 @@ public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent
     
     private final static PlayerDAO DAO = new PlayerDAO();
     
+    private int page = 1;
+    private String names, age, sexName, country, region, city;
+    
     public List<BasePlayer> findPlayers(String names, String age, String sexName, String country, String region, String city) {
         Player me = getPlayer();
         List<Player> l;
         if (me != null) {
-            l = DAO.getPlayers(names, age, sexName, country, region, city);
+            l = DAO.getPlayers(page, names, age, sexName, country, region, city);
         }
         else {
             l = new ArrayList<Player>();
