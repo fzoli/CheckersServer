@@ -129,6 +129,14 @@ public enum Permission {
         return MASKS;
     }
     
+    public static List<Integer> getMasks(Permission p) {
+        List<Integer> l = new ArrayList<Integer>();
+        for (int mask : getMasks()) {
+            if (hasPermission(mask, p)) l.add(mask);
+        }
+        return l;
+    }
+    
     public static int getMask(Permission p) {
         return (int) Math.pow(2, p.ordinal());
     }

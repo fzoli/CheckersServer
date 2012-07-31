@@ -107,10 +107,6 @@ public class PlayerDAO extends AbstractObjectDAO {
         }
     }
     
-    public static void main(String[] args) {
-        System.out.println(new PlayerDAO().getPlayers(1, new Player(null, null, null), null, null, null, null, null, null));
-    }
-    
     public List<Player> getPlayers(int page, Player asker, String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
         return getPlayers(Player.class, asker, page, names, ageFrom, ageTo, sex, country, region, city);
     }
@@ -119,10 +115,6 @@ public class PlayerDAO extends AbstractObjectDAO {
         if (country == null || country.trim().isEmpty()) country = region = city = null;
         else if (region == null || region.trim().isEmpty()) region = city = null;
              else if (city != null && city.trim().isEmpty()) city = null;
-        List<Integer> perms = new ArrayList<Integer>();
-        if (asker != null) {
-            perms.addAll(Permission.getMasks()); //TODO: test
-        }
         try {
             return getEntityManager().createQuery("SELECT " + (clazz.equals(Player.class) ? "p" : "count(p)") + " FROM Player p WHERE "
                     + "(:name IS NULL OR :name = '' OR upper(p.playerName) LIKE upper(:name) OR upper(p.personalData.firstName) LIKE upper(:name) OR upper(p.personalData.lastName) LIKE upper(:name)) AND "
@@ -131,7 +123,8 @@ public class PlayerDAO extends AbstractObjectDAO {
                     + "((:country IS NULL OR :country = '' OR p.personalData.country = :country) AND "
                     + "(:region IS NULL OR :region = '' OR p.personalData.region = :region) AND "
                     + "(:city IS NULL OR :city = '' OR p.personalData.city = :city)) AND "
-                    + "(p.activePermission MEMBER OF :perms)", clazz)
+                    + "(p.activePermission NOT MEMBER OF :perms OR (:perm = :root AND NOT p.permission = :root) OR (:shield)) AND "
+                    + "(NOT p = :asker)", clazz)
                     .setMaxResults(25)
                     .setFirstResult(clazz.equals(Player.class) && page > 0 ? (page - 1) * 25 : 0)
                     .setParameter("name", names)
@@ -141,7 +134,11 @@ public class PlayerDAO extends AbstractObjectDAO {
                     .setParameter("country", country)
                     .setParameter("region", region)
                     .setParameter("city", city)
-                    .setParameter("perms", perms)
+                    .setParameter("asker", asker)
+                    .setParameter("root", Permission.ROOT)
+                    .setParameter("shield", asker == null? false : Permission.hasPermission(asker.getPermissionMask(false), Permission.SHIELD_MODE))
+                    .setParameter("perm", asker == null ? 0 : asker.getPermissionMask(false))
+                    .setParameter("perms", Permission.getMasks(Permission.HIDDEN_MODE))
                     .getResultList();
         }
         catch (PersistenceException ex) {
