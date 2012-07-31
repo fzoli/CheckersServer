@@ -28,6 +28,7 @@ public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent
         List<Player> l;
         if (me != null) {
             l = DAO.getPlayers(page, me, names, age, sexName, country, region, city);
+            setParams(names, age, sexName, country, region, city);
         }
         else {
             l = new ArrayList<Player>();
@@ -43,6 +44,15 @@ public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent
     @Override
     protected int setProperty(HttpServletRequest hsr, RequestMap rm) {
         return 0;
+    }
+    
+    private void setParams(String names, String age, String sexName, String country, String region, String city) {
+        this.names = names;
+        this.age = age;
+        this.sexName = sexName;
+        this.country = country;
+        this.region = region;
+        this.city = city;
     }
     
 }
