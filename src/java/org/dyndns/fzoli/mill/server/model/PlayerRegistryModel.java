@@ -28,7 +28,7 @@ public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent
         Player me = getPlayer();
         List<Player> l;
         if (me != null) {
-            l = DAO.getPlayers(page, names, age, sexName, country, region, city);
+            l = DAO.getPlayers(page, me, names, age, sexName, country, region, city);
         }
         else {
             l = new ArrayList<Player>();

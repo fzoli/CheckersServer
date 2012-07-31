@@ -83,6 +83,14 @@ public enum Permission {
     public static final int ROOT = -1;
     private static final int MIN = 0, MAX = (int) Math.pow(2, Permission.values().length) - 1;
     
+    private static final List<Integer> MASKS = new ArrayList<Integer>() {
+        {
+            for (int i = MIN; i <= MAX; i++) {
+                add(i);
+            }
+        }
+    };
+    
     public static enum Group {
         TARGET, STATE_NORMAL, STATE_INVERSE, SYSTEM
     };
@@ -115,6 +123,10 @@ public enum Permission {
     
     public int decPermission(int mask) {
         return decPermission(mask, this);
+    }
+    
+    public static List<Integer> getMasks() {
+        return MASKS;
     }
     
     public static int getMask(Permission p) {
