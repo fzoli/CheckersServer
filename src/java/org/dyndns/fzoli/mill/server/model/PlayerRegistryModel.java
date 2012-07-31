@@ -23,7 +23,7 @@ public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent
     
     private int page = 1;
     private String names, age, sexName, country, region, city;
-    
+    //TODO: megy már a limit, de át kellene tenni a lekérdezésbe a szűrést, hogy a limit működjön
     public List<BasePlayer> findPlayers(String names, String age, String sexName, String country, String region, String city) {
         Player me = getPlayer();
         List<Player> l;
