@@ -81,8 +81,15 @@ public class PlayerDAO extends AbstractObjectDAO {
         }
     }
     
-    public List<Player> getPlayers(String names, String age, Sex sex, String country, String region, String city) {
+    public List<Player> getPlayers(String names, String age, String sexName, String country, String region, String city) {
         AgeInterval ages = InputValidator.getAges(age);
+        Sex sex;
+        try {
+            sex = Sex.valueOf(sexName);
+        }
+        catch (Exception ex) {
+            sex = null;
+        }
         return getPlayers(names, ages.getFrom(), ages.getTo(), sex, country, region, city);
     }
     
