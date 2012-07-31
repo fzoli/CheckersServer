@@ -1,6 +1,5 @@
 package org.dyndns.fzoli.mill.server.model;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.key.PlayerRegistryKeys;
