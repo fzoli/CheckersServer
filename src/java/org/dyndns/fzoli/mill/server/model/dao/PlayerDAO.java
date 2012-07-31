@@ -82,7 +82,6 @@ public class PlayerDAO extends AbstractObjectDAO {
     }
     
     public List<Player> getPlayers(String names, String age, String sexName, String country, String region, String city) {
-        AgeInterval ages = InputValidator.getAges(age);
         Sex sex;
         try {
             sex = Sex.valueOf(sexName);
@@ -90,10 +89,14 @@ public class PlayerDAO extends AbstractObjectDAO {
         catch (Exception ex) {
             sex = null;
         }
+        InputValidator.AgeInterval ages = InputValidator.getAges(age);
         return getPlayers(names, ages.getFrom(), ages.getTo(), sex, country, region, city);
     }
     
     public List<Player> getPlayers(String names, Integer ageFrom, Integer ageTo, Sex sex, String country, String region, String city) {
+        if (country == null || country.trim().isEmpty()) country = region = city = null;
+        else if (region == null || region.trim().isEmpty()) region = city = null;
+             else if (city != null && city.trim().isEmpty()) city = null;
         try {
             return getEntityManager().createQuery("SELECT p FROM Player p WHERE "
                     + "(:name IS NULL OR :name = '' OR upper(p.playerName) LIKE upper(:name) OR upper(p.personalData.firstName) LIKE upper(:name) OR upper(p.personalData.lastName) LIKE upper(:name)) AND "
