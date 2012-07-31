@@ -20,6 +20,7 @@ import org.dyndns.fzoli.mill.server.model.entity.Player;
  */
 public class PlayerDAO extends AbstractObjectDAO {
     
+    private static final int MAX_RES = 25;
     private static final boolean DELETE_MESSAGES = true;
     
     public List<Player> getPossibleFriends(Player player) {
@@ -81,6 +82,12 @@ public class PlayerDAO extends AbstractObjectDAO {
         }
     }
     
+    public int getLastPage(long count) {
+        double d = count / (double)MAX_RES;
+        if (d != (int)d) d = 1 + (int)d;
+        return (int)d;
+    }
+    
     public long getPlayerCount(Player asker, String names, String age, String sexName, String country, String region, String city) {
         InputValidator.AgeInterval ages = InputValidator.getAges(age);
         return getPlayerCount(asker, names, ages.getFrom(), ages.getTo(), getSex(sexName), country, region, city);
@@ -121,8 +128,8 @@ public class PlayerDAO extends AbstractObjectDAO {
                     + "(:city IS NULL OR :city = '' OR p.personalData.city = :city)) AND "
                     + "(p.activePermission NOT MEMBER OF :perms OR (:perm = :root AND NOT p.permission = :root) OR (:shield)) AND "
                     + "(NOT p = :asker)", clazz)
-                    .setMaxResults(25)
-                    .setFirstResult(clazz.equals(Player.class) && page > 0 ? (page - 1) * 25 : 0)
+                    .setMaxResults(MAX_RES)
+                    .setFirstResult(clazz.equals(Player.class) && page > 0 ? (page - 1) * MAX_RES : 0)
                     .setParameter("name", names)
                     .setParameter("dateFrom", ageTo == null ? null : DateUtils.addYears(new Date(), -1 * ageTo))
                     .setParameter("dateTo", ageFrom == null ? null : DateUtils.addYears(new Date(), -1 * ageFrom))

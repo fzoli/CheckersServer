@@ -11,7 +11,7 @@ public class PlayerRegistryData extends BaseOnlinePojo {
 
     private String names, age, sexName, country, region, city;
     
-    private int page;
+    private int page, lastPage;
     private long count;
     private List<BasePlayer> players;
 
@@ -25,11 +25,12 @@ public class PlayerRegistryData extends BaseOnlinePojo {
         this.city = city;
     }
     
-    public PlayerRegistryData(String playerName, List<BasePlayer> players, long count, int page) {
+    public PlayerRegistryData(String playerName, List<BasePlayer> players, long count, int page, int lastPage) {
         super(playerName);
         this.players = players;
         this.count = count;
         this.page = page;
+        this.lastPage = lastPage;
     }
 
     public long getCount() {
@@ -38,6 +39,10 @@ public class PlayerRegistryData extends BaseOnlinePojo {
 
     public int getPage() {
         return page;
+    }
+
+    public int getLastPage() {
+        return lastPage;
     }
 
     public List<BasePlayer> getPlayers() {
