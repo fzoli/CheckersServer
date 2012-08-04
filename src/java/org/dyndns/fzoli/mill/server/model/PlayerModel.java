@@ -591,7 +591,7 @@ public class PlayerModel extends AbstractOnlineModel<PlayerEvent, PlayerData> im
         return new PlayerData(commonPlayer, isCaptchaValidated(), getCaptchaWidth());
     }
     
-    private static List<String> createList(List<? extends Location> l) {
+    public static List<String> createList(List<? extends Location> l) {
         List<String> ls = new ArrayList<String>();
         for (Location o : l) {
             ls.add(o.getDisplay());

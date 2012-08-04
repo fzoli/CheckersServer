@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.dyndns.fzoli.mill.common.key.PlayerRegistryKeys;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerRegistryData;
 import org.dyndns.fzoli.mill.common.model.pojo.PlayerRegistryEvent;
+import static org.dyndns.fzoli.mill.server.model.PlayerModel.createList;
+import org.dyndns.fzoli.mill.server.model.dao.CityDAO;
 import org.dyndns.fzoli.mill.server.model.dao.PlayerDAO;
 import org.dyndns.fzoli.mill.server.model.entity.ConvertUtil;
 import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
@@ -15,6 +17,7 @@ import org.dyndns.fzoli.mvc.common.request.map.RequestMap;
 public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent, PlayerRegistryData> implements PlayerRegistryKeys {
     
     private final static PlayerDAO DAO = new PlayerDAO();
+    private final static CityDAO CDAO = new CityDAO();
     
     private int page = 1;
     private String names, ages, sexName, country, region, city;
@@ -41,15 +44,23 @@ public class PlayerRegistryModel extends AbstractOnlineModel<PlayerRegistryEvent
         int lastPage = DAO.getLastPage(count);
         if (page < 1) page = 1;
         if (page > lastPage) page = lastPage;
-        return new PlayerRegistryData(getPlayerName(), ConvertUtil.createPlayerList(this, DAO.getPlayers(page, getPlayer(), names, ages, sexName, country, region, city)), count, page, lastPage);
+        return new PlayerRegistryData(ConvertUtil.createPlayerList(this, DAO.getPlayers(page, getPlayer(), names, ages, sexName, country, region, city)), count, page, lastPage);
     }
     
     @Override
     protected PlayerRegistryData getProperties(HttpServletRequest hsr, RequestMap rm) {
         String action = rm.getFirst(KEY_REQUEST);
-        if (action != null && (action.equals(REQ_NEXT_PAGE) || action.equals(REQ_PREV_PAGE) || action.equals(REQ_GET_PAGE))) {
-            setPage(action, rm.getFirst(KEY_VALUE));
-            return findPlayers();
+        if (action != null) {
+            String value = rm.getFirst(KEY_VALUE);
+            if (action.equals(REQ_NEXT_PAGE) || action.equals(REQ_PREV_PAGE) || action.equals(REQ_GET_PAGE)) {
+                setPage(action, value);
+                return findPlayers();
+            }
+            if (value != null) {
+                if (action.equals(REQ_GET_COUNTRIES)) return new PlayerRegistryData(createList(CDAO.findCountriesByName(value)));
+                if (action.equals(REQ_GET_REGIONS)) return new PlayerRegistryData(createList(CDAO.findRegions(country, value)));
+                if (action.equals(REQ_GET_CITIES)) return new PlayerRegistryData(createList(CDAO.findCities(country, region, value)));
+            }
         }
         return new PlayerRegistryData(getPlayerName(), names, ages, sexName, country, region, city);
     }

@@ -9,12 +9,16 @@ import org.dyndns.fzoli.mill.common.model.entity.BasePlayer;
  */
 public class PlayerRegistryData extends BaseOnlinePojo {
 
+    private static String NULL_STRING = null;
+    
     private String names, age, sexName, country, region, city;
     
     private int page, lastPage;
     private long count;
     private List<BasePlayer> players;
 
+    private List<String> locations;
+    
     public PlayerRegistryData(String playerName, String names, String age, String sexName, String country, String region, String city) {
         super(playerName);
         this.names = names;
@@ -25,12 +29,21 @@ public class PlayerRegistryData extends BaseOnlinePojo {
         this.city = city;
     }
     
-    public PlayerRegistryData(String playerName, List<BasePlayer> players, long count, int page, int lastPage) {
-        super(playerName);
+    public PlayerRegistryData(List<BasePlayer> players, long count, int page, int lastPage) {
+        super(NULL_STRING);
         this.players = players;
         this.count = count;
         this.page = page;
         this.lastPage = lastPage;
+    }
+
+    public PlayerRegistryData(List<String> locations) {
+        super(NULL_STRING);
+        this.locations = locations;
+    }
+
+    public List<String> getLocations() {
+        return locations;
     }
 
     public long getCount() {
