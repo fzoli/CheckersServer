@@ -10,6 +10,9 @@ public interface PlayerRegistryKeys {
     String REQ_GET_PAGE = "get_page";
     String REQ_NEXT_PAGE = "next_page";
     String REQ_PREV_PAGE = "previous_page";
+    String REQ_GET_COUNTRIES = "get_countries";
+    String REQ_GET_REGIONS = "get_regions";
+    String REQ_GET_CITIES = "get_cities";
     
     String KEY_NAMES = "names";
     String KEY_AGES = "ages";
